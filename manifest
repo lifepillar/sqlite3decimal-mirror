@@ -1,5 +1,9 @@
-C Add\sa\sDoxyfile.
-D 2019-03-29T17:36:25.122
+C Add\s.fossil-settings.\n\nThe\sfiles\sin\sthe\sdecNumber\slibrary\shave\sDOS\sendings,\swhich\sI\sprefer\sto\sleave\nuntouched\sfor\snow.
+D 2019-03-29T18:04:12.829
+F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
+F .fossil-settings/clean-glob 3e23ae809432de45e293f556fa4f9482b6b4f4060d6fcb74d12efddfa531389e
+F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
+F .fossil-settings/ignore-glob 3fda45328108387e1a41d4738378ff3a908fc6e3d19a1b3fff76ffce48d5c417
 F Doxyfile 101f08f8ec610595dbf6469b171f9edba5764abe66f6eabf9638b24ea6d896a4
 F src/decNumber/ICU-license.html 143b2c5c88de83b084e2440787a88b682e97d2317c3b25de11015a27e48c3264
 F src/decNumber/decBasic.c 9708936c33805c6997251da63eb5d58788b32f987dbb434698ac45dd59068df0
@@ -44,7 +48,7 @@ F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473
 F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
 F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
 F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea6f4996a6
-P eb72003dc624cf839c0c689298634ac304ca091e5016a004b3136fefc610d43e
-R 243bfcd9224a93a84e990e7232824454
+P d895434a3f6e050c63a03cb5786c19f4c1714f9a59bf535076a9c27ee3a24683
+R 85c31712b52f79c79cf387f83172f4e5
 U lifepillar
-Z c5df32933526cd7530b6b23b17262ffe
+Z 704200f4d908628b318a1cd529a06c94
