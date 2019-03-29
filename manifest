@@ -1,5 +1,5 @@
-C Merge\sSQLite\samalgamation\sinto\strunk.
-D 2019-03-29T15:48:03.198
+C Add\sa\sdraft\sof\sthe\scode\sfor\sthe\sextension.\n\nThis\sdoes\snot\sinclude\sa\s"true"\simplementation\syet,\sonly\sa\s"stub"\sfile\sis\nprovided.\sNo\sMakefile\syet.\n\nTo\scomplete\sthe\sextension,\sthe\sfunctions\sdefined\sin\simpl_decimal.h\smust\sbe\nimplemented.
+D 2019-03-29T17:32:47.493
 F src/decNumber/ICU-license.html 143b2c5c88de83b084e2440787a88b682e97d2317c3b25de11015a27e48c3264
 F src/decNumber/decBasic.c 9708936c33805c6997251da63eb5d58788b32f987dbb434698ac45dd59068df0
 F src/decNumber/decCommon.c 55626b25052ac72413777856bab7897dba010c5222047ed824528822a3562b16
@@ -33,13 +33,17 @@ F src/decNumber/example6.c 15b17c6771c8a9bfc3c9df156f249d88669d9d5facdb901f63070
 F src/decNumber/example7.c 7eb098f660d9d17c7066e5b3bc478c3577a19a5e02cfe36f947f0b647019b369
 F src/decNumber/example8.c 74e3211c42dc3b6258d87e56821b4b6967f1a9307622c383daf4ad0a66712914
 F src/decNumber/readme.txt e811ab10a4ddd9549c6c0b0fc2f191d17bc4e067544fe34c30a80d0a999c66ce
+F src/decimal.c d823bf312fa0284689b7f7c4da46e65cbd8c17e21cd1c003f5678d0993876e76
+F src/decimal.h 6bafc9760f4cf53fccd1f67187b70338cb3d9b65aa35d7c3ba3df40d45f06e31
+F src/impl_decimal.h e275f5c4c670727f0616ba30b1aaea65d63dfbff19d60c80ff0a690d43932a94
+F src/impl_stub.c 23806b88ca89b0be1ac4d12234c1fbfef465da87bd5187148027868878a3c9d4
 F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
 F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
 F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473c9da9f3
 F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
 F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
-P 3ba6788e1db07db47c55ec1c8266902be584f4f9f16731eebf92234bcd1fbcb2 9c99849c46dd0e9762e925c1f592be8f15c79465c720246b09cc2baaac89c188
-R 2eb80cc5574e43b21a32ac690ebb2b5f
+P b9651aff1f598db2161494a14a2a8f39b77f3c42131f7503b43d4792680163e6
+R 2eb2a5e0ae43939412a3913f8fe794f2
 U lifepillar
-Z e7e5c749ae94eb6e71d2182600bc7f69
+Z 3f97bac2a1f5eeb788de2587727a3c8e
 # Remove this line to create a well-formed Fossil manifest.
