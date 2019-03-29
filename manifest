@@ -1,10 +1,8 @@
-C Add\smy\sMU\sUnit\smicro\stesting\sheader\sfile.
-D 2019-03-28T14:40:47.509
+C Extend\sMU\sUnit\swith\sassertions\sto\scheck\sthe\sresult\sof\sSQLite\squeries.\n\nMost\sof\sthis\scode\sis\sadapted\sfrom\sSQLite\stest\scode.
+D 2019-03-29T17:35:21.968
 F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
-P 9d36390acfa431535509fdb083197431aaf8196bf448c062b4f40b2834054236
-R 5c1d8353daf57f8651e9afa196d74e9a
-T *branch * mu-unit
-T *sym-mu-unit *
-T -sym-trunk *
+F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea6f4996a6
+P b19f21117a18e50e465afac17e0b9e7542e668797d09a38f349a49ed67b449b4
+R d57fbb3637b1314c262c92e2884998d1
 U lifepillar
-Z e0ad3f898245d9e19ce1a1a745c41932
+Z 28f891b7d9ca231f340272058330263c
