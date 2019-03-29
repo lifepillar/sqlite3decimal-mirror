@@ -1,5 +1,5 @@
-C Merge\smu-unit\sand\sdecnumber-lib\sbranches.
-D 2019-03-28T14:58:01.436
+C Add\sSQLite\samalgamation\s3270200.
+D 2019-03-29T15:47:00.992
 F src/decNumber/ICU-license.html 143b2c5c88de83b084e2440787a88b682e97d2317c3b25de11015a27e48c3264
 F src/decNumber/decBasic.c 9708936c33805c6997251da63eb5d58788b32f987dbb434698ac45dd59068df0
 F src/decNumber/decCommon.c 55626b25052ac72413777856bab7897dba010c5222047ed824528822a3562b16
@@ -33,9 +33,16 @@ F src/decNumber/example6.c 15b17c6771c8a9bfc3c9df156f249d88669d9d5facdb901f63070
 F src/decNumber/example7.c 7eb098f660d9d17c7066e5b3bc478c3577a19a5e02cfe36f947f0b647019b369
 F src/decNumber/example8.c 74e3211c42dc3b6258d87e56821b4b6967f1a9307622c383daf4ad0a66712914
 F src/decNumber/readme.txt e811ab10a4ddd9549c6c0b0fc2f191d17bc4e067544fe34c30a80d0a999c66ce
+F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
+F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
+F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473c9da9f3
+F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
 F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
-P 9d36390acfa431535509fdb083197431aaf8196bf448c062b4f40b2834054236 260d2e5419bcdc10e1e8f19cc90ced4087062d508c4a6ffb4a1d5406e91a826d b19f21117a18e50e465afac17e0b9e7542e668797d09a38f349a49ed67b449b4
-R a231dcfe7c510e9d2b9de9b9f33e48e1
+P 3ba6788e1db07db47c55ec1c8266902be584f4f9f16731eebf92234bcd1fbcb2
+R 2eb80cc5574e43b21a32ac690ebb2b5f
+T *branch * sqlite
+T *sym-sqlite *
+T -sym-trunk *
 U lifepillar
-Z 106c7a6a43b4a74cfb6e6fda584fb2f0
+Z 5af66b7d118f245b4431b7b910b89871
 # Remove this line to create a well-formed Fossil manifest.
