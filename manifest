@@ -1,5 +1,5 @@
-C Add\s.fossil-settings.\n\nThe\sfiles\sin\sthe\sdecNumber\slibrary\shave\sDOS\sendings,\swhich\sI\sprefer\sto\sleave\nuntouched\sfor\snow.
-D 2019-03-29T18:04:12.829
+C Add\san\simplementation\sbased\son\sdecQuad.\n\nThis\sis\smore\sor\sless\scomplete.\sIt\sis\sbased\son\sdecNumber's\sdecQuad,\sso\sno\nencoding/decoding\sis\snecessary\s(mathematical\soperations\sare\sperformed\son\sIEEE\n754\sencodings—see\sdecNumber's\smanual\sfor\sthe\sdetails).\n\nSo,\sthis\sis\srelatively\sfast.\sUnfortunately,\sthe\sIEEE\sencoding\shas\stwo\sdefects:\nfirst,\sit\sis\snot\sorder-preserving;\ssecond,\sthe\ssame\sdecimal\smay\shave\sseveral\nrepresentations\s(e.g.,\s1.0\sand\s1.00\shave\sdifferent\sencodings,\sdespite\sthe\sfact\nthat\sthey\srepresent\sthe\ssame\smathematical\squantity).
+D 2019-03-29T18:15:17.901
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 3e23ae809432de45e293f556fa4f9482b6b4f4060d6fcb74d12efddfa531389e
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -41,6 +41,7 @@ F src/decNumber/readme.txt e811ab10a4ddd9549c6c0b0fc2f191d17bc4e067544fe34c30a80
 F src/decimal.c d823bf312fa0284689b7f7c4da46e65cbd8c17e21cd1c003f5678d0993876e76
 F src/decimal.h 6bafc9760f4cf53fccd1f67187b70338cb3d9b65aa35d7c3ba3df40d45f06e31
 F src/impl_decimal.h e275f5c4c670727f0616ba30b1aaea65d63dfbff19d60c80ff0a690d43932a94
+F src/impl_decquad.c 20f57416a6d4c1c4211a71d0c0b3960ae917f92f90da084cb8f2a9a6ee9a159f
 F src/impl_stub.c 23806b88ca89b0be1ac4d12234c1fbfef465da87bd5187148027868878a3c9d4
 F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
 F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
@@ -48,7 +49,14 @@ F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473
 F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
 F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
 F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea6f4996a6
-P d895434a3f6e050c63a03cb5786c19f4c1714f9a59bf535076a9c27ee3a24683
-R 85c31712b52f79c79cf387f83172f4e5
+F test/runtests.c dfbb6aa87e86933961ce8cb31d4a0fd8a7864e1520c5b3a7a5037fb53ed67b02
+F test/test_common.c 6a5bfba62c265754b7e601bca719e06bf0b1ace5a043be569b719cb524658b54
+F test/test_decquad_bench.c b34c10826aab1f4d4f9e8dce74026d5e5f1d62f3d88498d2fd379880b8ca3c7a
+F test/test_decquad_vtab.c 7c103881aaea2dc99b7e7fc1adcb1a20f47ff4eba61ae313a24ba79adb1e172e
+P fe7e76ffaeecfb01ecb7bfdaf4ca10abc738938f5dc3d6aed7942a648627dd7e
+R 55ed244536fbbf4c9e2ea8d7c8fbd401
+T *branch * impl-decquad
+T *sym-impl-decquad *
+T -sym-trunk *
 U lifepillar
-Z 704200f4d908628b318a1cd529a06c94
+Z f0beeae0eced3239f0238efb975fff05
