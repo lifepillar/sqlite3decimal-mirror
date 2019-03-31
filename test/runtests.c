@@ -13,8 +13,8 @@
  */
 #include "mu_unit_sqlite.h"
 #include "test_common.c"
-#include "test_decquad.c"
-#include "test_decquad_bench.c"
+#include "test_decnumber_func.c"
+#include "test_decnumber_bench.c"
 
 static sqlite3* db;
 
@@ -57,12 +57,11 @@ int main(void) {
   mu_init();
   mu_run_test_suite(sqlite_decimal_func_tests);
   mu_run_test_suite(sqlite_decimal_vtab_tests);
-  mu_run_test_suite(sqlite_decquad_func_tests);
-  mu_run_test_suite(sqlite_decquad_vtab_tests);
+  mu_run_test_suite(sqlite_decnumber_func_tests);
 #ifdef SQLITE3_DECIMAL_BENCHMARKS
-  mu_run_test_suite(sqlite3_decquad_bench_tests);
+  mu_run_test_suite(sqlite3_decnumber_bench_tests);
 #else
-  (void)sqlite3_decquad_bench_tests; // Silence warnings
+  (void)sqlite_decnumber_bench_tests; // Silence warnings
 #endif
   mu_test_summary();
   sqlite_decimal_test_finish();
