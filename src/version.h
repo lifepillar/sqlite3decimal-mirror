@@ -1,0 +1,13 @@
+#define MANIFEST_UUID "ec040b951b3ddff1a2d2139d54b7d67101ac9854a7c877ab30236c887cb7681b"
+#define MANIFEST_VERSION "[ec040b951b]"
+#define MANIFEST_DATE "2019-03-31 16:56:32"
+#define MANIFEST_YEAR "2019"
+
+/**
+ * \brief SQLite3 Decimal short version string.
+ */
+#define SQLITE_DECIMAL_SHORT_VERSION "0.0.1"
+
+#define RELEASE_VERSION_NUMBER 1
+#define RELEASE_RESOURCE_VERSION 0,0,1,0
+#define COMPILER_VERSION "10.0.1"
