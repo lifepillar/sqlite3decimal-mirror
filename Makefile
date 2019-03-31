@@ -37,9 +37,9 @@ DYLIBV              = lib$(NAME).$(VERSION).$(SOEXT)
 
 # Source files
 SRCS                = src/decNumber/decContext.c
-SRCS               += src/decNumber/decQuad.c
+SRCS               += src/decNumber/decPacked.c
 SRCS               += src/decimal.c
-SRCS               += src/impl_decquad.c
+SRCS               += src/impl_decnumber.c
 
 DEBUGDIR            = $(BUILDDIR)/debug
 RELEASEDIR          = $(BUILDDIR)/release
@@ -56,13 +56,15 @@ RELEASE_LIBV        = $(RELEASEDIR)/$(LIBV)
 RELEASE_DYLIBV      = $(RELEASEDIR)/$(DYLIBV)
 
 DEBUGOBJS           = $(OBJDIR_DEBUG)/decContext.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/decQuad.o
+DEBUGOBJS          += $(OBJDIR_DEBUG)/decNumber.o
+DEBUGOBJS          += $(OBJDIR_DEBUG)/decPacked.o
 DEBUGOBJS          += $(OBJDIR_DEBUG)/decimal.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/impl_decquad.o
+DEBUGOBJS          += $(OBJDIR_DEBUG)/impl_decnumber.o
 RELEASEOBJS         = $(OBJDIR_RELEASE)/decContext.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/decQuad.o
+RELEASEOBJS        += $(OBJDIR_RELEASE)/decNumber.o
+RELEASEOBJS        += $(OBJDIR_RELEASE)/decPacked.o
 RELEASEOBJS        += $(OBJDIR_RELEASE)/decimal.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/impl_decquad.o
+RELEASEOBJS        += $(OBJDIR_RELEASE)/impl_decnumber.o
 
 # Targets
 
@@ -70,22 +72,28 @@ RELEASEOBJS        += $(OBJDIR_RELEASE)/impl_decquad.o
 all: debug release
 
 # Dependencies
-$(OBJDIR_DEBUG)/decContext.o $(OBJDIR_RELEASE)/decContext.o:     \
-	src/decNumber/decContext.c                                     \
+$(OBJDIR_DEBUG)/decContext.o $(OBJDIR_RELEASE)/decContext.o:         \
+	src/decNumber/decContext.c                                         \
 	src/decNumber/decContext.h src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/decQuad.o $(OBJDIR_RELEASE)/decQuad.o:           \
-	src/decNumber/decQuad.c                                        \
-	src/decNumber/decContext.h src/decNumber/decQuad.h             \
-	src/decNumber/decNumberLocal.h src/decNumber/decCommon.c       \
-	src/decNumber/decDPD.h src/decNumber/decBasic.c
+$(OBJDIR_DEBUG)/decNumber.o $(OBJDIR_RELEASE)/decNumber.o:           \
+	src/decNumber/decNumber.c src/decNumber/decNumber.h                \
+	src/decNumber/decContext.h src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/decimal.o $(OBJDIR_RELEASE)/decimal.o:           \
-	src/decimal.c src/impl_decimal.h src/decimal.h src/version.h   \
+$(OBJDIR_DEBUG)/decPacked.o $(OBJDIR_RELEASE)/decPacked.o:           \
+	src/decNumber/decPacked.c src/decNumber/decNumber.h                \
+	src/decNumber/decContext.h src/decNumber/decPacked.h               \
+	src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/impl_decquad.o $(OBJDIR_RELEASE)/impl_decquad.o: \
-	src/impl_decquad.c src/decNumber/decQuad.h                     \
-	src/decNumber/decContext.h src/impl_decimal.h src/decimal.h
+
+$(OBJDIR_DEBUG)/decimal.o $(OBJDIR_RELEASE)/decimal.o:               \
+	src/decimal.c src/impl_decimal.h src/decimal.h src/version.h       \
+
+$(OBJDIR_DEBUG)/impl_decnumber.o $(OBJDIR_RELEASE)/impl_decnumber.o: \
+	src/impl_decnumber.c src/decNumber/decNumber.h                     \
+	src/decNumber/decContext.h src/decNumber/decPacked.h               \
+	src/impl_decimal.h src/decimal.h src/version.h
+
 
 src/version.h: Makefile
 	$(CC) -o util/mkversion util/mkversion.c
@@ -117,14 +125,17 @@ $(DEBUG_DYLIBV): $(DEBUGOBJS)
 $(OBJDIR_DEBUG)/decContext.o:
 	$(COMPILE_DEBUG) src/decNumber/decContext.c
 
-$(OBJDIR_DEBUG)/decQuad.o:
-	$(COMPILE_DEBUG) src/decNumber/decQuad.c
+$(OBJDIR_DEBUG)/decNumber.o:
+	$(COMPILE_DEBUG) src/decNumber/decNumber.c
+
+$(OBJDIR_DEBUG)/decPacked.o:
+	$(COMPILE_DEBUG) src/decNumber/decPacked.c
 
 $(OBJDIR_DEBUG)/decimal.o:
 	$(COMPILE_DEBUG) src/decimal.c
 
-$(OBJDIR_DEBUG)/impl_decquad.o:
-	$(COMPILE_DEBUG) src/impl_decquad.c
+$(OBJDIR_DEBUG)/impl_decnumber.o:
+	$(COMPILE_DEBUG) src/impl_decnumber.c
 
 # Release build
 
@@ -152,14 +163,17 @@ $(RELEASE_DYLIBV): $(RELEASEOBJS)
 $(OBJDIR_RELEASE)/decContext.o:
 	$(COMPILE_RELEASE) src/decNumber/decContext.c
 
-$(OBJDIR_RELEASE)/decQuad.o:
-	$(COMPILE_RELEASE) src/decNumber/decQuad.c
+$(OBJDIR_RELEASE)/decNumber.o:
+	$(COMPILE_RELEASE) src/decNumber/decNumber.c
+
+$(OBJDIR_RELEASE)/decPacked.o:
+	$(COMPILE_RELEASE) src/decNumber/decPacked.c
 
 $(OBJDIR_RELEASE)/decimal.o:
 	$(COMPILE_RELEASE) src/decimal.c
 
-$(OBJDIR_RELEASE)/impl_decquad.o:
-	$(COMPILE_RELEASE) src/impl_decquad.c
+$(OBJDIR_RELEASE)/impl_decnumber.o:
+	$(COMPILE_RELEASE) src/impl_decnumber.c
 
 # Other targets
 
@@ -167,13 +181,13 @@ TEST_BIN            = runtests
 TEST_DEBUGOBJS      = $(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_DEBUG)/runtests.o
 TEST_RELEASEOBJS    = $(OBJDIR_RELEASE)/sqlite3.o $(OBJDIR_RELEASE)/runtests.o
 
-$(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_RELEASE)/sqlite3.o:           \
+$(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_RELEASE)/sqlite3.o:   \
 	src/sqlite/sqlite3.c
 
-$(OBJDIR_DEBUG)/runtests.o $(OBJDIR_RELEASE)/runtests.o:         \
-	test/runtests.c test/mu_unit_sqlite.h test/mu_unit.h           \
-	test/test_common.c test/test_decquad.c src/decNumber/decQuad.h \
-	src/decNumber/decContext.h test/test_decquad_bench.c
+$(OBJDIR_DEBUG)/runtests.o $(OBJDIR_RELEASE)/runtests.o: \
+	test/runtests.c test/mu_unit_sqlite.h test/mu_unit.h   \
+	test/test_common.c test/test_decnumber_func.c          \
+	test/test_decnumber_bench.c
 
 .PHONY: test
 test: testdebug testrelease
