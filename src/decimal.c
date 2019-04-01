@@ -435,6 +435,7 @@ typedef struct decimalContextCursor decimalContextCursor;
     0,                                                \
     0,                                                \
     0,                                                \
+    0,                                                \
   };
 
 #pragma mark Context virtual table
