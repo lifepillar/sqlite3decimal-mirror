@@ -1,11 +1,11 @@
-C Reorder\s#includes.\n\ndecPacked.h\smust\sbe\sincluded\safter\sdecInfinite.h,\sotherwise\sDECNUMDIGITS\sis\sset\nby\sthe\sdecNumber's\slibrary\srather\sthan\sby\sdecInfinite.h.
-D 2019-04-01T09:01:34.306
+C Fix\stypo\sin\sMakefile.
+D 2019-04-01T09:22:01.581
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
 F .fossil-settings/ignore-glob 3fda45328108387e1a41d4738378ff3a908fc6e3d19a1b3fff76ffce48d5c417
 F Doxyfile 93edba3e8b916811fe50edfea8cdb7dc3614da197883d4ddfd2585e29a1bd699
-F Makefile 18e7c2058fe3e3ce85a4e17a0fbca3d78446cb062a6377977ed6d57a5ec74b30
+F Makefile 758411ceb2c252d2072202daa89e787c83166b5aa9e957b5d712604a4c46b924
 F src/decInfinite.c 6e9c8f8e4cddb6dd72c687c8cf84d1e6b96b95dd48ccc243ef03e406cef9ff05
 F src/decInfinite.h 5a99fd8df4b5901bbea39634d84d2ba48893522be41a5fdc44bed8051f8abf77
 F src/decNumber/ICU-license.html 143b2c5c88de83b084e2440787a88b682e97d2317c3b25de11015a27e48c3264
@@ -56,7 +56,7 @@ F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 6a5bfba62c265754b7e601bca719e06bf0b1ace5a043be569b719cb524658b54
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 8793bbc890dded3b614888aa322b49f62de0ab584e4d95461c490bf919bf3285
-R ffb87783a7ab59fe62774eb99641fb46
+P 9a749513fc99aebcf79d797b21832a4c2fde18f0c533f6962f71a4b860a14db6
+R 8bd7113f175f522473003e71c4eff233
 U lifepillar
-Z 2cc388f46a3729d0d7c4ec3c00116bc6
+Z ff574750a2d40db24ac07360ca6aea2e
