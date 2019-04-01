@@ -510,8 +510,9 @@ void decimalToString(sqlite3_context* context, sqlite3_value* value) {
     // Converting a decNumber to a string requires a buffer
     // DECQUAD_String + 14 bytes long.
     char s[DECNUMDIGITS + 14];
-    // No error is possible from decNumberToString(), and no status is set
-    decNumberToString(&decnum, s);
+    // No error is possible from decNumberToString() and decNumberTrim(), and
+    // no status is set
+    decNumberToString(decNumberTrim(&decnum), s);
     sqlite3_result_text(context, s, -1, SQLITE_TRANSIENT);
   }
 }

@@ -1,5 +1,5 @@
-C Add\sfield\sfor\sxShadowName\sto\ssqlite3_module\sstructure.\n\nFor\snow,\sthis\sis\sset\sto\s0,\sbut\sin\sthe\sfuture\sthis\smight\schange.
-D 2019-04-01T09:23:12.977
+C Trim\strailing\szeroes\sbefore\sconverting\sa\snumber\sto\sstring.
+D 2019-04-01T11:51:00.476
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -44,7 +44,7 @@ F src/decNumber/readme.txt e811ab10a4ddd9549c6c0b0fc2f191d17bc4e067544fe34c30a80
 F src/decimal.c c734a1a46aa2f28424ffc9ea1d90d1ba686e839ffcca058c81c7beefd9fa538a
 F src/decimal.h ca5c3c356e5492d5e5c7b5bdf57e33f6f98eda8812437dd3a627fe10a755b156
 F src/impl_decimal.h e275f5c4c670727f0616ba30b1aaea65d63dfbff19d60c80ff0a690d43932a94
-F src/impl_decinfinite.c b0773641bcc4638930cb30b07e17d02b115f28581faf0178075487dee98d886f
+F src/impl_decinfinite.c df4d84b7f39931991d32186cf68e7b48e47e1d5cbe87fe02ecca45f0915fb1c2
 F src/impl_stub.c 23806b88ca89b0be1ac4d12234c1fbfef465da87bd5187148027868878a3c9d4
 F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
 F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
@@ -56,7 +56,7 @@ F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 6a5bfba62c265754b7e601bca719e06bf0b1ace5a043be569b719cb524658b54
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 89f30fa78404a9607ac2bf9d4741e6e994b867af92a0367e5c1486951beb2050
-R 707a07b71a80b1405f5fd4c6fd041a1e
+P 7749cfc7d070cb0032f208d6c19a776dc30fbb967c3351755bfd0642d0d3c265
+R bd1f2e6c592dbb26fdb14e2e871c2d52
 U lifepillar
-Z 88c3078ce1c673fdecd91ed258ada292
+Z 731ee0bbaf9452161ba92cb259cfdf8d
