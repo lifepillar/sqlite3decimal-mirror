@@ -6,8 +6,8 @@
  */
 #include <signal.h>
 #include <string.h>
-#include "decNumber/decPacked.h"
 #include "decInfinite.h"
+#include "decNumber/decPacked.h" // This must be included *after* decInfinite.h
 #include "impl_decimal.h"
 
 #pragma mark Helper functions
