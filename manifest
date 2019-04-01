@@ -1,5 +1,5 @@
-C Fix\sa\sfew\stests.\sAdd\ssome\scomments\sabout\sthings\sto\sbe\sfixed.
-D 2019-04-01T14:31:36.066
+C Fix\sall\stests\sexcept\sthose\sabout\soperations\snot\simplemented.\n\nSome\sfixes\sare\stemporary,\suntil\sI\sfigure\sout\sthe\sright\ssemantics\sfor\ssome\noperations\s(for\sinstance,\sis\sit\scorrect\sthat\sdecIsNeg('-NaN')\sreturns\s1,\swhen\ndecInfinite\sencodings\sdo\snot\ssupport\ssigned\sNaNs?)).
+D 2019-04-01T14:46:49.291
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -54,9 +54,9 @@ F src/version.h f533e60d1f47adcfa76be92dd4801bb18f7c6238f8f7b18366bd5a1f1c9f7230
 F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
 F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea6f4996a6
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
-F test/test_common.c e8abbc83e84b7b74cfeb5e3faa71ffd2c966f9f0eea8bb30ff52a70689db31a6
+F test/test_common.c 62aba444a40a2612dad1e66261e4a02dab592b9224392f71a722d4e2296eb67b
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P e6bf9205e834dc0801911efb92232278cbf07aa7b31b62032360d142e1b23f47
-R 9a4558e6f8d991a2e1f1fcc8bf6bd179
+P 24120a83ecdb7009ea0d81245275f66852cc9c1fe2f4609bc43fe057fe5a6dd6
+R fbccc3065c56b6cdd570f7a5bca97760
 U lifepillar
-Z d19becb05b45118775c33f13d495d69b
+Z d1dbc9b590e734686c60273012974807
