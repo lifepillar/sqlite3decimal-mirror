@@ -171,13 +171,13 @@ $(OBJDIR_RELEASE)/decNumber.o:
 $(OBJDIR_RELEASE)/decPacked.o:
 	$(COMPILE_RELEASE) src/decNumber/decPacked.c
 
-$(OBJDIR_RELEASE)/decinfinite.o:
-	$(COMPILE_RELEASE) src/decinfinite.c
+$(OBJDIR_RELEASE)/decInfinite.o:
+	$(COMPILE_RELEASE) src/decInfinite.c
 
 $(OBJDIR_RELEASE)/decimal.o:
 	$(COMPILE_RELEASE) src/decimal.c
 
-$(OBJDIR_RELEASE)/impl_decninfinite.o:
+$(OBJDIR_RELEASE)/impl_decinfinite.o:
 	$(COMPILE_RELEASE) src/impl_decinfinite.c
 
 # Other targets
