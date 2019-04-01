@@ -217,14 +217,19 @@ sqlite_decimal_test_deceq(void) {
   mu_assert_query(db, "select decEq('NaN', 'NaN')", "0");
   mu_assert_query(db, "select decEq('NaN', '1.0')", "0");
   mu_assert_query(db, "select decEq('1.0', 'NaN')", "0");
-  mu_assert_query(db, "select decEq('1e6145', 'Inf')", "1");
-  mu_assert_query(db, "select decEq('-1e6145', '-Inf')", "1");
+  mu_assert_query(db, "select decEq('1e9999999990', 'Inf')", "1");
+  mu_assert_query(db, "select decEq('-1e9999999990', '-Inf')", "1");
   return 0;
 }
 
 static int
 sqlite_decimal_test_decfma(void) {
-  mu_assert_query(db, "select decStr(decFMA('3', '2.5', '4.67'))", "12.17");
+  // decNumberFMA() invokes decCheckMath(), which enforces a few restrictions,
+  // among which emax and -emin must be less than DEC_MAX_MATH (99999).
+  // So, by default decFMA() raises an Invalid context error.
+  mu_assert_query_fails(db, "select decStr(decFMA('3', '2.5', '4.67'))", "Invalid context");
+  // TODO: uncomment when updating emax/emin is implemented
+  // mu_assert_query(db, "select decStr(decFMA('3', '2.5', '4.67'))", "12.17");
   return 0;
 }
 
@@ -730,15 +735,21 @@ static int
 sqlite_decimal_test_dectoint32(void) {
   mu_assert_query(db, "select decToInt32('0')", "0");
   mu_assert_query(db, "select decToInt32('123')", "123");
-  mu_assert_query(db, "select decToInt32('123.5')", "124"); // Round to even
-  mu_assert_query(db, "select decToInt32('122.5')", "122"); // Round to even
+  // decToInt32() uses decNumberToInt32(), which sets DEC_Invalid_operation if
+  // its argument does not have an exponent of 0 (i.e., it's an integer), it is
+  // NaN or Infinity or if it is out-of-range
+  mu_assert_query_fails(db, "select decToInt32('123.5')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt32('122.5')", "Invalid operation");
   mu_assert_query(db, "select decToInt32('-123')", "-123");
-  mu_assert_query(db, "select decToInt32('-123.5')", "-124"); // Round to even
-  mu_assert_query(db, "select decToInt32('-122.5')", "-122"); // Round to even
-  mu_assert_query(db, "select decToInt32(dec(2147483647))", "2147483647");
-  mu_assert_query(db, "select decToInt32(dec(2147483648))", "-2147483648"); // Wrap around, no error
+  mu_assert_query_fails(db, "select decToInt32('-123.5')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt32('-122.5')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt32('Inf')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt32('-Inf')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt32('NaN')", "Invalid operation");
+  mu_assert_query(db, "select decToInt32(dec('2147483647'))", "2147483647");
+  mu_assert_query(db, "select decToInt32(dec(2147483648))", "-2147483648"); // Wraps around, no error
   mu_assert_query(db, "select decToInt32(dec(-2147483648))", "-2147483648");
-  mu_assert_query(db, "select decToInt32(dec(-2147483649))", "2147483647"); // Wrap around, no error
+  mu_assert_query(db, "select decToInt32(dec(-2147483649))", "2147483647"); // Wraps around, no error
   return 0;
 }
 
@@ -873,7 +884,10 @@ sqlite_decimal_test_context_precision(void) {
 
 static int
 sqlite_decimal_test_context_rounding_default(void) {
-  mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
+  // When the decimal context is initialized to DEC_INIT_BASE, the defaults for
+  // the ANSI X3.274 arithmetic subset are used. In particular, the round field
+  // of the context is set to ROUND_HALF_UP.
+  mu_assert_query(db, "select round from decContext", "ROUND_HALF_UP");
   return 0;
 }
 
@@ -882,7 +896,7 @@ sqlite_decimal_test_context_set_rounding(void) {
   mu_db_execute(db, "update decContext set round = 'ROUND_UP'");
   mu_assert_query(db, "select round from decContext", "ROUND_UP");
   mu_db_execute(db, "update decContext set round = 'DEFAULT'");
-  mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
+  mu_assert_query(db, "select round from decContext", "ROUND_HALF_UP");
   return 0;
 }
 
@@ -966,6 +980,8 @@ sqlite_decimal_test_traps_insert_null_fails(void) {
 
 static void
 sqlite_test_context_setup() {
+  // Reset rounding
+  mu_db_execute(db, "update decContext set round = 'DEFAULT'");
   // Clear status
   mu_db_execute(db, "delete from decStatus");
   // Default traps

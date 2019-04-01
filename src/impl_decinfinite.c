@@ -100,7 +100,7 @@ static void decNumberToSQLite3Blob(sqlite3_context* context, decNumber* decnum) 
  **/
 static int checkStatus(sqlite3_context* sqlCtx, decContext* decCtx, uint32_t mask) {
   if (decContextTestStatus(decCtx, mask)) {
-    decContext errCtx;
+    decContext errCtx; // FIXME: reimplement without copying the whole context
     decimalContextCopy(&errCtx, decCtx);
     decContextClearStatus(&errCtx, ~mask);
     sqlite3_result_error(sqlCtx, decContextStatusToString(&errCtx), -1);
@@ -146,18 +146,30 @@ static int decode(decNumber* decnum, decContext* decCtx, sqlite3_value* value, s
 /**
  * \brief Handles `SIGFPE` signals.
  *
- * This handler should never be called. If it is, it just logs a message to
- * `stderr` and returns control to the point where the signal was raised.
+ * Quoting from decNumber's manual, p.14:
+ *
+ * > When one of the decNumber functions sets a bit in the context status, the
+ * > bit is compared with the corresponding bit in the traps field. If that bit
+ * > is set (is 1) then a C Floating-Point Exception signal (SIGFPE) is raised.
+ * > At that point, a signal handler function (previously identified to the
+ * > C runtime) is called.
+
+ * This function is such a handler. This doesn't do much: it just returns
+ * control to the point where the signal was raised.
+ *
+ * \see decNumber's manual, pp. 14–15 and p. 23.
  */
 static void signalHandler(int signo) {
+  (void)signo;
   signal(SIGFPE, signalHandler); // Re-enable
-  fprintf(stderr, "[Decimal] Unexpectedly raised signal: %d\n", signo);
 }
 
 void* decimalInitSystem() {
   if (signal(SIGFPE, signalHandler) == SIG_ERR) {
-    // Setting signal handling disabled?
+    // Maybe, setting signal handling is disabled?
+    // TODO: should we do something here?
   }
+  // TODO: Check endianness (with decContextTestEndian())?
   return decimalContextCreate();
 }
 
@@ -259,7 +271,7 @@ static char const* roundingModeToString(enum rounding round) {
 
 static enum rounding roundingModeToEnum(char const* round) {
   if (strncmp(round, "DEFAULT", strlen("DEFAULT")) == 0)
-    return DEC_ROUND_HALF_EVEN;
+    return DEC_ROUND_HALF_UP; // ANSI X3.274
   for (size_t i = 0; i < DEC_ROUND_MAX; i++) {
     if (strncmp(round, rounding_mode[i].name, strlen(rounding_mode[i].name)) == 0)
       return rounding_mode[i].value;
@@ -570,9 +582,9 @@ void decimalToInt32(sqlite3_context* context, sqlite3_value* value) {
   decNumber decnum;
   decContext* decCtx = sqlite3_user_data(context);
   if (decode(&decnum, decCtx, value, context)) {
-    // If rounding removes non-zero digits then the DEC_Inexact flag is set
-    //int result = decNumberToInt32Exact(&decnum, decCtx, decCtx->round);
-    int result = 0; // FIXME
+    // Need to trim trailing zeroes to make the exponent equal to zero (if the
+    // decimal is integer).
+    int result = decNumberToInt32(decNumberTrim(&decnum), decCtx);
     if (checkStatus(context, decCtx, decCtx->traps))
       sqlite3_result_int(context, result);
   }
@@ -611,9 +623,7 @@ void decimalCompare(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* 
     // If an argument is a NaN, the DEC_Invalid_operation flag is set.
     decNumberCompareSignal(&result, &x, &y, decCtx);
     if (checkStatus(context, decCtx, decCtx->traps))
-      // FIXME: incorrect
-     // sqlite3_result_int(context, decNumberToInt32Exact(&result, decCtx, DEC_ROUND_UP)); // Rounding mode does not matter
-      sqlite3_result_int(context, 0);
+     sqlite3_result_int(context, decNumberToInt32(&result, decCtx));
   }
 }
 
@@ -816,6 +826,7 @@ SQLITE_DECIMAL_AGGR_FINAL(Avg, avgAggrDefault, avgAggrFinOp)
 
 SQLITE_DECIMAL_NOT_IMPL1(Bits)
 SQLITE_DECIMAL_NOT_IMPL1(Digits)
+// calls decCheckMath()
 SQLITE_DECIMAL_NOT_IMPL1(Exp)
 SQLITE_DECIMAL_NOT_IMPL1(GetExponent)
 SQLITE_DECIMAL_NOT_IMPL1(IsInteger)
@@ -824,11 +835,14 @@ SQLITE_DECIMAL_NOT_IMPL1(IsNormal)
 SQLITE_DECIMAL_NOT_IMPL1(IsPositive)
 SQLITE_DECIMAL_NOT_IMPL1(IsSigned)
 SQLITE_DECIMAL_NOT_IMPL1(IsSubnormal)
+// calls decCheckMath()
 SQLITE_DECIMAL_NOT_IMPL1(Ln)
+// calls decCheckMath()
 SQLITE_DECIMAL_NOT_IMPL1(Log10)
 SQLITE_DECIMAL_NOT_IMPL1(ToInt64)
 SQLITE_DECIMAL_NOT_IMPL1(Sqrt)
 SQLITE_DECIMAL_NOT_IMPL1(Trim)
 SQLITE_DECIMAL_NOT_IMPL2(GreaterThan)
+// calls decCheckMath()
 SQLITE_DECIMAL_NOT_IMPL2(Power)
 
