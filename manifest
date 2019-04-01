@@ -1,5 +1,5 @@
-C Fix\stypo\sin\sMakefile.
-D 2019-04-01T09:22:01.581
+C Add\sfield\sfor\sxShadowName\sto\ssqlite3_module\sstructure.\n\nFor\snow,\sthis\sis\sset\sto\s0,\sbut\sin\sthe\sfuture\sthis\smight\schange.
+D 2019-04-01T09:23:12.977
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -41,7 +41,7 @@ F src/decNumber/example6.c 15b17c6771c8a9bfc3c9df156f249d88669d9d5facdb901f63070
 F src/decNumber/example7.c 7eb098f660d9d17c7066e5b3bc478c3577a19a5e02cfe36f947f0b647019b369
 F src/decNumber/example8.c 74e3211c42dc3b6258d87e56821b4b6967f1a9307622c383daf4ad0a66712914
 F src/decNumber/readme.txt e811ab10a4ddd9549c6c0b0fc2f191d17bc4e067544fe34c30a80d0a999c66ce
-F src/decimal.c d823bf312fa0284689b7f7c4da46e65cbd8c17e21cd1c003f5678d0993876e76
+F src/decimal.c c734a1a46aa2f28424ffc9ea1d90d1ba686e839ffcca058c81c7beefd9fa538a
 F src/decimal.h ca5c3c356e5492d5e5c7b5bdf57e33f6f98eda8812437dd3a627fe10a755b156
 F src/impl_decimal.h e275f5c4c670727f0616ba30b1aaea65d63dfbff19d60c80ff0a690d43932a94
 F src/impl_decinfinite.c b0773641bcc4638930cb30b07e17d02b115f28581faf0178075487dee98d886f
@@ -56,8 +56,8 @@ F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 6a5bfba62c265754b7e601bca719e06bf0b1ace5a043be569b719cb524658b54
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 9a749513fc99aebcf79d797b21832a4c2fde18f0c533f6962f71a4b860a14db6
-R 8bd7113f175f522473003e71c4eff233
+P 89f30fa78404a9607ac2bf9d4741e6e994b867af92a0367e5c1486951beb2050
+R 707a07b71a80b1405f5fd4c6fd041a1e
 U lifepillar
-Z ff574750a2d40db24ac07360ca6aea2e
+Z 88c3078ce1c673fdecd91ed258ada292
 # Remove this line to create a well-formed Fossil manifest.
