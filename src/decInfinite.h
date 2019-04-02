@@ -62,7 +62,7 @@
  *
  * The number is rounded up to the nearest integer.
  */
-#define DECINF_MAXSIZE 1 + (2 + 1 + (2 * DECINF_EXPSIZE - 1) + (10 * DECNUMDIGITS / 3) - 1) / 8
+#define DECINF_MAXSIZE (1 + (2 + 1 + (2 * DECINF_EXPSIZE - 1) + (10 * DECNUMDIGITS / 3) - 1) / 8)
 
 #include "decNumber/decNumber.h"
 
