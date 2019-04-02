@@ -1,12 +1,9 @@
-C Add\smy\sdecInfinite\sencoding/decoding\sfunctions.\n\nThis\scode\sextends\sdecNumber\swith\ssupport\sfor\sencoding\sdecimal\snumbers\sinto\sth\ndecInfinite\sformat\sdescribed\sin\sthis\spaper:\n\n\s\s\s\sFourny\sGhislain,\n\s\s\s\sdecimalInfinite:\sAll\sDecimals\sIn\sBits.\sNo\sLoss.\sSame\sOrder.\sSimple.\n\s\s\s\sarXiv:1506.01598v2,\n\s\s\s\s17\sJun\s2015.
-D 2019-03-28T14:56:01.427
+C Enclose\smacro\sdefinition\sin\sparentheses!
+D 2019-04-02T10:49:53.383
 F src/decInfinite.c 6e9c8f8e4cddb6dd72c687c8cf84d1e6b96b95dd48ccc243ef03e406cef9ff05
-F src/decInfinite.h 5a99fd8df4b5901bbea39634d84d2ba48893522be41a5fdc44bed8051f8abf77
-P 9d36390acfa431535509fdb083197431aaf8196bf448c062b4f40b2834054236
-R 3f7508e2e47b14cf13e688dfec22c8b6
-T *branch * decinfinite
-T *sym-decinfinite *
-T -sym-trunk *
+F src/decInfinite.h e2ff62c7a2f738f521553dae54ed72771f5ca999df2080ddc23f701f83cb8393
+P 2a449da9e7fad125cdf6658dc3ae447ab5a2a9880bece585de492082df9fa49c
+R 894e1f6c1b8bc9e50681589c77167a5b
 U lifepillar
-Z 5c2c80946a9726b4b7ce8dd7a1bb9654
+Z 8610da12705250e369bab53de07ebecd
 # Remove this line to create a well-formed Fossil manifest.
