@@ -99,5 +99,37 @@ size_t decInfiniteFromNumber(size_t len, uint8_t result[len], decNumber* decnum)
  */
 decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* decnum);
 
+/**
+ * \brief Returns an encoded number as a hexadecimal string.
+ *
+ * This function is meant mostly for debugging (or for fun).
+ *
+ * \param len The number of bytes of the encoded number
+ * \param bytes The encoded number
+ * \param hexes A non-null pointer to a buffer for the output string. This
+ *              function asssumes that the buffer has enough space, which is at
+ *              most `3 * #DECINF_MAXSIZE` bytes.
+ *
+ * \return \a hexes unless \a len exceeds #DECINF_MAXSIZE, in which case the
+ *         returned value is `0`.
+ */
+char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes);
+
+/**
+ * \brief Returns an encoded number as a formatted string of bits.
+ *
+ * This function is meant mostly for debugging (or for fun).
+ *
+ * \param len The number of bytes of the encoded number
+ * \param bytes The encoded number
+ * \param bitstring A non-null pointer to a buffer for the output string. This
+ *        must have enough space for the output string, which is at most
+ *        (approximately) `#DECINF_MAXSIZE * 9 + 1` bytes.
+ *
+ * \return \a bitstring unless \a len exceeds #DECINF_MAXSIZE, in which case
+ *         the returned value is `0`.
+ */
+char* decInfiniteToBits(size_t len, uint8_t const bytes[len], char* bitstring);
+
 #endif
 
