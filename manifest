@@ -1,9 +1,9 @@
-C Enclose\smacro\sdefinition\sin\sparentheses!
-D 2019-04-02T10:49:53.383
-F src/decInfinite.c 6e9c8f8e4cddb6dd72c687c8cf84d1e6b96b95dd48ccc243ef03e406cef9ff05
-F src/decInfinite.h e2ff62c7a2f738f521553dae54ed72771f5ca999df2080ddc23f701f83cb8393
-P 2a449da9e7fad125cdf6658dc3ae447ab5a2a9880bece585de492082df9fa49c
-R 894e1f6c1b8bc9e50681589c77167a5b
+C Add\sdebugging\sfunction\sthat\sformat\sa\sdecInfinite-encoded\sdecimal\sas\sa\sbyte\sor\nbit\sstring.
+D 2019-04-02T19:33:19.774
+F src/decInfinite.c fe90a2563228e0343a203b8e2c3d0844fa31bbbb3fe9867ad4d022aa2fc10c9b
+F src/decInfinite.h cbe3127e3a8cb2e5a2c10814760f110b39122616b49609da2e28b32a4e91c32f
+P 80d67628c1a002f033dc10c2c98d3907fa140c8ccc3f5a20ab76e878f0d4eeb9
+R 5ac729f89fb973ae7014a8d5343a15a7
 U lifepillar
-Z 8610da12705250e369bab53de07ebecd
+Z 9f305fbf394ded12a370de2dc79f50df
 # Remove this line to create a well-formed Fossil manifest.
