@@ -965,3 +965,53 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
   return decnum;
 }
 
+char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes) {
+  if (len > DECINF_MAXSIZE) return 0;
+  for (size_t i = 0; i < len; ++i) sprintf(hexes + 3 * i, "%02x ", bytes[i]);
+  hexes[3 * len - 1] = '\0'; // Replace last space with null byte
+  return hexes;
+}
+
+char* decInfiniteToBits(size_t len, uint8_t const bytes[len], char* bitstring) {
+#define bit(i) ('0' + ((bytes[i / 8] >> (7 - i % 8)) & 0x01))
+  if (len > DECINF_MAXSIZE) return 0;
+
+  size_t max = len * 8;
+  bitstring[0] = (bytes[0] & 0x80 ? '1' : '0'); // Sign
+  bitstring[1] = (bytes[0] & 0x40 ? '1' : '0'); // Sign
+  bitstring[2] = ' ';
+  bitstring[3] = (bytes[0] & 0x20 ? '1' : '0'); // Pad bit
+  bitstring[4] = ' ';
+  char T = bitstring[5] = (bytes[0] & 0x10) ? '1': '0';
+  size_t i = 4;
+  size_t k = 6;
+  uint8_t count = 1;
+  while (i < max && bit(i) == T) { // Unary prefix
+    bitstring[k] = T;
+    ++i; ++k; ++count;
+  }
+  if (i >= max) {
+    bitstring[k] = '\0';
+    return bitstring;
+  }
+  bitstring[k] = bit(i);
+  ++i; ++k;
+  while (i < max && count > 0) { // Exponent
+    bitstring[k] = bit(i);
+    ++i; ++k; --count;
+  }
+  // Mantissa
+  while (i < max) {
+    bitstring[k] = ' ';
+    ++k;
+    count = 10;
+    while (i < max && count > 0) {
+      bitstring[k] = bit(i);
+      ++i; ++k; --count;
+    }
+  }
+  bitstring[k] = '\0';
+
+  return bitstring;
+}
+
