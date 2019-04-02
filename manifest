@@ -1,5 +1,5 @@
-C Fix\sall\stests\sexcept\sthose\sabout\soperations\snot\simplemented.\n\nSome\sfixes\sare\stemporary,\suntil\sI\sfigure\sout\sthe\sright\ssemantics\sfor\ssome\noperations\s(for\sinstance,\sis\sit\scorrect\sthat\sdecIsNeg('-NaN')\sreturns\s1,\swhen\ndecInfinite\sencodings\sdo\snot\ssupport\ssigned\sNaNs?)).
-D 2019-04-01T14:46:49.291
+C Merge\supdate\sto\sdecinfinite.h.
+D 2019-04-02T10:50:27.201
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -7,7 +7,7 @@ F .fossil-settings/ignore-glob 3fda45328108387e1a41d4738378ff3a908fc6e3d19a1b3ff
 F Doxyfile 93edba3e8b916811fe50edfea8cdb7dc3614da197883d4ddfd2585e29a1bd699
 F Makefile 758411ceb2c252d2072202daa89e787c83166b5aa9e957b5d712604a4c46b924
 F src/decInfinite.c 6e9c8f8e4cddb6dd72c687c8cf84d1e6b96b95dd48ccc243ef03e406cef9ff05
-F src/decInfinite.h 5a99fd8df4b5901bbea39634d84d2ba48893522be41a5fdc44bed8051f8abf77
+F src/decInfinite.h e2ff62c7a2f738f521553dae54ed72771f5ca999df2080ddc23f701f83cb8393
 F src/decNumber/ICU-license.html 143b2c5c88de83b084e2440787a88b682e97d2317c3b25de11015a27e48c3264
 F src/decNumber/decBasic.c 9708936c33805c6997251da63eb5d58788b32f987dbb434698ac45dd59068df0
 F src/decNumber/decCommon.c 55626b25052ac72413777856bab7897dba010c5222047ed824528822a3562b16
@@ -56,8 +56,8 @@ F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 62aba444a40a2612dad1e66261e4a02dab592b9224392f71a722d4e2296eb67b
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 24120a83ecdb7009ea0d81245275f66852cc9c1fe2f4609bc43fe057fe5a6dd6
-R fbccc3065c56b6cdd570f7a5bca97760
+P 733194b35aae75159b65bf049abb00c31015c25ba660793b01736bacf8f721ca 80d67628c1a002f033dc10c2c98d3907fa140c8ccc3f5a20ab76e878f0d4eeb9
+R 0d910221870793bc3acbba2ac8703db8
 U lifepillar
-Z d1dbc9b590e734686c60273012974807
+Z e255b7b562f078fd4d7cc390118353c1
 # Remove this line to create a well-formed Fossil manifest.
