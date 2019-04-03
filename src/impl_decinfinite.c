@@ -10,6 +10,8 @@
  * \todo Better error reporting for functions using decCheckMath() (currently,
  *       they report Invalid context)
  * \todo Reset context status after each successful operation?
+ * \todo Fix semantics inconsistencies! For instance: decIsNeg('-NaN') is true,
+ *       but decIsNeg(dec('-NaN')) is false.
  */
 #include <signal.h>
 #include <string.h>
