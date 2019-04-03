@@ -169,10 +169,21 @@
 #include "decInfinite.h"
 #include "decNumber/decNumberLocal.h" // This *must* come after decInfinite.h
 
-static_assert(DECDPUN == 3, "decInfinite assumes DECDPUN == 3");
-static_assert(DECNUMDIGITS >= 3, "DECNUMDIGITS must be at least 3");
-static_assert(DECNUMDIGITS % 3 == 0, "DECNUMDIGITS must be a multiple of 3");
-static_assert(DECINF_EXPSIZE >= 5, "DECINF_EXPSIZE must be at least 5");
+#if DECDPUN != 3
+#error decInfinite assumes DECDPUN == 3
+#endif
+
+#if DECNUMDIGITS < 3
+#error DECNUMDIGITS must be at least 3
+#endif
+
+#if DECNUMDIGITS % 3 != 0
+#error DECNUMDIGITS must be a multiple of 3
+#endif
+
+#if DECINF_EXPSIZE < 5
+#error DECINF_EXPSIZE must be at least 5
+#endif
 
 /**
  * \brief Tests if a decNumber, known to be finite, is zero.
