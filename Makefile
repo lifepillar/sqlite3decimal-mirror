@@ -114,7 +114,7 @@ $(OBJDIR_DEBUG):
 	mkdir -p $(OBJDIR_DEBUG)
 
 $(DEBUG_LIBV): $(DEBUGOBJS)
-	libtool -static -o $@ $(DEBUGOBJS)
+	$(AR) rcs $@ $(DEBUGOBJS)
 	ln -f -s ./$(LIBV) $(DEBUG_LIB)
 
 $(DEBUG_DYLIBV): $(DEBUGOBJS)
@@ -155,7 +155,7 @@ $(OBJDIR_RELEASE):
 	mkdir -p $(OBJDIR_RELEASE)
 
 $(RELEASE_LIBV): $(RELEASEOBJS)
-	libtool -static -o $@ $(RELEASEOBJS)
+	$(AR) rcs $@ $(RELEASEOBJS)
 	ln -f -s ./$(LIBV) $(RELEASE_LIB)
 
 $(RELEASE_DYLIBV): $(RELEASEOBJS)
