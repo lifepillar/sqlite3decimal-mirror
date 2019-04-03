@@ -1,3 +1,4 @@
 build/*
+util/mkversion
 *.d
 *.o
