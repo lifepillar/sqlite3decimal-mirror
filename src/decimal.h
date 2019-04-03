@@ -1,10 +1,7 @@
 #ifndef sqlite_decimal_h
 #define sqlite_decimal_h
 
-/**
- * \brief SQLite Decimal short version string.
- */
-#define SQLITE_DECIMAL_SHORT_VERSION "0.0.0"
+#include "version.h"
 
 /**
  * \brief SQLite Decimal long version string.

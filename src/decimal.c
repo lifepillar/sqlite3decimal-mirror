@@ -35,8 +35,8 @@ SQLITE_EXTENSION_INIT1
   }
 
 SQLITE_DECIMAL_OP0(ClearStatus)
-SQLITE_DECIMAL_OP0(Version)
 SQLITE_DECIMAL_OP0(Status)
+SQLITE_DECIMAL_OP0(Version)
 
 #pragma mark Unary functions
 
@@ -435,6 +435,7 @@ typedef struct decimalContextCursor decimalContextCursor;
     0,                                                \
     0,                                                \
     0,                                                \
+    0,                                                \
   };
 
 #pragma mark Context virtual table
@@ -747,12 +748,16 @@ int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines cons
     { SQLITE_DECIMAL_PREFIX "IsCanonical",    1, decimalIsCanonicalFunc        },
     { SQLITE_DECIMAL_PREFIX "IsFinite",       1, decimalIsFiniteFunc           },
     { SQLITE_DECIMAL_PREFIX "IsInf",          1, decimalIsInfiniteFunc         },
+    { SQLITE_DECIMAL_PREFIX "IsInfinite",     1, decimalIsInfiniteFunc         },
     { SQLITE_DECIMAL_PREFIX "IsInt",          1, decimalIsIntegerFunc          },
+    { SQLITE_DECIMAL_PREFIX "IsInteger",      1, decimalIsIntegerFunc          },
     { SQLITE_DECIMAL_PREFIX "IsLogical",      1, decimalIsLogicalFunc          },
     { SQLITE_DECIMAL_PREFIX "IsNaN",          1, decimalIsNaNFunc              },
     { SQLITE_DECIMAL_PREFIX "IsNeg",          1, decimalIsNegativeFunc         },
+    { SQLITE_DECIMAL_PREFIX "IsNegative",     1, decimalIsNegativeFunc         },
     { SQLITE_DECIMAL_PREFIX "IsNormal",       1, decimalIsNormalFunc           },
     { SQLITE_DECIMAL_PREFIX "IsPos",          1, decimalIsPositiveFunc         },
+    { SQLITE_DECIMAL_PREFIX "IsPositive",     1, decimalIsPositiveFunc         },
     { SQLITE_DECIMAL_PREFIX "IsSigned",       1, decimalIsSignedFunc           },
     { SQLITE_DECIMAL_PREFIX "IsSubnormal",    1, decimalIsSubnormalFunc        },
     { SQLITE_DECIMAL_PREFIX "IsZero",         1, decimalIsZeroFunc             },
