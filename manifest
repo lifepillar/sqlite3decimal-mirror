@@ -1,11 +1,11 @@
-C Add\slicense\sinformation\sto\sall\sfiles.
-D 2019-04-03T12:55:41.540
+C Update\srecipe\sfor\sbuilding\sstatic\slibrary.
+D 2019-04-03T13:28:25.083
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
 F .fossil-settings/ignore-glob 3fda45328108387e1a41d4738378ff3a908fc6e3d19a1b3fff76ffce48d5c417
 F Doxyfile 93edba3e8b916811fe50edfea8cdb7dc3614da197883d4ddfd2585e29a1bd699
-F Makefile 758411ceb2c252d2072202daa89e787c83166b5aa9e957b5d712604a4c46b924
+F Makefile 0ef32f98c50eb15e81236b9b5b0324930edd3c07604ecf7c472e63cdb7af7f1b
 F src/decInfinite.c fe90a2563228e0343a203b8e2c3d0844fa31bbbb3fe9867ad4d022aa2fc10c9b
 F src/decInfinite.h cbe3127e3a8cb2e5a2c10814760f110b39122616b49609da2e28b32a4e91c32f
 F src/decNumber/ICU-license.html 143b2c5c88de83b084e2440787a88b682e97d2317c3b25de11015a27e48c3264
@@ -56,8 +56,8 @@ F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c c6e5d221722aa80ab023036787331cb299732cb5ad001114fbe112688c6db359
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 4fc9381a1fa01038e575c1371706e68f11f6b97ae111f1cfeb3149330eca692a
-R ff2942732b17122f43b06878363959ba
+P 50ebff18a524525da2ef6d1cc47c898383a5cabd92961af1d329d9032378fda0
+R b250b91283d9942932b1a8748cca97d2
 U lifepillar
-Z 6c0976dc9bc26e367505b68f6e2337a3
+Z 5d3544b81d5f5176164775d587eff452
 # Remove this line to create a well-formed Fossil manifest.
