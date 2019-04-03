@@ -1,3 +1,16 @@
+/**
+ * \file      impl_decimal.h
+ * \author    Lifepillar
+ * \copyright Copyright (c) 2019 Lifepillar.
+ *            This program is free software; you can redistribute it and/or
+ *            modify it under the terms of the Simplified BSD License (also
+ *            known as the "2-Clause License" or "FreeBSD License".)
+ * \copyright This program is distributed in the hope that it will be useful,
+ *            but without any warranty; without even the implied warranty of
+ *            merchantability or fitness for a particular purpose.
+ *
+ * \brief     Interface for implementations
+ */
 #ifndef sqlite3_decimal_impl_h
 #define sqlite3_decimal_impl_h
 
