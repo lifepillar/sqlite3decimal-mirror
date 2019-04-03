@@ -1,4 +1,5 @@
-# See https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html
+# https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html
+# vim: ts=8 sts=8 sw=8
 .POSIX:
 .SUFFIXES:
 .SUFFIXES: .o .c
@@ -68,28 +69,28 @@ RELEASEOBJS        += $(OBJDIR_RELEASE)/impl_decinfinite.o
 all: debug release
 
 # Dependencies
-$(OBJDIR_DEBUG)/decContext.o $(OBJDIR_RELEASE)/decContext.o:             \
+$(OBJDIR_DEBUG)/decContext.o $(OBJDIR_RELEASE)/decContext.o:                   \
 	src/decNumber/decContext.c                                             \
 	src/decNumber/decContext.h src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/decNumber.o $(OBJDIR_RELEASE)/decNumber.o:               \
+$(OBJDIR_DEBUG)/decNumber.o $(OBJDIR_RELEASE)/decNumber.o:                     \
 	src/decNumber/decNumber.c src/decNumber/decNumber.h                    \
 	src/decNumber/decContext.h src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/decPacked.o $(OBJDIR_RELEASE)/decPacked.o:               \
+$(OBJDIR_DEBUG)/decPacked.o $(OBJDIR_RELEASE)/decPacked.o:                     \
 	src/decNumber/decPacked.c src/decNumber/decNumber.h                    \
 	src/decNumber/decContext.h src/decNumber/decPacked.h                   \
 	src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/decInfinite.o $(OBJDIR_RELEASE)/decInfinite.o:           \
+$(OBJDIR_DEBUG)/decInfinite.o $(OBJDIR_RELEASE)/decInfinite.o:                 \
 	src/decInfinite.c src/decInfinite.h                                    \
 	src/decNumber/decNumber.h src/decNumber/decContext.h                   \
 	src/decNumber/decNumberLocal.h
 
-$(OBJDIR_DEBUG)/decimal.o $(OBJDIR_RELEASE)/decimal.o:                   \
+$(OBJDIR_DEBUG)/decimal.o $(OBJDIR_RELEASE)/decimal.o:                         \
 	src/decimal.c src/impl_decimal.h src/decimal.h src/version.h           \
 
-$(OBJDIR_DEBUG)/impl_decinfinite.o $(OBJDIR_RELEASE)/impl_decinfinite.o: \
+$(OBJDIR_DEBUG)/impl_decinfinite.o $(OBJDIR_RELEASE)/impl_decinfinite.o:       \
 	src/impl_decinfinite.c src/decNumber/decPacked.h                       \
 	src/decNumber/decNumber.h src/decNumber/decContext.h src/decInfinite.h \
 	src/impl_decimal.h src/decimal.h src/version.h
@@ -186,11 +187,11 @@ TEST_BIN            = runtests
 TEST_DEBUGOBJS      = $(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_DEBUG)/runtests.o
 TEST_RELEASEOBJS    = $(OBJDIR_RELEASE)/sqlite3.o $(OBJDIR_RELEASE)/runtests.o
 
-$(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_RELEASE)/sqlite3.o:   \
+$(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_RELEASE)/sqlite3.o:       \
 	src/sqlite/sqlite3.c
 
-$(OBJDIR_DEBUG)/runtests.o $(OBJDIR_RELEASE)/runtests.o: \
-	test/runtests.c test/mu_unit_sqlite.h test/mu_unit.h   \
+$(OBJDIR_DEBUG)/runtests.o $(OBJDIR_RELEASE)/runtests.o:     \
+	test/runtests.c test/mu_unit_sqlite.h test/mu_unit.h \
 	test/test_common.c
 
 .PHONY: test
