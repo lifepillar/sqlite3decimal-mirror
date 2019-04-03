@@ -1,9 +1,9 @@
-C Add\sdebugging\sfunction\sthat\sformat\sa\sdecInfinite-encoded\sdecimal\sas\sa\sbyte\sor\nbit\sstring.
-D 2019-04-02T19:33:19.774
-F src/decInfinite.c fe90a2563228e0343a203b8e2c3d0844fa31bbbb3fe9867ad4d022aa2fc10c9b
+C Use\s#define\sinstead\sof\sstatic_assert\sfor\sbetter\scompatibility\swith\sold\scompilers.
+D 2019-04-03T13:36:41.583
+F src/decInfinite.c 25d2fb4e90606067e1979769f534d151f12051fa407dde6c512e7c28d9274221
 F src/decInfinite.h cbe3127e3a8cb2e5a2c10814760f110b39122616b49609da2e28b32a4e91c32f
-P 80d67628c1a002f033dc10c2c98d3907fa140c8ccc3f5a20ab76e878f0d4eeb9
-R 5ac729f89fb973ae7014a8d5343a15a7
+P ff068ede76d12d09f65c0e3826e6239f47deb04dfb4c1ced852a1a62c79d06ae
+R a45ce68b49b122e70ab5fb0abb059902
 U lifepillar
-Z 9f305fbf394ded12a370de2dc79f50df
+Z 13d3cfb0091d408d6113f1da37545d57
 # Remove this line to create a well-formed Fossil manifest.
