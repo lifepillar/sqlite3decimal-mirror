@@ -6,6 +6,29 @@ static sqlite3* db;
 #pragma mark Test functions
 
 static int
+sqlite_decimal_test_decbytes(void) {
+  mu_assert_query(db, "select decBytes(dec('-1.00'))", "0f 84");
+  mu_assert_query(db, "select decBytes(dec('-Inf'))", "00");
+  mu_assert_query(db, "select decBytes(dec('+Inf'))", "c0");
+  mu_assert_query(db, "select decBytes(dec('-0'))", "40");
+  mu_assert_query(db, "select decBytes(dec('0'))", "80");
+  mu_assert_query(db, "select decBytes(dec('-NaN'))", "e0");
+  mu_assert_query(db, "select decBytes(dec('NaN'))", "e0");
+  mu_assert_query(db, "select decBytes(dec('-0.001213872189473241234987231984754353498798734892374289399999999999'))",
+                  "19 db a6 4c 34 34 a8 f6 c7 d5 14 c8 60 c8 d2 8a 1e 00");
+  return 0;
+}
+
+static int
+sqlite_decimal_test_decbits(void) {
+  for (int i = 0; i < 2; ++i) { // The result must be deterministic
+    mu_assert_query(db, "select decBits(dec('-1.23'));",
+        "00 0 011 1101101101");
+  }
+  return 0;
+}
+
+static int
 sqlite_decimal_test_dec_NaN(void) {
   mu_assert_query(db, "select decStr(dec('NaN'))", "NaN");
   mu_assert_query(db, "select decStr(dec('nan'))", "NaN");
@@ -1002,6 +1025,8 @@ sqlite_decimal_func_tests(void) {
   mu_setup = sqlite_test_context_setup;
   mu_teardown = mu_noop;
 
+  mu_test(sqlite_decimal_test_decbytes);
+  mu_test(sqlite_decimal_test_decbits);
   mu_test(sqlite_decimal_test_dec_NaN);
   mu_test(sqlite_decimal_test_dec_Inf);
   mu_test(sqlite_decimal_test_dec_neg);
