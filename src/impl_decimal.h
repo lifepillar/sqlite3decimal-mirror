@@ -710,8 +710,7 @@ SQLITE_DECIMAL_OPn_DECL(Add)
    * if all arguments are `NaN` then the result is `NaN`. If some, but not all
    * arguments are `NaN`, the maximum is computed as if there were no `NaN`.
    *
-   * \note When this function is invoked without arguments, it returns the
-   *       maximum finite representable decimal.
+   * \note When this function is invoked without arguments, it returns +Inf.
    */
 SQLITE_DECIMAL_OPn_DECL(Max)
 
@@ -722,8 +721,7 @@ SQLITE_DECIMAL_OPn_DECL(Max)
    * This is like decMaxFunc() except that the absolute values of the arguments
    * are used for comparisons.
    *
-   * \note When this function is invoked without arguments, it returns the
-   *       maximum finite representable decimal.
+   * \note When this function is invoked without arguments, it returns +Inf.
    */
 SQLITE_DECIMAL_OPn_DECL(MaxMag)
 
@@ -734,8 +732,7 @@ SQLITE_DECIMAL_OPn_DECL(MaxMag)
    * if all arguments are `NaN` then the result is `NaN`. If some, but not all
    * arguments are `NaN`, the minimum is computed as if there were no `NaN`.
    *
-   * \note When this function is invoked without arguments, it returns the
-   *       minimum (negative) finite representable decimal.
+   * \note When this function is invoked without arguments, it returns -Inf.
    */
 SQLITE_DECIMAL_OPn_DECL(Min)
 
@@ -746,8 +743,7 @@ SQLITE_DECIMAL_OPn_DECL(Min)
    * This is like decMinFunc() except that the absolute values of the arguments
    * are used for comparisons.
    *
-   * \note When this function is invoked without arguments, it returns the
-   *       minimum finite representable decimal.
+   * \note When this function is invoked without arguments, it returns zero.
    */
 SQLITE_DECIMAL_OPn_DECL(MinMag)
 

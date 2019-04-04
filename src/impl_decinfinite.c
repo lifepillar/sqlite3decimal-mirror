@@ -790,22 +790,11 @@ static void decimalAddDefault(decNumber* decnum, decContext* decCtx) {
 }
 
 static void decimalMaxDefault(decNumber* decnum, decContext* decCtx) {
-  char* m = sqlite3_malloc(decCtx->digits + 1);
-  for (int i = 0; i < decCtx->digits; ++i) m[i] = '9';
-  m[decCtx->digits] = '\0';
-  decNumberFromString(decnum, m, decCtx);
-  decnum->exponent = decCtx->emax - decCtx->digits + 1;
-  sqlite3_free(m);
+  decnum->bits = DECINF;
 }
 
 static void decimalMinDefault(decNumber* decnum, decContext* decCtx) {
-  char* m = sqlite3_malloc(decCtx->digits + 1);
-  for (int i = 0; i < decCtx->digits; ++i) m[i] = '9';
-  m[decCtx->digits] = '\0';
-  decNumberFromString(decnum, m, decCtx);
-  decnum->bits |= DECNEG;
-  decnum->exponent = decCtx->emax - decCtx->digits + 1;
-  sqlite3_free(m);
+  decnum->bits = DECNEG | DECINF;
 }
 
 static void decimalMultiplyDefault(decNumber* decnum, decContext* decCtx) {
@@ -816,7 +805,7 @@ SQLITE_DECIMAL_OPn(Add,      decNumberAdd,      decimalAddDefault)
 SQLITE_DECIMAL_OPn(Max,      decNumberMax,      decimalMaxDefault)
 SQLITE_DECIMAL_OPn(MaxMag,   decNumberMaxMag,   decimalMaxDefault)
 SQLITE_DECIMAL_OPn(Min,      decNumberMin,      decimalMinDefault)
-SQLITE_DECIMAL_OPn(MinMag,   decNumberMinMag,   decimalMinDefault)
+SQLITE_DECIMAL_OPn(MinMag,   decNumberMinMag,   decimalAddDefault)
 SQLITE_DECIMAL_OPn(Multiply, decNumberMultiply, decimalMultiplyDefault)
 
 /**
