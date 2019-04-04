@@ -1,8 +1,8 @@
-C Extend\sMU\sUnit\swith\sassertions\sto\scheck\sthe\sresult\sof\sSQLite\squeries.\n\nMost\sof\sthis\scode\sis\sadapted\sfrom\sSQLite\stest\scode.
-D 2019-03-29T17:35:21.968
-F test/mu_unit.h a50aac8f1a484a04ec64a6774da7eba7d64981fd0bd4da9adebe1ae821a9f761
-F test/mu_unit_sqlite.h 55632b73295beaa2fe618d5245df274f2999f53137e7927a71894bea6f4996a6
-P b19f21117a18e50e465afac17e0b9e7542e668797d09a38f349a49ed67b449b4
-R d57fbb3637b1314c262c92e2884998d1
+C Simplify\swriting\stests.
+D 2019-04-04T15:08:35.065
+F test/mu_unit.h 113feab6bd2fb09d04276408d41235f032fd4b89eabe5a55df14ea898b38bea0
+F test/mu_unit_sqlite.h 9bfa145068af2e53798d8cdcb1f7609e9ba72877db402bcac91412f6f12317d1
+P f5d027c3230735873ca9ab313eb458c4a35a51669a05531d3c6827dc9be3112f
+R 0ec14461bf5bfa36dbda4a1e750096f5
 U lifepillar
-Z 28f891b7d9ca231f340272058330263c
+Z 6515b620b2eb5a80dd93abdd5f4a2c3d
