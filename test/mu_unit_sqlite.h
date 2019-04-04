@@ -171,12 +171,13 @@ void mu_db_execute(sqlite3* db, char const* zFormat, ...) {
  * \note The given query should return a single record; if the query returns
  *       multiple records, only the first record is tested.
  */
-#define mu_assert_query(db, query, ...)                          \
-  do {                                                           \
-    ++mu_assert_num;                                             \
-    int success = db_check(db_query(db, query), __VA_ARGS__, 0); \
-    if (!success)                                                \
-      return 1;                                                  \
+#define mu_assert_query(db, query, ...)                            \
+  do {                                                             \
+    ++mu_assert_num;                                               \
+    if (!mu_test_status) {                                         \
+      int success = db_check(db_query(db, query), __VA_ARGS__, 0); \
+      if (!success) mu_test_status = 1;                            \
+    }                                                              \
   } while (0)
 
 /**
@@ -189,19 +190,21 @@ void mu_db_execute(sqlite3* db, char const* zFormat, ...) {
 #define mu_benchmark_query(db, query, n)                    \
   do {                                                      \
     ++mu_assert_num;                                        \
-    char* zErrMsg = 0;                                      \
-    float startTime = (float)clock() / CLOCKS_PER_SEC;      \
-    for (unsigned int i = 0; i < n; i++) {                  \
-      int rc = sqlite3_exec(db, query, 0, 0, &zErrMsg);     \
-      if (rc != SQLITE_OK) {                                \
-        MU_MSG("\n\n  QUERY BENCHMARK FAILED\n");           \
-        MU_MSG("  %s\n\n", zErrMsg);                        \
-        sqlite3_free(zErrMsg);                              \
-        return 1;                                           \
+    if (!mu_test_status) {                                  \
+      char* zErrMsg = 0;                                    \
+      float startTime = (float)clock() / CLOCKS_PER_SEC;    \
+      for (unsigned int i = 0; i < n; i++) {                \
+        int rc = sqlite3_exec(db, query, 0, 0, &zErrMsg);   \
+        if (rc != SQLITE_OK) {                              \
+          MU_MSG("\n\n  QUERY BENCHMARK FAILED\n");         \
+          MU_MSG("  %s\n\n", zErrMsg);                      \
+          sqlite3_free(zErrMsg);                            \
+          mu_test_status = 1;                               \
+        }                                                   \
       }                                                     \
+      float endTime = (float)clock() / CLOCKS_PER_SEC;      \
+      MU_MSG("%.1fms", 1000.0 * (endTime - startTime) / n); \
     }                                                       \
-    float endTime = (float)clock() / CLOCKS_PER_SEC;        \
-    MU_MSG("%.1fms", 1000.0 * (endTime - startTime) / n);   \
   } while (0)
 
 
@@ -212,19 +215,21 @@ void mu_db_execute(sqlite3* db, char const* zFormat, ...) {
  * \param query A string containing a SQL query
  * \param errmsg The expected error message
  */
-#define mu_assert_query_fails(db, query, errmsg)                                  \
-  do {                                                                            \
-    ++mu_assert_num;                                                              \
-    char** azElem = db_query(db, query);                                          \
-    int fail = (strcmp(azElem[0], errmsg) != 0);                                  \
-    if (fail) {                                                                   \
-      MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num);                       \
-      MU_MSG("  Expected error: %s\n", errmsg);                                   \
-      MU_MSG("             got: %s\n\n", azElem[0] == 0 ? "nothing" : azElem[0]); \
-      db_query_free(azElem);                                                      \
-      return 1;                                                                   \
-    }                                                                             \
-    db_query_free(azElem);                                                        \
+#define mu_assert_query_fails(db, query, errmsg)                                    \
+  do {                                                                              \
+    ++mu_assert_num;                                                                \
+    if (!mu_test_status) {                                                          \
+      char** azElem = db_query(db, query);                                          \
+      int fail = (strcmp(azElem[0], errmsg) != 0);                                  \
+      if (fail) {                                                                   \
+        MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num);                       \
+        MU_MSG("  Expected error: %s\n", errmsg);                                   \
+        MU_MSG("             got: %s\n\n", azElem[0] == 0 ? "nothing" : azElem[0]); \
+        db_query_free(azElem);                                                      \
+        mu_test_status = 1;                                                         \
+      }                                                                             \
+      db_query_free(azElem);                                                        \
+    }                                                                               \
   } while (0)
 
 #endif /* mu_unit_sqlite_h */
