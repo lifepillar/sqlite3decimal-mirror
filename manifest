@@ -1,5 +1,5 @@
-C Merge\schanges\sto\sMU\sUnit.
-D 2019-04-04T15:10:07.963
+C Update\stests\sfor\snew\ssyntax.
+D 2019-04-04T15:10:43.789
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -54,10 +54,10 @@ F src/version.h ca36127eacc7a12d3b9dc7cef6168d6a8a07ec704917c964dff5387b22ff6f59
 F test/mu_unit.h 113feab6bd2fb09d04276408d41235f032fd4b89eabe5a55df14ea898b38bea0
 F test/mu_unit_sqlite.h 9bfa145068af2e53798d8cdcb1f7609e9ba72877db402bcac91412f6f12317d1
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
-F test/test_common.c c6e5d221722aa80ab023036787331cb299732cb5ad001114fbe112688c6db359
+F test/test_common.c 8a279ef9cd7bc93afa2bc007a2a624c074df2c99fc758760b6080fb30a1c5c2a
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P ad9d57a7cd96e44095288d2a0fc20cc99008e1e8db3fc9b399630c0c53d565d0 aedcd4fc1559ab557d3c7258c4567cfb10c9aa42181c13e0747ed937247feb2b
-R dcd650fa315eb9e4fd8e3760e988c0d1
+P b33860cb708c9b87d1b646d55977291bf2a20feb96f43d370f50dc69f32d82e3
+R 41b88625892e027010edc7ee4a4034bd
 U lifepillar
-Z d8995d9e2b2579e2c722cc11ee66a654
+Z a85636658a7bd6d10e1f05a117780f10
 # Remove this line to create a well-formed Fossil manifest.
