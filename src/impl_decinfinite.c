@@ -790,19 +790,22 @@ static void decimalAddDefault(decNumber* decnum, decContext* decCtx) {
 }
 
 static void decimalMaxDefault(decNumber* decnum, decContext* decCtx) {
-  (void)decCtx;
-  uint8_t mantissa[DECNUMDIGITS];
-  for (size_t i = 0; i < DECNUMDIGITS; ++i)
-    mantissa[i] = 0x99;
-  decPackedToNumber(&mantissa[0], DECNUMDIGITS, &(decCtx->emax), decnum);
+  char* m = sqlite3_malloc(decCtx->digits + 1);
+  for (int i = 0; i < decCtx->digits; ++i) m[i] = '9';
+  m[decCtx->digits] = '\0';
+  decNumberFromString(decnum, m, decCtx);
+  decnum->exponent = decCtx->emax - decCtx->digits + 1;
+  sqlite3_free(m);
 }
 
 static void decimalMinDefault(decNumber* decnum, decContext* decCtx) {
-  (void)decCtx;
-  uint8_t mantissa[DECNUMDIGITS];
-  for (size_t i = 0; i < DECNUMDIGITS; i++)
-    mantissa[i] = 0x99;
-  decPackedToNumber(&mantissa[0], DECNUMDIGITS, &(decCtx->emin), decnum);
+  char* m = sqlite3_malloc(decCtx->digits + 1);
+  for (int i = 0; i < decCtx->digits; ++i) m[i] = '9';
+  m[decCtx->digits] = '\0';
+  decNumberFromString(decnum, m, decCtx);
+  decnum->bits |= DECNEG;
+  decnum->exponent = decCtx->emax - decCtx->digits + 1;
+  sqlite3_free(m);
 }
 
 static void decimalMultiplyDefault(decNumber* decnum, decContext* decCtx) {
