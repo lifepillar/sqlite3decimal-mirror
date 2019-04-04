@@ -100,6 +100,18 @@ size_t decInfiniteFromNumber(size_t len, uint8_t result[len], decNumber* decnum)
 decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* decnum);
 
 /**
+ * \brief Determines whether an encoded number is special.
+ *
+ * A special number is any of `-Inf`, `+Inf`, or `NaN`.
+ *
+ * \param len The number of bytes of the encoded number
+ * \param bytes The encoded number
+ *
+ * \return `1` if the number is recognized as a special number; `0` otherwise.
+ */
+int decInfiniteIsSpecial(size_t len, uint8_t const bytes[len]);
+
+/**
  * \brief Returns an encoded number as a hexadecimal string.
  *
  * This function is meant mostly for debugging (or for fun).
