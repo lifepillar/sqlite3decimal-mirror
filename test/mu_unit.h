@@ -148,12 +148,12 @@ extern "C" {
    * \param cond The condition to be verified for a test to be skipped
    * \param message The message to be printed when a test is skipped
    */
-#define mu_skip_if(cond, message) \
-  do {                            \
-    if ((cond)) {                 \
-      MU_MSG(" » %s\n", message); \
-      return 2;                   \
-    }                             \
+#define mu_skip_if(cond, message)    \
+  do {                               \
+    if (!mu_test_status && (cond)) { \
+      MU_MSG(" » %s\n", message);    \
+      mu_test_status = 2;            \
+    }                                \
   } while (0)
 
   /**
@@ -164,15 +164,15 @@ extern "C" {
    * \param test An expression to be tested
    * \param message A message to be printed when the test fails.
    *
-   * \return `1` if the test fails; `0` upon success.
+   * \return Nothing
    */
 #define mu_assert(test, message)                            \
   do {                                                      \
     ++mu_assert_num;                                        \
-    if (!(test)) {                                          \
+    if (!mu_test_status && !(test)) {                       \
       MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num); \
       MU_MSG("  %s\n\n", message);                          \
-      return 1;                                             \
+      mu_test_status = 1;                                   \
     }                                                       \
   } while (0)
 
@@ -189,12 +189,12 @@ extern "C" {
    *            `>=`.
    * \param value The expression to be compared.
    *
-   * \return `1` if the test fails; `0` upon success.
+   * \return Nothing
    */
 #define mu_assert_cmp(expected, cmp, value)                 \
   do {                                                      \
     ++mu_assert_num;                                        \
-    if (!((expected) cmp (value))) {                        \
+    if (!mu_test_status && !((expected) cmp (value))) {     \
       MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num); \
       MU_PRINT_VALUE("  Expected  ", expected);             \
       if (strncmp("==", #cmp, 2) == 0) {                    \
@@ -204,7 +204,7 @@ extern "C" {
         MU_PRINT_VALUE("\n     to be  " #cmp, value);       \
       }                                                     \
       MU_MSG("\n\n");                                       \
-      return 1;                                             \
+      mu_test_status = 1;                                   \
     }                                                       \
   } while (0)
 
@@ -262,16 +262,21 @@ extern "C" {
    * \brief Compares two null-terminated strings using `strcmp()`.
    *
    * Succeeds when \a expected is equal to \a value.
+   *
+   * \param expected The expected string
+   * \param value The actual string
+   *
+   * \return Nothing
    */
 #define mu_assert_streq(expected, value)                    \
   do {                                                      \
     ++mu_assert_num;                                        \
-    if (strcmp(expected, value) != 0) {                     \
+    if (!mu_test_status && strcmp(expected, value) != 0) {  \
       MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num); \
       MU_PRINT_VALUE("  Expected  ", expected);             \
       MU_PRINT_VALUE("\n   but got  ", value);              \
       MU_MSG("\n\n");                                       \
-      return 1;                                             \
+      mu_test_status = 1;                                   \
     }                                                       \
   } while (0)
 
@@ -280,6 +285,7 @@ extern "C" {
 
 
   typedef void mu_func(void);  /**< \brief The type of mu_setup() and mu_teardown() functions. */
+  static int mu_test_status;   /**< \brief The current test's status: `0` (ok), '1` (failed) or `2` (skipped) */
   static int mu_tests_run;     /**< \brief The total number of tests run. */
   static int mu_tests_failed;  /**< \brief The total number of failed tests. */
   static int mu_tests_skipped; /**< \brief The total number of skipped tests. */
@@ -326,23 +332,24 @@ extern "C" {
 
    * \param test The name of the function.
    */
-#define mu_test(test)       \
-  do {                      \
-    mu_assert_num = 0;      \
-    MU_MSG("%s ", #test);   \
-    (*mu_setup)();          \
-    int mu_res = test();    \
-    (*mu_teardown)();       \
-    ++mu_tests_run;         \
-    if (mu_res == 1) {      \
-      ++mu_tests_failed;    \
-    }                       \
-    else if (mu_res == 2) { \
-      ++mu_tests_skipped;   \
-    }                       \
-    else {                  \
-      MU_MSG(" ✔︎\n");       \
-    }                       \
+#define mu_test(test)               \
+  do {                              \
+    mu_test_status = 0;             \
+    mu_assert_num = 0;              \
+    MU_MSG("%s ", #test);           \
+    (*mu_setup)();                  \
+    test();                         \
+    (*mu_teardown)();               \
+    ++mu_tests_run;                 \
+    if (mu_test_status == 1) {      \
+      ++mu_tests_failed;            \
+    }                               \
+    else if (mu_test_status == 2) { \
+      ++mu_tests_skipped;           \
+    }                               \
+    else {                          \
+      MU_MSG(" ✔︎\n");               \
+    }                               \
   } while (0)
 
   /**
