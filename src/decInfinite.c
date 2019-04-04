@@ -31,21 +31,24 @@
  *
  * This following description is not meant to replace a good reading.
  *
- * Zeroes and special numbers (`+Inf`, `-Inf`, `NaN`) are encoded in one byte;
- * all other numbers occupy two or more bytes. Special numbers are encoded as
- * follows:
+ * Zeroes and special numbers (`-Inf`, `+Inf`, `-NaN`, `+NaN`) are encoded in
+ * one byte; all other numbers occupy two or more bytes. Special numbers are
+ * encoded as follows:
  *
- * - `-Inf` is encoded as       `00 000000`;
- * - `-0` is encoded as         `01 000000`;
- * - `+0` is encoded as         `10 000000`;
- * - `+Inf` is encoded as       `110 00000`;
- * - `NaN` is encoded as        `111 00000`.
+ * - `-NaN => 00 0 00000`;
+ * - `-Inf => 00 1 00000`;
+ * - `-0   => 01 1 00000`;
+ * - `+0   => 10 0 00000`;
+ * - `+Inf => 11 0 00000`;
+ * - `+NaN => 11 1 00000`.
  *
- * The encoding of all finite, negative, non-zero decimals starts with `00`.
- * The encoding of all finite, positive, non-zero decimals starts with `10`.
+ * The encoding of all finite, negative, non-zero decimals starts with `00 1`.
+ * The encoding of all finite, positive, non-zero decimals starts with `10 0`.
  * Since all finite numbers are encoded in two or more bytes, all negative
  * numbers are strictly between `-Inf` and `-0`, and all positive numbers are
- * strictly between `+0` and `+Inf`.
+ * strictly between `+0` and `+Inf`. So, the total ordering looks as follows:
+ *
+ *     -NaN < -Inf < negative decimals < -0 < +0 < positive decimals < +Inf < +NaN
  *
  * It is well known that every real number can be written in the form:
  *
@@ -60,17 +63,19 @@
  * assumes that M has a finite number of digits). We have already said that
  * S is encoded as either `00` (-1) or `10` (+1). In this implementation of
  * decimalInfinite, the sign of the exponent T is encoded in the *fourth* bit
- * (the third bit is unused and is always zero) according to the following
- * scheme:
+ * (the third bit is zero for -NaN and positive numbers, and it is one for +NaN
+ * and negative numbers) according to the following scheme:
  *
- * - `0000`: negative sign, non-negative exponent;
- * - `0001`: negative sign, negative exponent;
+ * - `0010`: negative sign, non-negative exponent;
+ * - `0011`: negative sign, negative exponent;
  * - `1000`: positive sign, negative exponent;
  * - `1001`: positive sign, non-negative exponent.
  *
- * (The reason why we skip the third bit is that, by doing so, the declets of
- * the mantissa gets aligned on even bits: in particular, no declet spans three
- * bytes).
+ * The third bit is not present in the original description of decInfinite. We
+ * use it for two purposes: first, it allows the declets of the mantissa to be
+ * aligned on even bits: in particular, no declet spans three bytes. Second, it
+ * allows us to encode -NaN as the minimum in the total ordering of the
+ * encodings.
  *
  * The absolute value of the exponent E is encoded in two steps using
  * a modified Gamma code. Gamma codes are variable-length self-delimiting
@@ -143,7 +148,7 @@
  *     That is, in this implementation: 10 0 1 00 001011110
  *                                      |  | | |  |
  *                                  S --   | | |  |
- *                       Pad (unused) -----  | |  |
+ *                                Pad -----  | |  |
  *                                  T -------  |  |
  *                                  E ---------   |
  *                                  M ------------
@@ -158,7 +163,8 @@
  *     E = 0111
  *     M = 1100100000 0011001000 (i.e., 800 and 200 in declets)
  *
- * Note that, since the number is negative, 10 - 1.998 = 8.002 is encoded.
+ * So, -199.8 becomes `00 1 0 0111 1100100000 0011001000`. Note that, since the
+ * number is negative, 10 - 1.998 = 8.002 is encoded.
  */
 
 #include <assert.h>
@@ -868,14 +874,14 @@ size_t decInfiniteFromNumber(size_t len, uByte result[len], decNumber* decnum) {
   // Treat special cases (zero, infinites and NaNs) first.
   if (decNumberIsSpecial(decnum)) {
     if (decNumberIsInfinite(decnum))
-      result[0] = decNumberIsNegative(decnum) ? 0x00 : 0xC0;
+      result[0] = decNumberIsNegative(decnum) ? 0x20 : 0xC0;
     else // NaN
-      result[0] = 0xE0;
+      result[0] = decNumberIsNegative(decnum) ? 0x00 : 0xE0;
     return 1;
   }
 
   if (finiteDecNumberIsZero(decnum)) {
-    result[0] = decNumberIsNegative(decnum) ? 0x40 : 0x80;
+    result[0] = decNumberIsNegative(decnum) ? 0x60 : 0x80;
     return 1;
   }
 
@@ -893,7 +899,7 @@ size_t decInfiniteFromNumber(size_t len, uByte result[len], decNumber* decnum) {
   bitPos p = { .pos = &result[0], .free = 5 };
 
   if (decNumberIsNegative(decnum)) {
-    *p.pos = 0x00; // Set negative sign and padding bit
+    *p.pos = 0x20; // Set negative sign and padding bit
     Flag T = adj_exp < 0;
     p = decInfinitePackExponent(T ? -adj_exp : adj_exp, T, p);
     decShiftToMost(decnum); // Align digits to msu (leaves exponent intact)
@@ -919,17 +925,20 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
     switch (bytes[0]) {
       case 0x80:                        // Zero
         break;
-      case 0x40:
+      case 0x60:
         decnum->bits = DECNEG;          // Minus zero
         break;
-      case 0x00:
+      case 0x20:
         decnum->bits = DECNEG | DECINF; // -Inf
         break;
       case 0xC0:
         decnum->bits = DECINF;          // +Inf
         break;
+      case 0x00:
+        decnum->bits = DECNEG | DECNAN; // -NaN
+        break;
       case 0xE0:
-        decnum->bits = DECNAN;          // Simple (not signaling) NaN
+        decnum->bits = DECNAN;          // +NaN
         break;
       default:
         return 0;                       // Error
@@ -937,9 +946,9 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
     return decnum;
   }
 
-  // Check that the sign is encoded correctly (00 or 10) and that the pad bit is zero
+  // Check that the sign and pad bit are encoded correctly
   switch (bytes[0] & 0xE0) {
-    case 0x00:
+    case 0x20:
       decnum->bits = DECNEG;
       break;
     case 0x80:
@@ -952,7 +961,7 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
   // Check that zero is not encoded as a negative exponent
   switch (bytes[0] & 0xFC) {
     case 0x8C: // 10 0 011 is invalid
-    case 0x10: // 00 0 100 is invalid
+    case 0x30: // 00 1 100 is invalid
       return 0;
     default:
       break;
@@ -976,6 +985,10 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
   return decnum;
 }
 
+int decInfiniteIsSpecial(size_t len, uint8_t const bytes[len]) {
+  return (len == 1 && (bytes[0]  == 0x00 || bytes[0] == 0x20 || bytes[0] == 0xC0 || bytes[0] == 0xE0));
+}
+
 char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes) {
   if (len > DECINF_MAXSIZE) return 0;
   for (size_t i = 0; i < len; ++i) sprintf(hexes + 3 * i, "%02x ", bytes[i]);
@@ -983,9 +996,29 @@ char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes) {
   return hexes;
 }
 
-char* decInfiniteToBits(size_t len, uint8_t const bytes[len], char* bitstring) {
+char* decInfiniteToBits(size_t len, uint8_t const bytes[len], char* const bitstring) {
 #define bit(i) ('0' + ((bytes[i / 8] >> (7 - i % 8)) & 0x01))
   if (len > DECINF_MAXSIZE) return 0;
+
+  if (decInfiniteIsSpecial(len, bytes)) {
+    switch (bytes[0]) {
+      case 0x00:
+        strcpy(bitstring, "00 0 00000");
+        break;
+      case 0x20:
+        strcpy(bitstring, "00 1 00000");
+        break;
+      case 0xC0:
+        strcpy(bitstring, "11 0 00000");
+        break;
+      case 0xE0:
+        strcpy(bitstring, "11 1 00000");
+        break;
+      default: // Should never happen
+        strcpy(bitstring, "XX X XXXXX");
+    }
+    return bitstring;
+  }
 
   size_t max = len * 8;
   bitstring[0] = (bytes[0] & 0x80 ? '1' : '0'); // Sign

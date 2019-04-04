@@ -1,9 +1,9 @@
-C Use\s#define\sinstead\sof\sstatic_assert\sfor\sbetter\scompatibility\swith\sold\scompilers.
-D 2019-04-03T13:36:41.583
-F src/decInfinite.c 25d2fb4e90606067e1979769f534d151f12051fa407dde6c512e7c28d9274221
-F src/decInfinite.h cbe3127e3a8cb2e5a2c10814760f110b39122616b49609da2e28b32a4e91c32f
-P ff068ede76d12d09f65c0e3826e6239f47deb04dfb4c1ced852a1a62c79d06ae
-R a45ce68b49b122e70ab5fb0abb059902
+C Update\sthe\sdecInfinite\sformat\sto\saccommodate\ssigned\sNaNs.\n\nThis\sis\smostly\sfor\ssymmetry\sand\sfor\sconsistency\swith\sdecNumber.\sNot\sthat\sI\sfind\nsigned\sNaNs\sa\sprominent\sexample\sof\scoherence\s("it's\snot\sa\snumber,\sbut\sit's\nnegative")...
+D 2019-04-04T20:40:37.265
+F src/decInfinite.c 9aabc2c1791b28f3975d1d4e92f650d2286ea85a2eb41110bfe309154804a45b
+F src/decInfinite.h 7127fa2f5a90904ef83c628061709706047ebc875f1bd63c7633d9b9a7297557
+P 2c0b6dfa1ff00b83b14740eb780ccdb1cf2fddf01049c6d2b97a91222a8d1a6c
+R 161ec08b646f8f8f546d4f8f12f59c2e
 U lifepillar
-Z 13d3cfb0091d408d6113f1da37545d57
+Z d27a162fed4ce38f78f50fc0399a94c3
 # Remove this line to create a well-formed Fossil manifest.
