@@ -1,5 +1,5 @@
-C Merge\sversion\sof\sdecInfinite\sthat\simplements\ssigned\sNaNs.
-D 2019-04-04T20:41:27.930
+C Add\sscript\sfor\stesting\shandling\sof\sNULL\svalues.\n\nThe\sscript\sis\sadapted\sfrom\shttps://sqlite.org/nulls.html\sand\scurrently\sproduces\nthe\ssame\soutput\sas\sfor\sints.
+D 2019-04-05T08:11:00.825
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -53,11 +53,12 @@ F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292f
 F src/version.h ca36127eacc7a12d3b9dc7cef6168d6a8a07ec704917c964dff5387b22ff6f59
 F test/mu_unit.h 113feab6bd2fb09d04276408d41235f032fd4b89eabe5a55df14ea898b38bea0
 F test/mu_unit_sqlite.h 9bfa145068af2e53798d8cdcb1f7609e9ba72877db402bcac91412f6f12317d1
+F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 8a279ef9cd7bc93afa2bc007a2a624c074df2c99fc758760b6080fb30a1c5c2a
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 55d0a7aa3d02e2c8d44e298445efd85d1b88837f2694b5f223e93b1ee01b74dd 451892718458c9548dd578d67256a2b3b8c24adf32e5e40b105bf5acdd8b0ed0
-R 6ef1efade87d121e08fd3fb7b89e8662
+P 004b724fe8990ba576a8ccc6b4bc56efb806bc356581e008b41335523b3fe3de
+R 947704f753bfce66f94a45d90760f207
 U lifepillar
-Z ad7bc6c3546440e631abe65a92ac259d
+Z 22ce4d8748c90a75195093991cce9f51
 # Remove this line to create a well-formed Fossil manifest.
