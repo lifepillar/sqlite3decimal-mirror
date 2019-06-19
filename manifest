@@ -1,9 +1,9 @@
-C Update\scomments.\sRemove\ssome\scomparison\sfunctions.\sUpdate\stests.
-D 2019-06-19T10:08:04.969
+C Ignore\scscope\sfiles\sin\ssubdirectories.
+D 2019-06-19T10:19:11.882
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
-F .fossil-settings/ignore-glob 3fda45328108387e1a41d4738378ff3a908fc6e3d19a1b3fff76ffce48d5c417
+F .fossil-settings/ignore-glob 7b46a109eab5cf91cabb643a93dcfbec75d0aa47f67bddd4210d897b4f4b2a69
 F Doxyfile 93edba3e8b916811fe50edfea8cdb7dc3614da197883d4ddfd2585e29a1bd699
 F Makefile bf63941aa275ac3e8856c4aee6262e1e62b0b450c65639a4e534c2a39fab81ba
 F src/decInfinite.c 9aabc2c1791b28f3975d1d4e92f650d2286ea85a2eb41110bfe309154804a45b
@@ -57,7 +57,7 @@ F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317b
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P be6241b25b411181d39a4d88403334eeea203e8ec495d0d44fce043b47fe83af
-R 980766c4bcac936d12b76820f547d174
+P b5d08490323145fadb7f336d1ff9eb7331643fa6e59ba3b082a2a5fe5f29fd93
+R 86cd9f617ea981e357536246a654aea6
 U lifepillar
-Z 014054351ee5ec3f0a7eeef869e3fc55
+Z 3f378934558d2c6bd4e1da1881319cbc
