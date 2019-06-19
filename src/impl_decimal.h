@@ -238,6 +238,8 @@ SQLITE_DECIMAL_OP0_DECL(Version)
 
   /**
    * \brief Returns the absolute value of a decimal.
+   *
+   * NaNs are propagated.
    */
 SQLITE_DECIMAL_OP1_DECL(Abs)
 
@@ -285,9 +287,11 @@ SQLITE_DECIMAL_OP1_DECL(Digits)
    * \brief Calculates `e^x` where `x` is the argument of the function.
    *
    * Finite results are always full precision and inexact, except when the
-   * argument is a zero or -Infinity (giving `1` or `0` respectively).
+   * argument is a zero or `-Inf` (giving `1` and `0`, respectively). If the
+   * argument is `+Inf` then the result is `+Inf`. NaNs propagate to the
+   * result.
    *
-   * \note: Rounding rules are implementation-defined.
+   * \note Rounding rules are implementation-defined.
    */
 SQLITE_DECIMAL_OP1_DECL(Exp)
 
@@ -313,6 +317,8 @@ SQLITE_DECIMAL_OP1_DECL(Invert)
   /**
    * \brief Returns `1` if the given decimal number's encoding is canonical;
    *        returns `0` otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsCanonical)
 
@@ -320,43 +326,59 @@ SQLITE_DECIMAL_OP1_DECL(IsCanonical)
    * \brief Returns `1` if the given decimal number is finite, `0` otherwise.
    *
    * This function returns `1` if its argument is neither infinite nor a NaN;
-   * returns `0` otherwise.
+   * returns `0` otherwise. The returned value is a SQLite3 integer, not
+   * a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsFinite)
 
   /**
    * \brief Returns `1` if the given decimal number is an infinity; returns `0`
    *        otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsInfinite)
 
   /**
    * \brief Returns `1` if the given decimal number is finite and has exponent
    *        zero; returns `0` otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsInteger)
 
   /**
    * \brief Returns `1` if the given decimal number is a valid argument for
    *        logical operations; return `0` otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsLogical)
 
   /**
    * \brief Returns `1` if the given decimal number is `NaN`; returns `0`
    *        otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsNaN)
 
   /**
-   * \brief Returns `1` if the given decimal number is less than zero and not a
-   *        `NaN`; returns `0` otherwise.
+   * \brief Returns `1` if the given decimal number is (strictly) less than
+   *        zero and not a `NaN`; returns `0` otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
+   *
+   * \note `-0` is still zero, so this function returns `0` is its argument is
+   *       `-0`.
    */
 SQLITE_DECIMAL_OP1_DECL(IsNegative)
 
   /**
    * \brief Returns `1` if the given decimal number is normal; returns `0`
    *        otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    *
    * A number is **normal** iff it is finite, non-zero and not subnormal, i.e.,
    * with magnitude greater than or equal to `10^emin`, where `emin` is the
@@ -367,14 +389,18 @@ SQLITE_DECIMAL_OP1_DECL(IsNegative)
 SQLITE_DECIMAL_OP1_DECL(IsNormal)
 
   /**
-   * \brief Returns `1` if the given decimal number is greater than zero and not
-   *        a `NaN`; returns `0` otherwise.
+   * \brief Returns `1` if the given decimal number is (strictly) greater than
+   *        zero and not a `NaN`; returns `0` otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsPositive)
 
   /**
    * \brief Returns `1` if the given decimal number has a negative sign;
    *        returns `0` otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    *
    * \note Zeroes and NaNs may have a negative signs.
    */
@@ -384,7 +410,9 @@ SQLITE_DECIMAL_OP1_DECL(IsSigned)
    * \brief Returns `1` if the given decimal number is subnormal; returns `0`
    *        otherwise.
    *
-   * A number is **§subnormal** iff it is finite, non-zero and with magnitude
+   * The returned value is a SQLite3 integer, not a decimal.
+   *
+   * A number is **subnormal** iff it is finite, non-zero and with magnitude
    * less than `10^emin` where `emin` is the value returned by decMinExp().
    *
    * \note Zero is neither normal nor subnormal.
@@ -394,6 +422,8 @@ SQLITE_DECIMAL_OP1_DECL(IsSubnormal)
   /**
    * \brief Returns `1` if the given decimal number is zero; returns `0`
    *        otherwise.
+   *
+   * The returned value is a SQLite3 integer, not a decimal.
    */
 SQLITE_DECIMAL_OP1_DECL(IsZero)
 
@@ -533,7 +563,8 @@ SQLITE_DECIMAL_OP1_DECL(Trim)
    * \brief Carries out the digit-wise logical And of two bit sequences.
    *
    * The operands must be integer, zero or (finite) positive and consist only of
-   * zeroes and ones; otherwise, the operation results in an error.
+   * zeroes and ones; otherwise, the operation results in an error (e.g.,
+   * `'Invalid operation'`).
    */
 SQLITE_DECIMAL_OP2_DECL(And)
 
@@ -543,59 +574,89 @@ SQLITE_DECIMAL_OP2_DECL(And)
    * If the first argument is less than the second, the result is `-1`. If the
    * first argument is greater than the second, the result is `1`. If they are
    * equal, the result is `0`. If the operands are not comparable (i.e., one or
-   * both are NaN) then an error is raised.
+   * both are NaN) then the result is `NaN`.
    *
-   * \note The returned value is a SQLite3 integer, not a decimal.
+   * \note The result is a decimal, not a SQLite3 integer: you may use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(Compare)
 
   /**
    * \brief Performs the division of two decimals.
+   *
+   * NaNs inputs propagate to the result.
    */
 SQLITE_DECIMAL_OP2_DECL(Divide)
 
   /**
-   * \brief Performs integer division of two decimals, returning a decimal with
-   *        exponent equal to zero.
+   * \brief Performs integer division of two decimals.
    *
-   * The quotient (rounded towards zero) has exponent zero. If the result cannot
-   * be represented (because it has too many digits) then an error is raised.
+   * The returned value is a decimal, not a SQLite3 integer.
+   *
+   * \note Integer division is an exact operation. For instance, dividing `5.2`
+   *       by `0.3` has the exact result `17`: no errors are raised and no
+   *       status flags are set. However, if the result cannot be represented
+   *       (because it has too many digits) then an error is raised (e.g.,
+   *       `Division impossible`).
    */
 SQLITE_DECIMAL_OP2_DECL(DivideInteger)
 
   /**
-   * \brief Returns `1` if the two decimals are (mathematically) equal;
-   *        returns `0` otherwise.
+   * \brief Returns `1` if the two decimals are (mathematically) equal; returns
+   *       `NaN` if one or both the arguments are NaNs; returns `0` otherwise.
+   *
+   * \note The returned value is a decimal, not a SQLite3 integer. Use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(Equal)
 
   /**
    * \brief Returns `1` if the first decimal is strictly greater than the second;
-   *        returns `0` otherwise.
+   *       returns `NaN' if one or both the arguments are NaNs; returns `0`
+   *       otherwise.
+   *
+   * \note The returned value is a decimal, not a SQLite3 integer. Use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(GreaterThan)
 
   /**
    * \brief Returns `1` if the first decimal is greater than or equal to the
-   *        second; returns `0` otherwise.
+   *        second; returns `NaN' if one or both the arguments are NaNs;
+   *        returns `0` otherwise.
+   *
+   * \note The returned value is a decimal, not a SQLite3 integer. Use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(GreaterThanOrEqual)
 
   /**
    * \brief Returns `1` if the first decimal is strictly less than the second;
-   *        returns `0` otherwise.
+   *        returns `NaN' if one or both the arguments are NaNs; returns `0`
+   *        otherwise.
+   *
+   * \note The returned value is a decimal, not a SQLite3 integer. Use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(LessThan)
 
   /**
    * \brief Returns `1` if the first decimal is less than or equal to the second;
-   *        returns `0` otherwise.
+   *        returns `NaN' if one or both the arguments are NaNs; returns `0`
+   *        otherwise.
+   *
+   * \note The returned value is a decimal, not a SQLite3 integer. Use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(LessThanOrEqual)
 
   /**
    * \brief Returns `1` if the two decimal are not (mathematically) equal;
-   *        returns `0` otherwise.
+   *        returns `NaN' if one or both the arguments are NaNs; returns `0`
+   *        otherwise.
+   *
+   * \note The returned value is a decimal, not a SQLite3 integer. Use
+   *       decToInt32() to convert it to an integer.
    */
 SQLITE_DECIMAL_OP2_DECL(NotEqual)
 
@@ -690,16 +751,22 @@ SQLITE_DECIMAL_OP2_DECL(Xor)
 
 #pragma mark Ternary functions
 
-  void decimalFMA(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y, sqlite3_value* z);
+  /**
+   * \brief Calculates the fused multiply-add `v1 × v2 + v3`.
+   *
+   * NaNs propagate to the results.
+   */
+  void decimalFMA(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2, sqlite3_value* v3);
 
 #pragma mark Variadic functions
 
   /**
    * \brief Adds up zero or more decimals.
    *
-   * \note The sum of zero decimals (i.e., when decAdd() is called without
-   *       arguments) is zero, not `null`.
-   *       If any of the arguments is `null`, the result is `null`.
+   * \note The sum of zero decimals (i.e., when the function is called without
+   *       arguments) is `0`, not `null`. If any of the arguments is `null`
+   *       then the result is `null`. If any of the argument is a NaN then the
+   *       result is a NaN.
    */
 SQLITE_DECIMAL_OPn_DECL(Add)
 
