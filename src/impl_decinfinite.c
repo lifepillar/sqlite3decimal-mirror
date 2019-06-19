@@ -18,8 +18,6 @@
  * \todo Better error reporting for functions using decCheckMath() (currently,
  *       they report Invalid context)
  * \todo Reset context status after each successful operation?
- * \todo Fix semantics inconsistencies! For instance: decIsNeg('-NaN') is true,
- *       but decIsNeg(dec('-NaN')) is false.
  */
 #include <signal.h>
 #include <string.h>
@@ -648,7 +646,10 @@ void decimalClass(sqlite3_context* context, sqlite3_value* value) {
     }                                                                   \
   }
 
-#define decNumberIsPositive(d) \
+#define decNumberIsNeg(d) \
+  (decNumberIsNegative(d) && !decNumberIsZero(d) && !decNumberIsNaN(d))
+
+#define decNumberIsPos(d) \
   (!decNumberIsNegative(d) && !decNumberIsZero(d) && !decNumberIsNaN(d))
 
 SQLITE_DECIMAL_INT1(IsCanonical, decNumberIsCanonical)
@@ -657,8 +658,8 @@ SQLITE_DECIMAL_INT1(IsInfinite,  decNumberIsInfinite)
 //SQLITE_DECIMAL_INT1(IsInteger,   decNumberIsInteger)
 //SQLITE_DECIMAL_INT1(IsLogical,   decNumberIsLogical)
 SQLITE_DECIMAL_INT1(IsNaN,       decNumberIsNaN)
-SQLITE_DECIMAL_INT1(IsNegative,  decNumberIsNegative)
-SQLITE_DECIMAL_INT1(IsPositive,  decNumberIsPositive)
+SQLITE_DECIMAL_INT1(IsNegative,  decNumberIsNeg)
+SQLITE_DECIMAL_INT1(IsPositive,  decNumberIsPos)
 //SQLITE_DECIMAL_INT1(IsSigned,    decNumberIsSigned)
 SQLITE_DECIMAL_INT1(IsZero,      decNumberIsZero)
 
@@ -693,37 +694,14 @@ void decimalToInt32(sqlite3_context* context, sqlite3_value* value) {
 
 #pragma mark Dec × Dec → Int
 
-#define SQLITE_DECIMAL_CMP(fun, cmp)                                                    \
-  void decimal ## fun(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) { \
-    decNumber x;                                                                        \
-    decNumber y;                                                                        \
-    decContext* decCtx = sqlite3_user_data(context);                                    \
-    if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {           \
-      decNumber result;                                                                 \
-      decNumberCompare(&result, &x, &y, decCtx);                                        \
-      sqlite3_result_int(context, cmp(&result));                                        \
-    }                                                                                   \
-  }                                                                                     \
-
-#define decNumberIsNegativeOrZero(d) (decNumberIsNegative(d) || decNumberIsZero(d))
-
-SQLITE_DECIMAL_CMP(Equal,              decNumberIsZero)
-SQLITE_DECIMAL_CMP(GreaterThan,        decNumberIsPositive)
-SQLITE_DECIMAL_CMP(GreaterThanOrEqual, !decNumberIsNegativeOrZero)
-SQLITE_DECIMAL_CMP(LessThan,           decNumberIsNegative)
-SQLITE_DECIMAL_CMP(LessThanOrEqual,    decNumberIsNegativeOrZero)
-SQLITE_DECIMAL_CMP(NotEqual,           !decNumberIsZero)
-
 void decimalCompare(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
   decNumber x;
   decNumber y;
   decContext* decCtx = sqlite3_user_data(context);
   if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
     decNumber result;
-    // If an argument is a NaN, the DEC_Invalid_operation flag is set.
-    decNumberCompareSignal(&result, &x, &y, decCtx);
-    if (checkStatus(context, decCtx, decCtx->traps))
-     sqlite3_result_int(context, decNumberToInt32(&result, decCtx));
+    decNumberCompare(&result, &x, &y, decCtx);
+    decNumberToSQLite3Blob(context, &result);
   }
 }
 
@@ -741,9 +719,6 @@ void decimalSameQuantum(sqlite3_context* context, sqlite3_value* v1, sqlite3_val
 
 #pragma mark Dec × Dec × Dec → Dec
 
-/**
- * \brief Calculates the fused multiply-add `v1 × v2 + v3`.
- */
 void decimalFMA(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2, sqlite3_value* v3) {
   decNumber x;
   decNumber y;
@@ -928,4 +903,16 @@ SQLITE_DECIMAL_NOT_IMPL1(IsSigned)
 SQLITE_DECIMAL_NOT_IMPL1(ToInt64)
 // Unnecessary
 SQLITE_DECIMAL_NOT_IMPL1(Trim)
+// Use decCompare() or SQL comparisons
+SQLITE_DECIMAL_NOT_IMPL2(Equal)
+// Use decCompare() or SQL comparisons
+SQLITE_DECIMAL_NOT_IMPL2(GreaterThan)
+// Use decCompare() or SQL comparisons
+SQLITE_DECIMAL_NOT_IMPL2(GreaterThanOrEqual)
+// Use decCompare() or SQL comparisons
+SQLITE_DECIMAL_NOT_IMPL2(LessThan)
+// Use decCompare() or SQL comparisons
+SQLITE_DECIMAL_NOT_IMPL2(LessThanOrEqual)
+// Use decCompare() or SQL comparisons
+SQLITE_DECIMAL_NOT_IMPL2(NotEqual)
 
