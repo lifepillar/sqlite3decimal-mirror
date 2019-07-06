@@ -1,7 +1,7 @@
-C Alway\sinclude\sSQLite3\sdirectory.
-D 2019-07-06T14:49:26.031
+C Update\sclean-glob.
+D 2019-07-06T17:12:54.863
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
-F .fossil-settings/clean-glob 72e49a25cdf77206b044272207a1690efb8b815504226eae87cfb3946a57a2af
+F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
 F .fossil-settings/ignore-glob 7b46a109eab5cf91cabb643a93dcfbec75d0aa47f67bddd4210d897b4f4b2a69
 F Doxyfile 93edba3e8b916811fe50edfea8cdb7dc3614da197883d4ddfd2585e29a1bd699
@@ -76,7 +76,7 @@ F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317b
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 85c395f98506a2c354099487306a0ab05ec4201dba4aa17edd478be9e96661d0
-R 79f2c7539239373e4ef9ba640926f4a2
+P 556325a3663b001f9a300cc93b0b5321cc5aacd35e3c740d110d5eb51ba12e20
+R 0d5aaddfb9cfb616a071f5ceebcef9b0
 U lifepillar
-Z 6e21839256ca9a53e233bc3bc29f2aa9
+Z 000aa724021529010bd24e18726e54ad
