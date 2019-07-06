@@ -104,6 +104,7 @@ doc:
 .PHONY: clean
 clean:
 	-rm -f $(OBJS) $(TESTOBJS)
+	-rm -f util/mkversion.o
 	-rm -f $(LIB) $(DYLIB)
 
 .PHONY: distclean
