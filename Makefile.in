@@ -1,0 +1,117 @@
+# https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html
+# vim: ts=8 sts=8 sw=8
+.POSIX:
+.SUFFIXES:
+.SUFFIXES: .o .c
+
+NAME                = @NAME@
+VERSION             = @VERSION@
+
+LIB                 = lib@NAME@.a
+DYLIB               = lib@NAME@@SH_SOEXT@
+
+SRCDIR              = ./src
+DECDIR              = $(SRCDIR)/decNumber
+SQLITEDIR           = $(SRCDIR)/sqlite
+TESTDIR             = ./test
+
+AR                  = @AR@
+CC                  = @CC@
+CFLAGS              = @CFLAGS@
+EXTRA_CFLAGS        = @EXTRA_CFLAGS@
+EXTRA_CFLAGS       += -I$(DECDIR) -I$(SQLITEDIR)
+LDFLAGS             = @LDFLAGS@
+DECFLAGS            = @DECFLAGS@
+DECFLAGS           += -DDECUSE64=1 -DDECSUBSET=0
+
+SQLITE_FLAGS        = -Wno-unused-parameter
+SQLITE_FLAGS       += -DSQLITE_THREADSAFE=0
+SQLITE_FLAGS       += -DSQLITE_DEFAULT_MEMSTATUS=0
+SQLITE_FLAGS       += -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
+SQLITE_FLAGS       += -DSQLITE_LIKE_DOESNT_MATCH_BLOBS
+SQLITE_FLAGS       += -DSQLITE_MAX_EXPR_DEPTH=0
+SQLITE_FLAGS       += -DSQLITE_OMIT_DECLTYPE
+SQLITE_FLAGS       += -DSQLITE_OMIT_DEPRECATED
+SQLITE_FLAGS       += -DSQLITE_OMIT_PROGRESS_CALLBACK
+SQLITE_FLAGS       += -DSQLITE_OMIT_SHARED_CACHE
+SQLITE_FLAGS       += -DSQLITE_USE_ALLOCA
+
+OBJS                = $(DECDIR)/decContext.o
+OBJS               += $(DECDIR)/decNumber.o
+OBJS               += $(DECDIR)/decPacked.o
+OBJS               += $(SRCDIR)/decInfinite.o
+OBJS               += $(SRCDIR)/decimal.o
+OBJS               += $(SRCDIR)/impl_decinfinite.o
+
+TESTBIN             = runtests
+TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/runtests.o
+
+.c:
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(DECFLAGS) -o $@ $<
+
+.c.o:
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(DECFLAGS) -c $< -o $*.o
+
+
+# Main targets
+
+.PHONY: all
+all: $(LIB) $(DYLIB)
+
+$(LIB): $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS)
+
+$(DYLIB): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+
+$(SRCDIR)/version.h: util/mkversion Makefile
+	./util/mkversion manifest.uuid manifest Makefile >src/version.h
+
+util/mkversion:
+	$(CC) -o $@ $*.c
+
+# Dependencies
+$(DECDIR)/decContext.c: $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decNumber.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decPacked.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decPacked.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decInfinite.c: $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decimal.c: $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decPacked.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+
+
+# Test targets
+
+.PHONY: test
+test: $(DYLIB) $(TESTBIN)
+
+$(TESTBIN): $(TESTOBJS)
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $?
+
+$(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c
+	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $(SQLITEDIR)/sqlite3.c
+
+# Dependencies
+$(TESTDIR)/runtests.c: $(TESTDIR)/test_common.c
+$(TESTDIR)/runtests.c: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
+
+
+# Other targets
+
+.PHONY: doc
+doc:
+	doxygen
+
+.PHONY: clean
+clean:
+	-rm -f $(OBJS) $(TESTOBJS)
+	-rm -f util/mkversion.o
+	-rm -f $(LIB) $(DYLIB)
+
+.PHONY: distclean
+distclean: clean
+	-rm -f cscope.*
+	-rm -f -r html
+	-rm -f Session.vim
+	-rm -f tags
+	-rm -f util/mkversion
+
