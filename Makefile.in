@@ -19,12 +19,12 @@ AR                  = @AR@
 CC                  = @CC@
 CFLAGS              = @CFLAGS@
 EXTRA_CFLAGS        = @EXTRA_CFLAGS@
+EXTRA_CFLAGS       += -I$(DECDIR) -I$(SQLITEDIR)
 LDFLAGS             = @LDFLAGS@
 DECFLAGS            = @DECFLAGS@
-DECFLAGS           += -I$(DECDIR) -DDECUSE64=1 -DDECSUBSET=0
+DECFLAGS           += -DDECUSE64=1 -DDECSUBSET=0
 
-SQLITE_FLAGS        = -I$(SQLITEDIR)
-SQLITE_FLAGS       += -Wno-unused-parameter
+SQLITE_FLAGS        = -Wno-unused-parameter
 SQLITE_FLAGS       += -DSQLITE_THREADSAFE=0
 SQLITE_FLAGS       += -DSQLITE_DEFAULT_MEMSTATUS=0
 SQLITE_FLAGS       += -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
