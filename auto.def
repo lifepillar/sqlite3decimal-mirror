@@ -1,3 +1,4 @@
+# vim: ft=tcl
 use cc cc-shared
 
 options {
