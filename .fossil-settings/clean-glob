@@ -1,4 +1,8 @@
-build/*
-util/mkversion
+*.a
 *.d
 *.o
+util/mkversion
+Makefile
+autoconfig.h
+config.log
+runtests
