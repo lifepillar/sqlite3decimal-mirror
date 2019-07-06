@@ -67,8 +67,8 @@ $(DYLIB): $(OBJS)
 $(SRCDIR)/version.h: util/mkversion Makefile
 	./util/mkversion manifest.uuid manifest Makefile >src/version.h
 
-util/mkversion:
-	$(CC) -o $@ $*.c
+util/mkversion: util/mkversion.c
+	$(CC) -o $@ util/mkversion.c
 
 # Dependencies
 $(DECDIR)/decContext.c: $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
@@ -76,7 +76,8 @@ $(DECDIR)/decNumber.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/de
 $(DECDIR)/decPacked.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decPacked.h $(DECDIR)/decNumberLocal.h
 $(SRCDIR)/decInfinite.c: $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
 $(SRCDIR)/decimal.c: $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
-$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decPacked.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decPacked.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
+$(SRCDIR)/impl_decinfinite.c: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
 
 
 # Test targets
