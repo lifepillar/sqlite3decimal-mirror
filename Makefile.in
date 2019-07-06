@@ -4,23 +4,23 @@
 .SUFFIXES:
 .SUFFIXES: .o .c
 
-NAME                = sqlite3decimal
-VERSION             = 0.0.1
+NAME                = @NAME@
+VERSION             = @VERSION@
 
-LIB                 = libsqlite3decimal.a
-DYLIB               = libsqlite3decimal.dylib
+LIB                 = lib@NAME@.a
+DYLIB               = lib@NAME@@SH_SOEXT@
 
 SRCDIR              = ./src
 DECDIR              = $(SRCDIR)/decNumber
 SQLITEDIR           = $(SRCDIR)/sqlite
 TESTDIR             = ./test
 
-AR                  = ar
-CC                  = cc
-CFLAGS              = -Os -DNDEBUG
-EXTRA_CFLAGS        = -fPIC -Wall -Wextra
-LDFLAGS             = -dynamiclib
-DECFLAGS            = -DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0
+AR                  = @AR@
+CC                  = @CC@
+CFLAGS              = @CFLAGS@
+EXTRA_CFLAGS        = @EXTRA_CFLAGS@
+LDFLAGS             = @LDFLAGS@
+DECFLAGS            = @DECFLAGS@
 DECFLAGS           += -I$(DECDIR) -DDECUSE64=1 -DDECSUBSET=0
 
 SQLITE_FLAGS        = -I$(SQLITEDIR)
@@ -82,7 +82,7 @@ $(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decPacked.h $(DECDIR)/decNumber.h $(DECD
 # Test targets
 
 .PHONY: test
-test: $(TESTBIN)
+test: $(DYLIB) $(TESTBIN)
 
 $(TESTBIN): $(TESTOBJS)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $?
