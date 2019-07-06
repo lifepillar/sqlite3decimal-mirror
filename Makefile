@@ -6,220 +6,96 @@
 
 NAME                = sqlite3decimal
 VERSION             = 0.0.1
-BUILDDIR            = build
-TESTDIR             = test
 
-CFLAGS              = -fPIC -Wall -Wextra
-CFLAGS             += -Isrc -Isrc/decNumber -Isrc/sqlite
-CFLAGS             += -DDECUSE64=1 -DDECSUBSET=0
+LIB                 = libsqlite3decimal.a
+DYLIB               = libsqlite3decimal.dylib
 
-SQLITE_OPTIONS      = -Wno-unused-parameter
-SQLITE_OPTIONS     += -DSQLITE_THREADSAFE=0
-SQLITE_OPTIONS     += -DSQLITE_DEFAULT_MEMSTATUS=0
-SQLITE_OPTIONS     += -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
-SQLITE_OPTIONS     += -DSQLITE_LIKE_DOESNT_MATCH_BLOBS
-SQLITE_OPTIONS     += -DSQLITE_MAX_EXPR_DEPTH=0
-SQLITE_OPTIONS     += -DSQLITE_OMIT_DECLTYPE
-SQLITE_OPTIONS     += -DSQLITE_OMIT_DEPRECATED
-SQLITE_OPTIONS     += -DSQLITE_OMIT_PROGRESS_CALLBACK
-SQLITE_OPTIONS     += -DSQLITE_OMIT_SHARED_CACHE
-SQLITE_OPTIONS     += -DSQLITE_USE_ALLOCA
+SRCDIR              = ./src
+DECDIR              = $(SRCDIR)/decNumber
+SQLITEDIR           = $(SRCDIR)/sqlite
+TESTDIR             = ./test
 
-# Defaults for Darwin
-# (Use make SOEXT=so LDFLAGS=-shared to override)
-SOEXT               = dylib
+AR                  = ar
+CC                  = cc
+CFLAGS              = -Os -DNDEBUG
+EXTRA_CFLAGS        = -fPIC -Wall -Wextra
 LDFLAGS             = -dynamiclib
+DECFLAGS            = -DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0
+DECFLAGS           += -I$(DECDIR) -DDECUSE64=1 -DDECSUBSET=0
 
-# Products
-LIB                 = lib$(NAME).a
-LIBV                = lib$(NAME).$(VERSION).a
-DYLIB               = lib$(NAME).$(SOEXT)
-DYLIBV              = lib$(NAME).$(VERSION).$(SOEXT)
+SQLITE_FLAGS        = -I$(SQLITEDIR)
+SQLITE_FLAGS       += -Wno-unused-parameter
+SQLITE_FLAGS       += -DSQLITE_THREADSAFE=0
+SQLITE_FLAGS       += -DSQLITE_DEFAULT_MEMSTATUS=0
+SQLITE_FLAGS       += -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
+SQLITE_FLAGS       += -DSQLITE_LIKE_DOESNT_MATCH_BLOBS
+SQLITE_FLAGS       += -DSQLITE_MAX_EXPR_DEPTH=0
+SQLITE_FLAGS       += -DSQLITE_OMIT_DECLTYPE
+SQLITE_FLAGS       += -DSQLITE_OMIT_DEPRECATED
+SQLITE_FLAGS       += -DSQLITE_OMIT_PROGRESS_CALLBACK
+SQLITE_FLAGS       += -DSQLITE_OMIT_SHARED_CACHE
+SQLITE_FLAGS       += -DSQLITE_USE_ALLOCA
 
-DEBUGDIR            = $(BUILDDIR)/debug
-RELEASEDIR          = $(BUILDDIR)/release
-OBJDIR_DEBUG        = $(DEBUGDIR)/obj
-OBJDIR_RELEASE      = $(RELEASEDIR)/obj
+OBJS                = $(DECDIR)/decContext.o
+OBJS               += $(DECDIR)/decNumber.o
+OBJS               += $(DECDIR)/decPacked.o
+OBJS               += $(SRCDIR)/decInfinite.o
+OBJS               += $(SRCDIR)/decimal.o
+OBJS               += $(SRCDIR)/impl_decinfinite.o
 
-DEBUG_LIB           = $(DEBUGDIR)/$(LIB)
-DEBUG_DYLIB         = $(DEBUGDIR)/$(DYLIB)
-DEBUG_LIBV          = $(DEBUGDIR)/$(LIBV)
-DEBUG_DYLIBV        = $(DEBUGDIR)/$(DYLIBV)
-RELEASE_LIB         = $(RELEASEDIR)/$(LIB)
-RELEASE_DYLIB       = $(RELEASEDIR)/$(DYLIB)
-RELEASE_LIBV        = $(RELEASEDIR)/$(LIBV)
-RELEASE_DYLIBV      = $(RELEASEDIR)/$(DYLIBV)
+TESTBIN             = runtests
+TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/runtests.o
 
-DEBUGOBJS           = $(OBJDIR_DEBUG)/decContext.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/decNumber.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/decPacked.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/decInfinite.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/decimal.o
-DEBUGOBJS          += $(OBJDIR_DEBUG)/impl_decinfinite.o
-RELEASEOBJS         = $(OBJDIR_RELEASE)/decContext.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/decNumber.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/decPacked.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/decInfinite.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/decimal.o
-RELEASEOBJS        += $(OBJDIR_RELEASE)/impl_decinfinite.o
+.c:
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(DECFLAGS) -o $@ $<
 
-# Targets
+.c.o:
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(DECFLAGS) -c $< -o $*.o
+
+
+# Main targets
 
 .PHONY: all
-all: debug release
+all: $(LIB) $(DYLIB)
 
-# Dependencies
-$(OBJDIR_DEBUG)/decContext.o $(OBJDIR_RELEASE)/decContext.o:                   \
-	src/decNumber/decContext.c                                             \
-	src/decNumber/decContext.h src/decNumber/decNumberLocal.h
+$(LIB): $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS)
 
-$(OBJDIR_DEBUG)/decNumber.o $(OBJDIR_RELEASE)/decNumber.o:                     \
-	src/decNumber/decNumber.c src/decNumber/decNumber.h                    \
-	src/decNumber/decContext.h src/decNumber/decNumberLocal.h
+$(DYLIB): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS)
 
-$(OBJDIR_DEBUG)/decPacked.o $(OBJDIR_RELEASE)/decPacked.o:                     \
-	src/decNumber/decPacked.c src/decNumber/decNumber.h                    \
-	src/decNumber/decContext.h src/decNumber/decPacked.h                   \
-	src/decNumber/decNumberLocal.h
-
-$(OBJDIR_DEBUG)/decInfinite.o $(OBJDIR_RELEASE)/decInfinite.o:                 \
-	src/decInfinite.c src/decInfinite.h                                    \
-	src/decNumber/decNumber.h src/decNumber/decContext.h                   \
-	src/decNumber/decNumberLocal.h
-
-$(OBJDIR_DEBUG)/decimal.o $(OBJDIR_RELEASE)/decimal.o:                         \
-	src/decimal.c src/impl_decimal.h src/decimal.h src/version.h           \
-
-$(OBJDIR_DEBUG)/impl_decinfinite.o $(OBJDIR_RELEASE)/impl_decinfinite.o:       \
-	src/impl_decinfinite.c src/decNumber/decPacked.h                       \
-	src/decNumber/decNumber.h src/decNumber/decContext.h src/decInfinite.h \
-	src/impl_decimal.h src/decimal.h src/version.h
-
-src/version.h: Makefile
-	$(CC) -o util/mkversion util/mkversion.c
+$(SRCDIR)/version.h: util/mkversion Makefile
 	./util/mkversion manifest.uuid manifest Makefile >src/version.h
 
-# Debug build
+util/mkversion:
+	$(CC) -o $@ $*.c
 
-COMPILE_DEBUG       = $(CC) -c $(CFLAGS) $(DEBUGFLAGS) -o $@
-DEBUGFLAGS          = -O0 -g -DDEBUG
-DEBUGFLAGS         += -DDECPRINT=1 -DDECCHECK=1 -DDECALLOC=1
+# Dependencies
+$(DECDIR)/decContext.c: $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decNumber.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decPacked.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decPacked.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decInfinite.c: $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decimal.c: $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decPacked.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
 
-.PHONY: debug
-debug: $(DEBUGDIR) $(OBJDIR_DEBUG) $(DEBUG_LIBV) $(DEBUG_DYLIBV)
 
-$(DEBUGDIR):
-	mkdir -p $(DEBUGDIR)
-
-$(OBJDIR_DEBUG):
-	mkdir -p $(OBJDIR_DEBUG)
-
-$(DEBUG_LIBV): $(DEBUGOBJS)
-	$(AR) $(ARFLAGS) $@ $(DEBUGOBJS)
-	ln -f -s ./$(LIBV) $(DEBUG_LIB)
-
-$(DEBUG_DYLIBV): $(DEBUGOBJS)
-	$(CC) $(LDFLAGS) -o $@ $(DEBUGOBJS)
-	ln -f -s ./$(DYLIBV) $(DEBUG_DYLIB)
-
-$(OBJDIR_DEBUG)/decContext.o:
-	$(COMPILE_DEBUG) src/decNumber/decContext.c
-
-$(OBJDIR_DEBUG)/decNumber.o:
-	$(COMPILE_DEBUG) src/decNumber/decNumber.c
-
-$(OBJDIR_DEBUG)/decPacked.o:
-	$(COMPILE_DEBUG) src/decNumber/decPacked.c
-
-$(OBJDIR_DEBUG)/decInfinite.o:
-	$(COMPILE_DEBUG) src/decInfinite.c
-
-$(OBJDIR_DEBUG)/decimal.o:
-	$(COMPILE_DEBUG) src/decimal.c
-
-$(OBJDIR_DEBUG)/impl_decinfinite.o:
-	$(COMPILE_DEBUG) src/impl_decinfinite.c
-
-# Release build
-
-COMPILE_RELEASE     = $(CC) -c $(CFLAGS) $(RELEASEFLAGS) -o $@
-RELEASEFLAGS        = -Os -DNDEBUG
-RELEASEFLAGS       += -DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0
-
-.PHONY: release
-release: $(RELEASEDIR) $(OBJDIR_RELEASE) $(RELEASE_LIBV) $(RELEASE_DYLIBV)
-
-$(RELEASEDIR):
-	mkdir -p $(RELEASEDIR)
-
-$(OBJDIR_RELEASE):
-	mkdir -p $(OBJDIR_RELEASE)
-
-$(RELEASE_LIBV): $(RELEASEOBJS)
-	$(AR) $(ARFLAGS) $@ $(RELEASEOBJS)
-	ln -f -s ./$(LIBV) $(RELEASE_LIB)
-
-$(RELEASE_DYLIBV): $(RELEASEOBJS)
-	$(CC) $(LDFLAGS) -o $@ $(RELEASEOBJS)
-	ln -f -s ./$(DYLIBV) $(RELEASE_DYLIB)
-
-$(OBJDIR_RELEASE)/decContext.o:
-	$(COMPILE_RELEASE) src/decNumber/decContext.c
-
-$(OBJDIR_RELEASE)/decNumber.o:
-	$(COMPILE_RELEASE) src/decNumber/decNumber.c
-
-$(OBJDIR_RELEASE)/decPacked.o:
-	$(COMPILE_RELEASE) src/decNumber/decPacked.c
-
-$(OBJDIR_RELEASE)/decInfinite.o:
-	$(COMPILE_RELEASE) src/decInfinite.c
-
-$(OBJDIR_RELEASE)/decimal.o:
-	$(COMPILE_RELEASE) src/decimal.c
-
-$(OBJDIR_RELEASE)/impl_decinfinite.o:
-	$(COMPILE_RELEASE) src/impl_decinfinite.c
-
-# Other targets
-
-TEST_BIN            = runtests
-TEST_DEBUGOBJS      = $(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_DEBUG)/runtests.o
-TEST_RELEASEOBJS    = $(OBJDIR_RELEASE)/sqlite3.o $(OBJDIR_RELEASE)/runtests.o
-
-$(OBJDIR_DEBUG)/sqlite3.o $(OBJDIR_RELEASE)/sqlite3.o:       \
-	src/sqlite/sqlite3.c
-
-$(OBJDIR_DEBUG)/runtests.o $(OBJDIR_RELEASE)/runtests.o:     \
-	test/runtests.c test/mu_unit_sqlite.h test/mu_unit.h \
-	test/test_common.c
+# Test targets
 
 .PHONY: test
-test: testdebug testrelease
+test: $(TESTBIN)
 
-.PHONY: testdebug
-testdebug: $(DEBUGDIR) $(OBJDIR_DEBUG) $(DEBUGDIR)/$(TEST_BIN)
+$(TESTBIN): $(TESTOBJS)
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $?
 
-$(DEBUGDIR)/$(TEST_BIN): $(TEST_DEBUGOBJS)
-	$(CC) $(CFLAGS) $(DEBUGFLAGS) -I$(TESTDIR) -o $@ $(TEST_DEBUGOBJS)
+$(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c
+	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $(SQLITEDIR)/sqlite3.c
 
-$(OBJDIR_DEBUG)/sqlite3.o:
-	$(COMPILE_DEBUG) $(SQLITE_OPTIONS) src/sqlite/sqlite3.c
+# Dependencies
+$(TESTDIR)/runtests.c: $(TESTDIR)/test_common.c
+$(TESTDIR)/runtests.c: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
 
-$(OBJDIR_DEBUG)/runtests.o:
-	$(COMPILE_DEBUG) test/runtests.c
 
-.PHONY: testrelease
-testrelease: $(RELEASEDIR) $(OBJDIR_RELEASE) $(RELEASEDIR)/$(TEST_BIN)
-
-$(RELEASEDIR)/$(TEST_BIN): $(TEST_RELEASEOBJS)
-	$(CC) $(CFLAGS) $(RELEASEFLAGS) -I$(TESTDIR) -o $@ $(TEST_RELEASEOBJS)
-
-$(OBJDIR_RELEASE)/sqlite3.o:
-	$(COMPILE_RELEASE) $(SQLITE_OPTIONS) -o $@ src/sqlite/sqlite3.c
-
-$(OBJDIR_RELEASE)/runtests.o:
-	$(COMPILE_RELEASE) test/runtests.c
+# Other targets
 
 .PHONY: doc
 doc:
@@ -227,13 +103,14 @@ doc:
 
 .PHONY: clean
 clean:
-	@$(RM) -r ./build
+	-rm -f $(OBJS) $(TESTOBJS)
+	-rm -f $(LIB) $(DYLIB)
 
 .PHONY: distclean
 distclean: clean
-	@$(RM) cscope.*
-	@$(RM) -r html
-	@$(RM) Session.vim
-	@$(RM) tags
-	@$(RM) util/mkversion
+	-rm -f cscope.*
+	-rm -f -r html
+	-rm -f Session.vim
+	-rm -f tags
+	-rm -f util/mkversion
 
