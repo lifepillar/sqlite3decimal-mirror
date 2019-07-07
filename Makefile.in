@@ -38,7 +38,6 @@ SQLITE_FLAGS       += -DSQLITE_USE_ALLOCA
 
 OBJS                = $(DECDIR)/decContext.o
 OBJS               += $(DECDIR)/decNumber.o
-OBJS               += $(DECDIR)/decPacked.o
 OBJS               += $(SRCDIR)/decInfinite.o
 OBJS               += $(SRCDIR)/decimal.o
 OBJS               += $(SRCDIR)/impl_decinfinite.o
@@ -73,10 +72,9 @@ util/mkversion: util/mkversion.c
 # Dependencies
 $(DECDIR)/decContext.c: $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
 $(DECDIR)/decNumber.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(DECDIR)/decPacked.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decPacked.h $(DECDIR)/decNumberLocal.h
 $(SRCDIR)/decInfinite.c: $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
 $(SRCDIR)/decimal.c: $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
-$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decPacked.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
+$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
 $(SRCDIR)/impl_decinfinite.c: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
 
 
