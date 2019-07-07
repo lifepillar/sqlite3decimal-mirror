@@ -764,10 +764,12 @@ static void decimalAddDefault(decNumber* decnum, decContext* decCtx) {
 }
 
 static void decimalMaxDefault(decNumber* decnum, decContext* decCtx) {
+  (void)decCtx;
   decnum->bits = DECINF;
 }
 
 static void decimalMinDefault(decNumber* decnum, decContext* decCtx) {
+  (void)decCtx;
   decnum->bits = DECNEG | DECINF;
 }
 

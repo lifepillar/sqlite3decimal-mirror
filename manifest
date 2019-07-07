@@ -1,5 +1,5 @@
-C Remove\sunused\sdependency\son\sdecPacked.
-D 2019-07-07T07:22:13.609
+C Silence\swarnings\sabout\sunused\sfunction\sparameter.
+D 2019-07-07T07:23:08.133
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -64,7 +64,7 @@ F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2
 F src/decimal.c 585a4f0a322e76cbd406ead661a0bba8ac4cb3557bf3f7a0e41294f70225beda
 F src/decimal.h db29aee2f3b1695014907291f00d902978ee542820e13c30c5410b3ec9fb6237
 F src/impl_decimal.h 8fab26a2dc5bb8ae1621d8e4edd84d0448e6bb5bc511c6cbbed54d86c49e5728
-F src/impl_decinfinite.c 2542ea18808a99029077ac7dce51da5339a111869f162ad83dca58c42e49e7cc
+F src/impl_decinfinite.c 7651df64457f1b27df04c900e814bee0ea229e69731661b95a56de007e315b89
 F src/impl_stub.c fff76b84949ba2432b4893c5eac4ea6bc6cdbc1aac75faac9069683ac8af6dbe
 F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
 F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
@@ -77,7 +77,7 @@ F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317b
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P f976b62fa6dcaca94771ff8a5bad79c73422116081253506e1220e1d0d77b495
-R e1e18010cfc67da9c3349e3e59badad5
+P f84681b467f8c11f8c3b467345c94d841074cc668cac01eb89895bbd60a868c7
+R e77600eed13db790079814ec9ae3570f
 U lifepillar
-Z a278ae59bbbb2dc4ff265c9d7b0c17bd
+Z f157ac129d82fc692d3ac7332e19535a
