@@ -28,7 +28,7 @@ if {[opt-bool debug]} {
   define-append CFLAGS -DNDEBUG
   define DECFLAGS {-DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0}
 }
-define EXTRA_CFLAGS {-fPIC -Wall -Wextra}
+define EXTRA_CFLAGS {-fPIC -pedantic -Wall -Wextra}
 
 #cc-check-endian
 cc-check-tools ar ranlib strip
