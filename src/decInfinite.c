@@ -547,9 +547,9 @@ static bitPos decInfinitePackExponent(uInt exp, Flag T, bitPos p) {
   if (exp < 126) { // && exp >= 6 (Small exponent, fits in two bytes)
     dUnit u;
     if (T)
-      u = (dUnit)SMALL_EXP[exp];
+      u.declet = SMALL_EXP[exp];
     else
-      u = (dUnit)SMALL_C_EXP[exp];
+      u.declet = SMALL_C_EXP[exp];
     *p.pos |= DECLET_HI(u);
     ++p.pos;
     *p.pos = DECLET_LO(u);
@@ -718,7 +718,7 @@ static bitPos decInfinitePackMantissa(decNumber const* decnum, bitPos p) {
       p.free = 8;
     }
 
-    out = (dUnit)(*rp);
+    out.declet = *rp;
     out.declet &= 0x03FF; // Not needed
     p.free -= 2;
     out.declet <<= p.free;
