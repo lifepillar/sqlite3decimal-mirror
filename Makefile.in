@@ -70,12 +70,12 @@ util/mkversion: util/mkversion.c
 	$(CC) -o $@ util/mkversion.c
 
 # Dependencies
-$(DECDIR)/decContext.c: $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(DECDIR)/decNumber.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(SRCDIR)/decInfinite.c: $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(SRCDIR)/decimal.c: $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
-$(SRCDIR)/impl_decinfinite.c: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
-$(SRCDIR)/impl_decinfinite.c: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+$(DECDIR)/decContext.o: $(DECDIR)/decContext.c $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decNumber.o: $(DECDIR)/decNumber.c $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decInfinite.o: $(SRCDIR)/decInfinite.c $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decimal.o: $(SRCDIR)/decimal.c $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/impl_decinfinite.c $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
 
 
 # Test targets
@@ -90,8 +90,8 @@ $(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c
 	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $(SQLITEDIR)/sqlite3.c
 
 # Dependencies
-$(TESTDIR)/runtests.c: $(TESTDIR)/test_common.c
-$(TESTDIR)/runtests.c: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
+$(TESTDIR)/runtests.o: $(TESTDIR)/runtests.c $(TESTDIR)/test_common.c
+$(TESTDIR)/runtests.o: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
 
 
 # Other targets
