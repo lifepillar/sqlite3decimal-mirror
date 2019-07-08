@@ -1,5 +1,5 @@
-C Suppress\swarnings\sabout\sunknown\s#pragmas.
-D 2019-07-08T13:33:56.540
+C Free\smemory\swith\ssqlite3_free()\srather\sthan\sfree()\sto\savoid\scrashing\stests\sin\ssome\scircumstances.\n\nTests\swere\scrashing\sfor\sme\sin\sFreeBSD.\n\nAs\sexplained\sin\sSQLite3's\smanual,\smemory\sallocated\sfor\serror\smessages\sby\nsqlite3_exec()\sshould\sbe\sdeallocated\swith\ssqlite3_free().
+D 2019-07-08T18:56:42.852
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -72,13 +72,13 @@ F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473
 F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
 F src/version.h 773fa5e2285ecfff748f5f860637877b923ffdc8b4b6fbf0a5b4b49c1ec705f1
 F test/mu_unit.h 113feab6bd2fb09d04276408d41235f032fd4b89eabe5a55df14ea898b38bea0
-F test/mu_unit_sqlite.h 9bfa145068af2e53798d8cdcb1f7609e9ba72877db402bcac91412f6f12317d1
+F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 338213ffd3c969abc4d1ec06a11520f71811cbc0392b01eaf3e26b499dc4360f
-R 5cc7f71b84d0fda0ffed0d3776da3398
+P 38bcc18b58d9028f03b9db87c0c45b8df7339a44f7ec95f602b646c85025a3fb
+R 6d6a565befc9cf74d8787529f481bb6c
 U lifepillar
-Z e82fab7788c4383790e2ce6f65bb6584
+Z eb5368594814cec5fe044c65cae58fe4
 # Remove this line to create a well-formed Fossil manifest.
