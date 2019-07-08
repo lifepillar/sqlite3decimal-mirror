@@ -1,5 +1,5 @@
-C Free\smemory\swith\ssqlite3_free()\srather\sthan\sfree()\sto\savoid\scrashing\stests\sin\ssome\scircumstances.\n\nTests\swere\scrashing\sfor\sme\sin\sFreeBSD.\n\nAs\sexplained\sin\sSQLite3's\smanual,\smemory\sallocated\sfor\serror\smessages\sby\nsqlite3_exec()\sshould\sbe\sdeallocated\swith\ssqlite3_free().
-D 2019-07-08T18:56:42.852
+C Fix\stypo\sin\scomment.
+D 2019-07-08T20:21:35.033
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -64,7 +64,7 @@ F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2
 F src/decimal.c 585a4f0a322e76cbd406ead661a0bba8ac4cb3557bf3f7a0e41294f70225beda
 F src/decimal.h c1945b2594960ec27424c03b5035768d4ebc99713c6c055337e93a9b7bd7a919
 F src/impl_decimal.h 99a0430887f2347a2be0583cb145816bf33c2b563ae9968a0415dc12907708d3
-F src/impl_decinfinite.c d5730e748602205aa238a81b3d78e5ff2638bee4b1b1d44603fa2665e66304c0
+F src/impl_decinfinite.c eaf9ada08b80eb94b79f80351ee0b50369a4ee6b46e88dd6fe80f922b4016cac
 F src/impl_stub.c fff76b84949ba2432b4893c5eac4ea6bc6cdbc1aac75faac9069683ac8af6dbe
 F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
 F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
@@ -77,8 +77,8 @@ F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317b
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 38bcc18b58d9028f03b9db87c0c45b8df7339a44f7ec95f602b646c85025a3fb
-R 6d6a565befc9cf74d8787529f481bb6c
+P b48be69e36f5e81194998a8782078fb3cfc7892d78a9acc13f08baf45d645c8c
+R 439e6e15c18850e0c0e0fd01f72f5b1e
 U lifepillar
-Z eb5368594814cec5fe044c65cae58fe4
+Z 90dfdd0f4cc7702f5de037bd55b55050
 # Remove this line to create a well-formed Fossil manifest.

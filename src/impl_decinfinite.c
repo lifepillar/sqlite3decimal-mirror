@@ -107,7 +107,7 @@ static void decNumberToSQLite3Blob(sqlite3_context* context, decNumber* decnum) 
  * \brief Checks decNumber's context status and interrupts the current SQL
  *        operation with an error if any of the mask bit is set.
  *
- * \param sqlCtx SQLIte3's context
+ * \param sqlCtx SQLite3's context
  * \param decContext decNumber's context
  * \param mask decNumber's status bits
  *
