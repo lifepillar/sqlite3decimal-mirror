@@ -77,22 +77,27 @@ static char** db_query(sqlite3* db, char const* zFormat, ...) {
   struct QueryResult sResult;
   va_start(ap, zFormat);
   zSql = sqlite3_vmprintf(zFormat, ap);
+  if (zSql == 0) {
+    MU_MSG("sqlite3_vmprintf() alloc failed\n");
+    exit(1);
+  }
   va_end(ap);
 
   memset(&sResult, 0, sizeof(sResult));
   rc = sqlite3_exec(db, zSql, db_query_callback, &sResult, &zErrMsg);
   if (rc == SQLITE_SCHEMA) {
-    if(zErrMsg) free(zErrMsg);
+    if (zErrMsg) sqlite3_free(zErrMsg);
     sqlite3_exec(db, zSql, db_query_callback, &sResult, &zErrMsg);
   }
-  sqlite3_free(zSql);
   if(zErrMsg) {
-    sResult.azElem = malloc(2 * sizeof(char*));
+    sResult.azElem = (char**)malloc(2 * sizeof(char*));
     sResult.azElem[0] = sqlite3_mprintf("%s", zErrMsg);
     sResult.azElem[1] = 0;
-    free(zErrMsg);
+    sqlite3_free(zErrMsg);
+    sqlite3_free(zSql);
     return sResult.azElem;
   }
+  sqlite3_free(zSql);
   if (sResult.azElem == 0) {
     db_query_callback(&sResult, 0, 0, 0);
   }
@@ -154,7 +159,7 @@ void mu_db_execute(sqlite3* db, char const* zFormat, ...) {
 
   if (zErrMsg) {
     MU_MSG("Command failed: %s - %s\n", zSql, zErrMsg);
-    free(zErrMsg);
+    sqlite3_free(zErrMsg);
     sqlite3_free(zSql);
     exit(1);
   }
@@ -227,8 +232,9 @@ void mu_db_execute(sqlite3* db, char const* zFormat, ...) {
         MU_MSG("             got: %s\n\n", azElem[0] == 0 ? "nothing" : azElem[0]); \
         db_query_free(azElem);                                                      \
         mu_test_status = 1;                                                         \
+      } else {                                                                      \
+        db_query_free(azElem);                                                      \
       }                                                                             \
-      db_query_free(azElem);                                                        \
     }                                                                               \
   } while (0)
 
