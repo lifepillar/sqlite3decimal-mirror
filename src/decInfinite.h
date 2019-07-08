@@ -15,9 +15,9 @@
 #if !defined(DECINFINITE)
 
 #define DECINFINITE
-#define DECINF_NAME "decInfinite"                 /**< Short name.        */
-#define DECINF_FULLNAME "Decimal Infinite Module" /**< Full name.         */
-#define DECINF_AUTHOR "Lifepillar"                /**< Who to bl… praise. */
+#define DECINF_NAME "decInfinite"                 /**< Short name.          */
+#define DECINF_FULLNAME "Decimal Infinite Module" /**< Full name.           */
+#define DECINF_AUTHOR "Lifepillar"                /**< Who to bl... praise. */
 
 #if HAVE_LITTLE_ENDIAN
 #define DECLITEND 1         /**< 1=little-endian, 0=big-endian. */

@@ -87,7 +87,7 @@
  * length stops). Gamma codes are cleverer, though: if the number is offset by
  * one, it can be assumed that the most significant bit of its binary
  * representation is always `1`, hence it is not necessary to encode such bit.
- * So, the Gamma code of 9 is in fact just `111` `0` `010` (i.e., the naïve
+ * So, the Gamma code of 9 is in fact just `111` `0` `010` (i.e., the naive
  * Gamma encoding of 9+1 with the leading `1` dropped). It is easy to verify
  * that this Gamma code is order-preserving.
  *
@@ -872,7 +872,7 @@ static void decShiftToMost(decNumber* decnum) {
 // Conversions
 
 size_t decInfiniteFromNumber(size_t len, uByte result[len], decNumber* decnum) {
-  // Treat special cases (zero, infinites and NaNs) first.
+  // Treat special cases (zero, infinities and NaNs) first.
   if (decNumberIsSpecial(decnum)) {
     if (decNumberIsInfinite(decnum))
       result[0] = decNumberIsNegative(decnum) ? 0x20 : 0xC0;
