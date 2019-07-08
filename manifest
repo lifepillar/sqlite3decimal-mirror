@@ -1,10 +1,10 @@
-C Put\sautoconfig.h\sin\sthe\ssrc\sdirectory.
-D 2019-07-08T07:50:02.798
+C Add\sDot\sdiagrams\sto\sthe\sdocumentation.
+D 2019-07-08T10:19:00.085
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
 F .fossil-settings/ignore-glob 7b46a109eab5cf91cabb643a93dcfbec75d0aa47f67bddd4210d897b4f4b2a69
-F Doxyfile 62ce7596829a07abedee5d1538c57bff5d87abacef93f0f1c6b70d261c205ab9
+F Doxyfile 2388b4a12f1799e9a5bcf764b488134c6d7ae5bcc2a3e8cf9970b7d3281a62fb
 F LICENSE 9fa1f54869c4dcd32b9423afd255293abef84010c188491f815e3739eb169df3
 F Makefile.in 0f2133cad75d08bec823dfd7fd16187237fdded8d78e2ca528ee40a1c861c2eb
 F auto.def cf0aa6b9bd5022b1c988b04ef681db82961e75e8a286e57c0e8e5a6e0c902b9a
@@ -77,8 +77,8 @@ F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317b
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 38014419765b170f2f5b891ecc1c21cc145e351629cdd8f55bfbdc981b4d357a
-R 7986f0532cbdb6617732f0d8e0c78880
+P 9335985506222d49e6423674a37625ff3d01d9a258f24285f47a6c2103bc93b6
+R 42bb66f0c9bdafe9e6055b1d077f31fd
 U lifepillar
-Z ef6caec6483d9b05d860f5cff4f5d41b
+Z 8c469dab47033a4ad30b6e7b5eb5533a
 # Remove this line to create a well-formed Fossil manifest.
