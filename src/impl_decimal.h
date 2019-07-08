@@ -475,14 +475,14 @@ SQLITE_DECIMAL_OP1_DECL(LogB)
 SQLITE_DECIMAL_OP1_DECL(Minus)
 
   /**
-   * \brief Returns the “next” decimal number in the direction of -Infinity
-   *        according to IEEE 754 rules for “nextDown”.
+   * \brief Returns the "next" decimal number in the direction of -Infinity
+   *        according to IEEE 754 rules for "nextDown".
    */
 SQLITE_DECIMAL_OP1_DECL(NextDown)
 
   /**
-   * \brief Returns the “next” decimal number in the direction of +Infinity
-   *        according to IEEE 754 rules for “nextUp”.
+   * \brief Returns the "next" decimal number in the direction of +Infinity
+   *        according to IEEE 754 rules for "nextUp".
    */
 SQLITE_DECIMAL_OP1_DECL(NextUp)
 
@@ -712,7 +712,7 @@ SQLITE_DECIMAL_OP2_DECL(Rotate)
 SQLITE_DECIMAL_OP2_DECL(SameQuantum)
 
   /**
-   * \brief Calculates `x × 10^y`, where `x` is the first argument and `y` is the
+   * \brief Calculates `x times 10^b`, where `x` is the first argument and `y` is the
    *        second argument, which must be an integer.
    *
    * The range of allowed integers for the second argument is
@@ -728,7 +728,7 @@ SQLITE_DECIMAL_OP2_DECL(ScaleB)
    * This function shifts the digits of the coefficient of the first argument to
    * the left (if the second argument is positive) or to the right (if the second
    * argument is negative) without adjusting the exponent or the sign of the
-   * first argument. Any digits “shifted in” from the left or from the right will
+   * first argument. Any digits "shifted in" from the left or from the right will
    * be zero.
    *
    * The second argument is the count of positions to shift and it must be a
@@ -752,7 +752,7 @@ SQLITE_DECIMAL_OP2_DECL(Xor)
 #pragma mark Ternary functions
 
   /**
-   * \brief Calculates the fused multiply-add `v1 × v2 + v3`.
+   * \brief Calculates the fused multiply-add `v1 x v2 + v3`.
    *
    * NaNs propagate to the results.
    */
