@@ -3192,7 +3192,7 @@ decFloat * decFloatReduce(decFloat *result, const decFloat *df,
   uByte buf[DECPMAX], *ub;              // coefficient and pointer
   if (df!=result) *result=*df;          // copy, if needed
   if (DFISNAN(df)) return decNaNs(result, df, NULL, set);   // sNaN
-  // zeros and infinites propagate too
+  // zeros and infinities propagate too
   if (DFISINF(df)) return decInfinity(result, df);     // canonical
   if (DFISZERO(df)) {
     uInt sign=DFWORD(df, 0)&DECFLOAT_Sign;
