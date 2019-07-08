@@ -1,22 +1,12 @@
 # vim: ft=tcl
-use cc cc-shared
+use cc cc-db cc-lib cc-shared
 
 options {
+  static => "Build a static library"
 }
 
 define NAME "sqlite3decimal"
 define VERSION "0.0.1"
-
-switch -glob -- [lindex [split [get-define host] -] end] {
-  darwin* {
-    define host_os darwin
-    define LDFLAGS -dynamiclib
-  }
-  default {
-    define host_os other
-    define LDFLAGS -shared
-  }
-}
 
 if {[opt-bool debug]} {
   define CFLAGS {-g -O0}
@@ -28,9 +18,16 @@ if {[opt-bool debug]} {
   define-append CFLAGS -DNDEBUG
   define DECFLAGS {-DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0}
 }
-define EXTRA_CFLAGS {-fPIC -pedantic -Wall -Wextra}
+define EXTRA_CFLAGS {-pedantic -Wall -Wextra}
 
-#cc-check-endian
+if {[opt-bool static]} {
+  msg-result "Building a static library"
+  define DEC_STATICLIB
+} else {
+  msg-result "Building a shared library"
+}
+
+cc-check-endian
 cc-check-tools ar ranlib strip
 
 cc-with {-includes {stdint.h inttypes.h}} {
