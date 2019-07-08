@@ -172,6 +172,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoconfig.h"
 #include "decInfinite.h"
 #include "decNumber/decNumberLocal.h" // This *must* come after decInfinite.h
 
@@ -254,7 +255,7 @@ union dUnit {
 
 typedef union dUnit dUnit;
 
-#ifdef DECLITEND
+#ifdef HAVE_LITTLE_ENDIAN
 /** \brief The low byte of a declet (endian-dependent). */
 #define DECLET_LO(u) (u).byte[0]
 /** \brief The high byte of a declet (endian-dependent). */
