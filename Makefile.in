@@ -7,20 +7,27 @@
 NAME                = @NAME@
 VERSION             = @VERSION@
 
-LIB                 = lib@NAME@.a
-DYLIB               = lib@NAME@@SH_SOEXT@
-
-SRCDIR              = ./src
+SRCDIR              = @srcdir@/src
 DECDIR              = $(SRCDIR)/decNumber
 SQLITEDIR           = $(SRCDIR)/sqlite
-TESTDIR             = ./test
+TESTDIR             = @srcdir@/test
+UTILDIR             = @srcdir@/util
 
 AR                  = @AR@
+RANLIB              = @RANLIB@
+STRIP               = @STRIP@
 CC                  = @CC@
 CFLAGS              = @CFLAGS@
+LDFLAGS             = @LDFLAGS@
+@if DEC_STATICLIB
+SH_LDFLAGS          =
+SHOBJ_CFLAGS        =
+@else
+SH_LDFLAGS          = @SH_LDFLAGS@
+SHOBJ_CFLAGS        = @SHOBJ_CFLAGS@
+@endif
 EXTRA_CFLAGS        = @EXTRA_CFLAGS@
 EXTRA_CFLAGS       += -I$(DECDIR) -I$(SQLITEDIR)
-LDFLAGS             = @LDFLAGS@
 DECFLAGS            = @DECFLAGS@
 DECFLAGS           += -DDECUSE64=1 -DDECSUBSET=0
 
@@ -36,65 +43,98 @@ SQLITE_FLAGS       += -DSQLITE_OMIT_PROGRESS_CALLBACK
 SQLITE_FLAGS       += -DSQLITE_OMIT_SHARED_CACHE
 SQLITE_FLAGS       += -DSQLITE_USE_ALLOCA
 
+@if DEC_STATICLIB
+LIB                 = lib@NAME@.a
+@else
+LIB                 = lib@NAME@@SH_SOEXT@
+@endif
+
 OBJS                = $(DECDIR)/decContext.o
 OBJS               += $(DECDIR)/decNumber.o
 OBJS               += $(SRCDIR)/decInfinite.o
 OBJS               += $(SRCDIR)/decimal.o
 OBJS               += $(SRCDIR)/impl_decinfinite.o
 
-TESTBIN             = runtests
-TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/runtests.o
-
-.c:
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(DECFLAGS) -o $@ $<
-
 .c.o:
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(DECFLAGS) -c $< -o $*.o
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -c $< -o $*.o
 
 
 # Main targets
 
 .PHONY: all
-all: $(LIB) $(DYLIB)
+all: $(LIB)
 
+@if DEC_STATICLIB
 $(LIB): $(OBJS)
-	$(AR) $(ARFLAGS) $@ $(OBJS)
+	$(AR) $(ARFLAGS) $(LDFLAGS) $@ $(OBJS)
+	$(RANLIB) $@
+@else
+$(LIB): $(OBJS)
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(SH_LDFLAGS) -o $@ $(OBJS)
+@endif
 
-$(DYLIB): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+$(SRCDIR)/version.h: $(UTILDIR)/mkversion Makefile
+	$(UTILDIR)/mkversion manifest.uuid manifest Makefile >src/version.h
 
-$(SRCDIR)/version.h: util/mkversion Makefile
-	./util/mkversion manifest.uuid manifest Makefile >src/version.h
-
-util/mkversion: util/mkversion.c
-	$(CC) -o $@ util/mkversion.c
+$(UTILDIR)/mkversion: $(UTILDIR)/mkversion.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $(UTILDIR)/mkversion.c
 
 # Dependencies
-$(DECDIR)/decContext.o: $(DECDIR)/decContext.c $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(DECDIR)/decNumber.o: $(DECDIR)/decNumber.c $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(SRCDIR)/decInfinite.o: $(SRCDIR)/decInfinite.c $(SRCDIR)/decInfinite.h $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(SRCDIR)/decimal.o: $(SRCDIR)/decimal.c $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/impl_decinfinite.c $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h $(SRCDIR)/version.h
+$(DECDIR)/decContext.o:       $(DECDIR)/decContext.c
+$(DECDIR)/decContext.o:       $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decNumber.o:        $(DECDIR)/decNumber.c
+$(DECDIR)/decNumber.o:        $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.c
+$(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.h
+$(SRCDIR)/decInfinite.o:      $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(SRCDIR)/decInfinite.o:      $(SRCDIR)/autoconfig.h
+$(SRCDIR)/decimal.o:          $(SRCDIR)/decimal.c
+$(SRCDIR)/decimal.o:          $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h
+$(SRCDIR)/decimal.o:          $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/impl_decinfinite.c
+$(SRCDIR)/impl_decinfinite.o: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 
 
+@if DEC_STATICLIB
+@else
 # Test targets
 
-.PHONY: test
-test: $(DYLIB) $(TESTBIN)
+TESTBIN             = runtests
+TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/runtests.o
+
+.PHONY: check
+check: tests
+	@srcdir@/runtests
+
+.PHONY: tests
+tests: $(LIB) $(TESTBIN)
 
 $(TESTBIN): $(TESTOBJS)
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $?
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $(TESTOBJS)
 
 $(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c
-	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $(SQLITEDIR)/sqlite3.c
+	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $?
 
 # Dependencies
 $(TESTDIR)/runtests.o: $(TESTDIR)/runtests.c $(TESTDIR)/test_common.c
 $(TESTDIR)/runtests.o: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
+	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(TESTDIR)/runtests.c
+@endif
 
 
 # Other targets
+
+# This just prints out the dependencies: the Makefile must be updated manually.
+.PHONY: depend
+depend:
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decContext.o $(DECDIR)/decContext.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decNumber.o $(DECDIR)/decNumber.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decInfinite.o $(SRCDIR)/decInfinite.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decimal.o $(SRCDIR)/decimal.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT impl_decinfinite.o $(SRCDIR)/impl_decinfinite.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) $(SQLITEFLAGS) -MM -MT runtests.o $(TESTDIR)/runtests.c
 
 .PHONY: doc
 doc:
@@ -102,15 +142,23 @@ doc:
 
 .PHONY: clean
 clean:
-	-rm -f $(OBJS) $(TESTOBJS)
-	-rm -f util/mkversion.o
-	-rm -f $(LIB) $(DYLIB)
+	-rm -f $(OBJS) $(TESTOBJS) $(UTILDIR)/*.o
+	-rm -f $(LIB)
 
 .PHONY: distclean
 distclean: clean
-	-rm -f cscope.*
-	-rm -f -r html
-	-rm -f Session.vim
-	-rm -f tags
-	-rm -f util/mkversion
+	-rm -f @srcdir@/*.a @srcdir@/*@SH_SOEXT@
+	-rm -f $(SRCDIR)/autoconfig.h @srcdir@/config.log @srcdir@/Makefile
+	-rm -f @srcdir@/**/cscope.*
+	-rm -f -r @srcdir@/html
+	-rm -f @srcdir@/**/Session.vim
+	-rm -f @srcdir@/**/tags
+	-rm -f $(UTILDIR)/mkversion
+
+Makefile: @AUTODEPS@ @srcdir@/Makefile.in
+	@AUTOREMAKE@
+	touch @builddir@/Makefile
+
+reconfig:
+	@AUTOREMAKE@
 
