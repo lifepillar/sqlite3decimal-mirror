@@ -37,6 +37,6 @@ cc-with {-includes {stdint.h inttypes.h}} {
   cc-check-types uint32_t uint16_t int16_t uint8_t
 }
 
-make-config-header autoconfig.h
+make-config-header src/autoconfig.h
 make-template Makefile.in
 
