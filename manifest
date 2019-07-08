@@ -1,5 +1,5 @@
-C Remove\snon-ASCII\scharacters\sin\scomments\sand\sfix\ssome\stypos.
-D 2019-07-08T13:25:56.312
+C Suppress\swarnings\sabout\sunknown\s#pragmas.
+D 2019-07-08T13:33:56.540
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -7,7 +7,7 @@ F .fossil-settings/ignore-glob 7b46a109eab5cf91cabb643a93dcfbec75d0aa47f67bddd42
 F Doxyfile 2388b4a12f1799e9a5bcf764b488134c6d7ae5bcc2a3e8cf9970b7d3281a62fb
 F LICENSE 9fa1f54869c4dcd32b9423afd255293abef84010c188491f815e3739eb169df3
 F Makefile.in df06a420be1b3354aeef5ac24afe1c3f2aecdeaf3e3c3db46331c18dd2e3f8fe
-F auto.def 2c873c055460a1bffb2626760b99cc47b896bf91663394f3c592eea761118795
+F auto.def 51afe7747ec643d7151c1af5d70713c4a9c051654cc64aa596cae184f5e60e3f
 F autosetup/LICENSE 41a26aebdd2cd185d1e2b210f71b7ce234496979f6b35aef2cbf6b80cbed4ce4
 F autosetup/README.autosetup ce1de4d412c2c929f43da338d3cb19e3644f3af238dd499e180dae432152a03c
 F autosetup/autosetup 96368ea5601ed9998d195fbaa6452eaa2cab6cc6b720554d3798af2ad7ada952 x
@@ -77,7 +77,7 @@ F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317b
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P 1d4f29315e4cd50ca8240d3b1eec78a76b90e77f74b240caa4fe01db600e8495
-R 95f6d2a67c19b3ebc9348721e513f3d7
+P 338213ffd3c969abc4d1ec06a11520f71811cbc0392b01eaf3e26b499dc4360f
+R 5cc7f71b84d0fda0ffed0d3776da3398
 U lifepillar
-Z 081cadfe8b437fb2ed940cb32f87bfb8
+Z e82fab7788c4383790e2ce6f65bb6584
