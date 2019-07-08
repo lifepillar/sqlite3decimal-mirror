@@ -1,8 +1,8 @@
-C Update\sthe\sdecInfinite\sformat\sto\saccommodate\ssigned\sNaNs.\n\nThis\sis\smostly\sfor\ssymmetry\sand\sfor\sconsistency\swith\sdecNumber.\sNot\sthat\sI\sfind\nsigned\sNaNs\sa\sprominent\sexample\sof\scoherence\s("it's\snot\sa\snumber,\sbut\sit's\nnegative")...
-D 2019-04-04T20:40:37.265
-F src/decInfinite.c 9aabc2c1791b28f3975d1d4e92f650d2286ea85a2eb41110bfe309154804a45b
-F src/decInfinite.h 7127fa2f5a90904ef83c628061709706047ebc875f1bd63c7633d9b9a7297557
-P 2c0b6dfa1ff00b83b14740eb780ccdb1cf2fddf01049c6d2b97a91222a8d1a6c
-R 161ec08b646f8f8f546d4f8f12f59c2e
+C Include\sautoconfig.h\sin\sdecInfinite.c.
+D 2019-07-08T10:22:13.777
+F src/decInfinite.c e0e7c0b20ce759ce6f86d28800da59f1f96113e175ec3106f3825a137f05e02a
+F src/decInfinite.h 607e2596eceba27959cce3f94593097af3341b5eaf359f46af55e7707e693536
+P 451892718458c9548dd578d67256a2b3b8c24adf32e5e40b105bf5acdd8b0ed0
+R aed08e4e86c172d315fb4b6a5ded1d1c
 U lifepillar
-Z d27a162fed4ce38f78f50fc0399a94c3
+Z ed8aa29589aba9d914c37412004c7060
