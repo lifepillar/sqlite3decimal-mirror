@@ -18,7 +18,7 @@ if {[opt-bool debug]} {
   define-append CFLAGS -DNDEBUG
   define DECFLAGS {-DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0}
 }
-define EXTRA_CFLAGS {-pedantic -Wall -Wextra}
+define EXTRA_CFLAGS {-pedantic -Wall -Wextra -Wno-unknown-pragmas}
 
 if {[opt-bool static]} {
   msg-result "Building a static library"
