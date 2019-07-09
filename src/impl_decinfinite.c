@@ -22,7 +22,6 @@
 #include <signal.h>
 #include <string.h>
 #include "decInfinite.h"
-#include "decNumber/decPacked.h" // This must be included *after* decInfinite.h
 #include "impl_decimal.h"
 
 #pragma mark Helper functions
@@ -108,7 +107,7 @@ static void decNumberToSQLite3Blob(sqlite3_context* context, decNumber* decnum) 
  * \brief Checks decNumber's context status and interrupts the current SQL
  *        operation with an error if any of the mask bit is set.
  *
- * \param sqlCtx SQLIte3's context
+ * \param sqlCtx SQLite3's context
  * \param decContext decNumber's context
  * \param mask decNumber's status bits
  *
@@ -176,7 +175,7 @@ static int decode(decNumber* decnum, decContext* decCtx, sqlite3_value* value, s
  * This function is such a handler. This doesn't do much: it just returns
  * control to the point where the signal was raised.
  *
- * \see decNumber's manual, pp. 14–15 and p. 23.
+ * \see decNumber's manual, pp. 14-15 and p. 23.
  */
 static void signalHandler(int signo) {
   (void)signo;
@@ -280,9 +279,9 @@ int decimalSetMinExp(void* decCtx, int new_exp, char** zErrMsg) {
  *
  * The supported rounding modes are:
  *
- * - `ROUND_CEILING`: round towards +∞.
+ * - `ROUND_CEILING`: round towards +inf.
  * - `ROUND_DOWN`: round towards 0.
- * - `ROUND_FLOOR`: round towards -∞.
+ * - `ROUND_FLOOR`: round towards -inf.
  * - `ROUND_HALF_DOWN`: round to nearest; if equidistant, round down.
  * - `ROUND_HALF_EVEN`: round to nearest; if equidistant, round so that the
  *                       final digit is even.
@@ -453,7 +452,7 @@ void decimalVersion(sqlite3_context* context) {
   sqlite3_result_text(context, version, -1, SQLITE_TRANSIENT);
 }
 
-#pragma mark . → Dec
+#pragma mark . -> Dec
 
 void decimalCreate(sqlite3_context* context, sqlite3_value* value) {
   decNumber decnum;
@@ -462,7 +461,7 @@ void decimalCreate(sqlite3_context* context, sqlite3_value* value) {
     decNumberToSQLite3Blob(context, &decnum);
 }
 
-#pragma mark Dec → Dec
+#pragma mark Dec -> Dec
 
 #define SQLITE_DECIMAL_OP1(fun, op)                                     \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
@@ -494,7 +493,7 @@ SQLITE_DECIMAL_OP1(Reduce,     decNumberReduce)
 SQLITE_DECIMAL_OP1(Sqrt,       decNumberSquareRoot)
 SQLITE_DECIMAL_OP1(ToIntegral, decNumberToIntegralValue)
 
-#pragma mark Dec × Dec → Dec
+#pragma mark Dec x Dec -> Dec
 
 #define SQLITE_DECIMAL_OP2(fun, op)                                                             \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value1, sqlite3_value* value2) { \
@@ -524,7 +523,7 @@ SQLITE_DECIMAL_OP2(Shift,         decNumberShift)
 SQLITE_DECIMAL_OP2(Subtract,      decNumberSubtract)
 SQLITE_DECIMAL_OP2(Xor,           decNumberXor)
 
-#pragma mark Dec → Text
+#pragma mark Dec -> Text
 
 void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
   switch (sqlite3_value_type(value)) {
@@ -621,8 +620,8 @@ void decimalToString(sqlite3_context* context, sqlite3_value* value) {
  * - `-Normal`: negative normal.
  * - `+Zero`: positive zero.
  * - `-Zero`: negative zero.
- * - `+Infinity`: +∞.
- * - `-Infinity`: -∞.
+ * - `+Infinity`: +inf.
+ * - `-Infinity`: -inf.
  * - `+Subnormal`: positive subnormal.
  * - `-Subnormal`: negative subnormal.
  * - `NaN`: NaN.
@@ -634,7 +633,7 @@ void decimalClass(sqlite3_context* context, sqlite3_value* value) {
     sqlite3_result_text(context, decNumberClassToString(decNumberClass(&decnum, decCtx)), -1, SQLITE_STATIC);
 }
 
-#pragma mark Dec → Bool
+#pragma mark Dec -> Bool
 
 #define SQLITE_DECIMAL_INT1(fun, op)                                    \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
@@ -663,7 +662,7 @@ SQLITE_DECIMAL_INT1(IsPositive,  decNumberIsPos)
 //SQLITE_DECIMAL_INT1(IsSigned,    decNumberIsSigned)
 SQLITE_DECIMAL_INT1(IsZero,      decNumberIsZero)
 
-#pragma mark Dec × Dec → Bool
+#pragma mark Dec x Dec -> Bool
 
 #define SQLITE_DECIMAL_INT1_CTX(fun, op)                                \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
@@ -678,7 +677,7 @@ SQLITE_DECIMAL_INT1(IsZero,      decNumberIsZero)
 SQLITE_DECIMAL_INT1_CTX(IsNormal,          decNumberIsNormal)
 SQLITE_DECIMAL_INT1_CTX(IsSubnormal, decNumberIsSubnormal)
 
-#pragma mark Dec → Int
+#pragma mark Dec -> Int
 
 void decimalToInt32(sqlite3_context* context, sqlite3_value* value) {
   decNumber decnum;
@@ -692,7 +691,7 @@ void decimalToInt32(sqlite3_context* context, sqlite3_value* value) {
   }
 }
 
-#pragma mark Dec × Dec → Int
+#pragma mark Dec x Dec -> Int
 
 void decimalCompare(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
   decNumber x;
@@ -717,7 +716,7 @@ void decimalSameQuantum(sqlite3_context* context, sqlite3_value* v1, sqlite3_val
 }
 
 
-#pragma mark Dec × Dec × Dec → Dec
+#pragma mark Dec x Dec x Dec -> Dec
 
 void decimalFMA(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2, sqlite3_value* v3) {
   decNumber x;
@@ -732,7 +731,7 @@ void decimalFMA(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2, 
   }
 }
 
-#pragma mark Dec × ⋯ × Dec → Dec
+#pragma mark Dec x ... x Dec -> Dec
 
 #define SQLITE_DECIMAL_OPn(fun, op, defaultValue)                                 \
   void decimal ## fun(sqlite3_context* context, int argc, sqlite3_value** argv) { \
@@ -765,10 +764,12 @@ static void decimalAddDefault(decNumber* decnum, decContext* decCtx) {
 }
 
 static void decimalMaxDefault(decNumber* decnum, decContext* decCtx) {
+  (void)decCtx;
   decnum->bits = DECINF;
 }
 
 static void decimalMinDefault(decNumber* decnum, decContext* decCtx) {
+  (void)decCtx;
   decnum->bits = DECNEG | DECINF;
 }
 
