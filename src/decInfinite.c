@@ -29,7 +29,7 @@
  *     arXiv:1506.01598v2
  *     17 Jun 2015
  *
- * This following description is not meant to replace a good reading.
+ * The following description is not meant to replace a good reading.
  *
  * Zeroes and special numbers (`-Inf`, `+Inf`, `-NaN`, `+NaN`) are encoded in
  * one byte; all other numbers occupy two or more bytes. Special numbers are
@@ -172,25 +172,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "autoconfig.h"
 #include "decInfinite.h"
-#include "decNumber/decNumberLocal.h" // This *must* come after decInfinite.h
-
-#if DECDPUN != 3
-#error decInfinite assumes DECDPUN == 3
-#endif
-
-#if DECNUMDIGITS < 3
-#error DECNUMDIGITS must be at least 3
-#endif
-
-#if DECNUMDIGITS % 3 != 0
-#error DECNUMDIGITS must be a multiple of 3
-#endif
-
-#if DECINF_EXPSIZE < 5
-#error DECINF_EXPSIZE must be at least 5
-#endif
 
 /**
  * \brief Tests if a decNumber, known to be finite, is zero.

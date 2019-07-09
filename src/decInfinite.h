@@ -12,6 +12,8 @@
  * \brief     Decimal Infinite public interface
  */
 
+#include "autoconfig.h"
+
 #if !defined(DECINFINITE)
 
 #define DECINFINITE
@@ -41,6 +43,15 @@
 #define DECNUMDIGITS 39
 #endif
 
+#if DECNUMDIGITS < 3
+#error DECNUMDIGITS must be at least 3
+#endif
+
+#if DECNUMDIGITS % 3 != 0
+#error DECNUMDIGITS must be a multiple of 3
+#endif
+
+
 #ifndef DECINF_EXPSIZE
 /**
  * \brief Maximum size of the absolute value of an adjusted exponent, in bits.
@@ -54,6 +65,11 @@
  */
 #define DECINF_EXPSIZE 30
 #endif
+
+#if DECINF_EXPSIZE < 5
+#error DECINF_EXPSIZE must be at least 5
+#endif
+
 
 /**
  * \brief Maximum size of a Decimal Infinite encoded number, in bytes.
@@ -71,6 +87,11 @@
 #define DECINF_MAXSIZE (1 + (2 + 1 + (2 * DECINF_EXPSIZE - 1) + (10 * DECNUMDIGITS / 3) - 1) / 8)
 
 #include "decNumber/decNumber.h"
+#include "decNumber/decNumberLocal.h"
+
+#if DECDPUN != 3
+#error decInfinite assumes DECDPUN == 3
+#endif
 
 /**
  * \brief Encodes a decNumber into a stream of bytes.
