@@ -1,5 +1,5 @@
-C Fix\stypo\sin\scomment.
-D 2019-07-08T20:21:35.033
+C Re-enable\stest\sthat\swas\scausing\sa\scrash.
+D 2019-07-09T07:58:41.245
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -75,10 +75,10 @@ F test/mu_unit.h 113feab6bd2fb09d04276408d41235f032fd4b89eabe5a55df14ea898b38bea
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
-F test/test_common.c 38987a3b4016f9013aea91feddbc3af10d8a78bd7fcd0598dd7edd1e2d23e2d4
+F test/test_common.c ad00a62eecfa5ee8a53a2b065d5c6c2d504b2788f1624938c30ca439af7b8745
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P b48be69e36f5e81194998a8782078fb3cfc7892d78a9acc13f08baf45d645c8c
-R 439e6e15c18850e0c0e0fd01f72f5b1e
+P 5212c6f1e1f70bd37a95a2cbf2d0aeec59f3f4d6a1183ceae757af7a093a4dce
+R 627f00f5022b1ee2ba88dca128406a70
 U lifepillar
-Z 90dfdd0f4cc7702f5de037bd55b55050
+Z 0f1ec316a1a9fc3876509377d7b1e820
 # Remove this line to create a well-formed Fossil manifest.
