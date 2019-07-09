@@ -285,8 +285,6 @@ static inline uInt ilog2(uInt v) {
  * Counts the number of consecutive bits equal to the fourth bit of the
  * encoding. This gives the number of bits of the encoded exponent.
  *
- * This function is meant to be used only by decInfiniteUnpackExponent().
- *
  * \param p The current position in the byte stream
  * \param end Pointer one past the end of the byte stream
  *
@@ -590,21 +588,21 @@ static bitPos decInfinitePackExponent(uInt exp, Flag T, bitPos p) {
 /**
  * \brief Unpacks an encoded exponent.
  *
- * \param decnum The target decNumber
+ * \param exponent A pointer to an integer to hold the decoded exponent
  * \param p The current position in the byte stream
  * \param end A pointer one past the end of the byte stream
  *
  * \return Updated \a p
  */
-static bitPos decInfiniteUnpackExponent(decNumber* decnum, bitPos p, uByte const* end) {
+static bitPos decInfiniteUnpackExponent(Int* exponent, bitPos p, uByte const* end) {
   uByte T = *p.pos & 0x10; // Extract the encoding of the exponent sign
   uByte esign = (T << 3) ^ (*p.pos & 0x80); // Exponent sign (0=positive,>0=negative)
 
   uCount n;
   if (T)
-    n = decInfiniteReadUnaryPrefix1(&p, end); // Sets d->free
+    n = decInfiniteReadUnaryPrefix1(&p, end); // Sets p->free
   else
-    n = decInfiniteReadUnaryPrefix0(&p, end); // Sets d->free
+    n = decInfiniteReadUnaryPrefix0(&p, end); // Sets p->free
 
   if (!n) { p.pos = 0; return p; } // Too large an exponent
   // Check that there are enough bits left to read the exponent
@@ -647,8 +645,8 @@ static bitPos decInfiniteUnpackExponent(decNumber* decnum, bitPos p, uByte const
   e -= 2;        // Cancel offset
   assert(e < INT32_MAX); // Detecting too long unary prefixes prevent this to be violated
   if (e > 999999999) { p.pos = 0; return p; } // But the exponent might still be too large
-  decnum->exponent = (Int)e;
-  if (esign) decnum->exponent = -decnum->exponent;
+  *exponent = (Int)e;
+  if (esign) *exponent = -(*exponent);
 
   return p;
 }
@@ -954,7 +952,7 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
   uByte const* end = bytes + len;
 
   // Decode the adjusted exponent
-  p = decInfiniteUnpackExponent(decnum, p, end);
+  p = decInfiniteUnpackExponent(&(decnum->exponent), p, end);
   if (!p.pos) return 0; // Too large an exponent
 
   // Decode the significand
@@ -970,6 +968,55 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
 
 int decInfiniteIsSpecial(size_t len, uint8_t const bytes[len]) {
   return (len == 1 && (bytes[0]  == 0x00 || bytes[0] == 0x20 || bytes[0] == 0xC0 || bytes[0] == 0xE0));
+}
+
+inline int decInfiniteSign(uint8_t const* bytes) {
+  return (*bytes) & 0x80 ? 1 : -1;
+}
+
+int32_t decInfiniteExponent(size_t len, uint8_t const bytes[len]) {
+  if (decInfiniteIsSpecial(len, bytes))
+    return (decInfiniteSign(bytes) * (1 << DECINF_EXPSIZE));
+  bitPos p = { .pos = (uByte*)&bytes[0], .free = 5 };
+  uByte const* end = bytes + len;
+  int32_t exponent;
+  decInfiniteUnpackExponent(&exponent, p, end);
+  return exponent;
+}
+
+/**
+ * \brief Initializes \a p so that it points to the starting bit of the mantissa.
+ *
+ * \param p The position to be set
+ * \param len The number of bytes of the encoded decimal
+ * \param bytes The encoded decimal
+ *
+ * \return \a p
+ */
+static bitPos advanceToMantissa(bitPos p, size_t len, uint8_t bytes[len]) {
+  uByte T = *p.pos & 0x10; // Extract the encoding of the exponent sign
+  uByte const* end = bytes + len;
+  uCount n;
+
+  if (T)
+    n = decInfiniteReadUnaryPrefix1(&p, end);
+  else
+    n = decInfiniteReadUnaryPrefix0(&p, end);
+
+  if (n) {
+    size_t offset =  3 + 2 * n - 1;
+    p.pos = bytes + (offset / 8);
+    p.free = offset % 8;
+    return p;
+  }
+  else {
+    p.pos = 0;
+    return p;
+  }
+}
+
+char* decInfiniteCoefficient(size_t len, uint8_t const bytes[len], char* significand) {
+  return 0;
 }
 
 char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes) {
