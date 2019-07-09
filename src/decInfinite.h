@@ -139,6 +139,47 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
 int decInfiniteIsSpecial(size_t len, uint8_t const bytes[len]);
 
 /**
+ * \brief Returns the sign of an encoded decimal.
+ *
+ * The sign is returned also for special numbers.
+ *
+ * \param bytes A non-null pointer to the encoded number
+ *
+ * \return `1` if the sign is positive, `-1` if the sign is negative.
+ */
+int decInfiniteSign(uint8_t const* bytes);
+
+/**
+ * \brief Returns the exponent of a decimal.
+ *
+ * \param len The number of bytes of the encoded decimal number
+ * \param bytes The encoded decimal number
+ *
+ * \return The adjusted exponent of the decimal, i.e., the exponent of the
+ *         number when expressed in scientific notation. If the decimal is
+ *         a special number (`-NaN`, `-Inf`, `+Inf`, `+NaN`), the returned
+ *         value is `-2^#DECINF_EXPSIZE` or `+2^#DECINF_EXPSIZE` (i.e., an
+ *         out-of-range exponent).
+ *
+ */
+int32_t decInfiniteExponent(size_t len, uint8_t const bytes[len]);
+
+/**
+ * \brief Returns the significand of a decimal as a string.
+ *
+ * \param len The number of bytes of the encoded number
+ * \param bytes The encoded number
+ * \param significand The output buffer: this is assumed to have enough space
+ *        to hold the coefficient, i.e., at most `#DECNUMDIGITS + 2` bytes
+ *        (#DECNUMDIGITS digits, a dot, the string terminator).
+ *
+ * \return \a significand, or `0` if a decoding error occurs.
+ *
+ * TODO: return the mantissa as a decInfinite integer instead?
+ */
+char* decInfiniteCoefficient(size_t len, uint8_t const bytes[len], char* significand);
+
+/**
  * \brief Returns an encoded number as a hexadecimal string.
  *
  * This function is meant mostly for debugging (or for fun).
