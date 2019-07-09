@@ -12,20 +12,12 @@
  * \brief     Decimal Infinite public interface
  */
 
-#include "autoconfig.h"
-
 #if !defined(DECINFINITE)
 
 #define DECINFINITE
-#define DECINF_NAME "decInfinite"                 /**< Short name.          */
-#define DECINF_FULLNAME "Decimal Infinite Module" /**< Full name.           */
-#define DECINF_AUTHOR "Lifepillar"                /**< Who to bl... praise. */
-
-#if HAVE_LITTLE_ENDIAN
-#define DECLITEND 1         /**< 1=little-endian, 0=big-endian. */
-#else
-#define DECLITEND 0
-#endif
+#define DECINF_NAME "decInfinite"                 /**< Short name.        */
+#define DECINF_FULLNAME "Decimal Infinite Module" /**< Full name.         */
+#define DECINF_AUTHOR "Lifepillar"                /**< Who to bl… praise. */
 
 #ifndef DECNUMDIGITS
 /**
@@ -43,15 +35,6 @@
 #define DECNUMDIGITS 39
 #endif
 
-#if DECNUMDIGITS < 3
-#error DECNUMDIGITS must be at least 3
-#endif
-
-#if DECNUMDIGITS % 3 != 0
-#error DECNUMDIGITS must be a multiple of 3
-#endif
-
-
 #ifndef DECINF_EXPSIZE
 /**
  * \brief Maximum size of the absolute value of an adjusted exponent, in bits.
@@ -65,11 +48,6 @@
  */
 #define DECINF_EXPSIZE 30
 #endif
-
-#if DECINF_EXPSIZE < 5
-#error DECINF_EXPSIZE must be at least 5
-#endif
-
 
 /**
  * \brief Maximum size of a Decimal Infinite encoded number, in bytes.
@@ -87,11 +65,6 @@
 #define DECINF_MAXSIZE (1 + (2 + 1 + (2 * DECINF_EXPSIZE - 1) + (10 * DECNUMDIGITS / 3) - 1) / 8)
 
 #include "decNumber/decNumber.h"
-#include "decNumber/decNumberLocal.h"
-
-#if DECDPUN != 3
-#error decInfinite assumes DECDPUN == 3
-#endif
 
 /**
  * \brief Encodes a decNumber into a stream of bytes.
@@ -137,47 +110,6 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
  * \return `1` if the number is recognized as a special number; `0` otherwise.
  */
 int decInfiniteIsSpecial(size_t len, uint8_t const bytes[len]);
-
-/**
- * \brief Returns the sign of an encoded decimal.
- *
- * The sign is returned also for special numbers.
- *
- * \param bytes A non-null pointer to the encoded number
- *
- * \return `1` if the sign is positive, `-1` if the sign is negative.
- */
-int decInfiniteSign(uint8_t const* bytes);
-
-/**
- * \brief Returns the exponent of a decimal.
- *
- * \param len The number of bytes of the encoded decimal number
- * \param bytes The encoded decimal number
- *
- * \return The adjusted exponent of the decimal, i.e., the exponent of the
- *         number when expressed in scientific notation. If the decimal is
- *         a special number (`-NaN`, `-Inf`, `+Inf`, `+NaN`), the returned
- *         value is `-2^#DECINF_EXPSIZE` or `+2^#DECINF_EXPSIZE` (i.e., an
- *         out-of-range exponent).
- *
- */
-int32_t decInfiniteExponent(size_t len, uint8_t const bytes[len]);
-
-/**
- * \brief Returns the significand of a decimal as a string.
- *
- * \param len The number of bytes of the encoded number
- * \param bytes The encoded number
- * \param significand The output buffer: this is assumed to have enough space
- *        to hold the coefficient, i.e., at most `#DECNUMDIGITS + 2` bytes
- *        (#DECNUMDIGITS digits, a dot, the string terminator).
- *
- * \return \a significand, or `0` if a decoding error occurs.
- *
- * TODO: return the mantissa as a decInfinite integer instead?
- */
-char* decInfiniteCoefficient(size_t len, uint8_t const bytes[len], char* significand);
 
 /**
  * \brief Returns an encoded number as a hexadecimal string.

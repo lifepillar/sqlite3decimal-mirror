@@ -14,7 +14,6 @@
 #ifndef sqlite_decimal_h
 #define sqlite_decimal_h
 
-#include "autoconfig.h"
 #include "version.h"
 
 /**

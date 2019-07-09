@@ -29,7 +29,7 @@
  *     arXiv:1506.01598v2
  *     17 Jun 2015
  *
- * The following description is not meant to replace a good reading.
+ * This following description is not meant to replace a good reading.
  *
  * Zeroes and special numbers (`-Inf`, `+Inf`, `-NaN`, `+NaN`) are encoded in
  * one byte; all other numbers occupy two or more bytes. Special numbers are
@@ -87,7 +87,7 @@
  * length stops). Gamma codes are cleverer, though: if the number is offset by
  * one, it can be assumed that the most significant bit of its binary
  * representation is always `1`, hence it is not necessary to encode such bit.
- * So, the Gamma code of 9 is in fact just `111` `0` `010` (i.e., the naive
+ * So, the Gamma code of 9 is in fact just `111` `0` `010` (i.e., the naïve
  * Gamma encoding of 9+1 with the leading `1` dropped). It is easy to verify
  * that this Gamma code is order-preserving.
  *
@@ -173,6 +173,23 @@
 #include <stdint.h>
 
 #include "decInfinite.h"
+#include "decNumber/decNumberLocal.h" // This *must* come after decInfinite.h
+
+#if DECDPUN != 3
+#error decInfinite assumes DECDPUN == 3
+#endif
+
+#if DECNUMDIGITS < 3
+#error DECNUMDIGITS must be at least 3
+#endif
+
+#if DECNUMDIGITS % 3 != 0
+#error DECNUMDIGITS must be a multiple of 3
+#endif
+
+#if DECINF_EXPSIZE < 5
+#error DECINF_EXPSIZE must be at least 5
+#endif
 
 /**
  * \brief Tests if a decNumber, known to be finite, is zero.
@@ -237,7 +254,7 @@ union dUnit {
 
 typedef union dUnit dUnit;
 
-#ifdef HAVE_LITTLE_ENDIAN
+#ifdef DECLITEND
 /** \brief The low byte of a declet (endian-dependent). */
 #define DECLET_LO(u) (u).byte[0]
 /** \brief The high byte of a declet (endian-dependent). */
@@ -284,6 +301,8 @@ static inline uInt ilog2(uInt v) {
  *
  * Counts the number of consecutive bits equal to the fourth bit of the
  * encoding. This gives the number of bits of the encoded exponent.
+ *
+ * This function is meant to be used only by decInfiniteUnpackExponent().
  *
  * \param p The current position in the byte stream
  * \param end Pointer one past the end of the byte stream
@@ -528,9 +547,9 @@ static bitPos decInfinitePackExponent(uInt exp, Flag T, bitPos p) {
   if (exp < 126) { // && exp >= 6 (Small exponent, fits in two bytes)
     dUnit u;
     if (T)
-      u.declet = SMALL_EXP[exp];
+      u = (dUnit)SMALL_EXP[exp];
     else
-      u.declet = SMALL_C_EXP[exp];
+      u = (dUnit)SMALL_C_EXP[exp];
     *p.pos |= DECLET_HI(u);
     ++p.pos;
     *p.pos = DECLET_LO(u);
@@ -588,21 +607,21 @@ static bitPos decInfinitePackExponent(uInt exp, Flag T, bitPos p) {
 /**
  * \brief Unpacks an encoded exponent.
  *
- * \param exponent A pointer to an integer to hold the decoded exponent
+ * \param decnum The target decNumber
  * \param p The current position in the byte stream
  * \param end A pointer one past the end of the byte stream
  *
  * \return Updated \a p
  */
-static bitPos decInfiniteUnpackExponent(Int* exponent, bitPos p, uByte const* end) {
+static bitPos decInfiniteUnpackExponent(decNumber* decnum, bitPos p, uByte const* end) {
   uByte T = *p.pos & 0x10; // Extract the encoding of the exponent sign
   uByte esign = (T << 3) ^ (*p.pos & 0x80); // Exponent sign (0=positive,>0=negative)
 
   uCount n;
   if (T)
-    n = decInfiniteReadUnaryPrefix1(&p, end); // Sets p->free
+    n = decInfiniteReadUnaryPrefix1(&p, end); // Sets d->free
   else
-    n = decInfiniteReadUnaryPrefix0(&p, end); // Sets p->free
+    n = decInfiniteReadUnaryPrefix0(&p, end); // Sets d->free
 
   if (!n) { p.pos = 0; return p; } // Too large an exponent
   // Check that there are enough bits left to read the exponent
@@ -645,8 +664,8 @@ static bitPos decInfiniteUnpackExponent(Int* exponent, bitPos p, uByte const* en
   e -= 2;        // Cancel offset
   assert(e < INT32_MAX); // Detecting too long unary prefixes prevent this to be violated
   if (e > 999999999) { p.pos = 0; return p; } // But the exponent might still be too large
-  *exponent = (Int)e;
-  if (esign) *exponent = -(*exponent);
+  decnum->exponent = (Int)e;
+  if (esign) decnum->exponent = -decnum->exponent;
 
   return p;
 }
@@ -699,7 +718,7 @@ static bitPos decInfinitePackMantissa(decNumber const* decnum, bitPos p) {
       p.free = 8;
     }
 
-    out.declet = *rp;
+    out = (dUnit)(*rp);
     out.declet &= 0x03FF; // Not needed
     p.free -= 2;
     out.declet <<= p.free;
@@ -852,7 +871,7 @@ static void decShiftToMost(decNumber* decnum) {
 // Conversions
 
 size_t decInfiniteFromNumber(size_t len, uByte result[len], decNumber* decnum) {
-  // Treat special cases (zero, infinities and NaNs) first.
+  // Treat special cases (zero, infinites and NaNs) first.
   if (decNumberIsSpecial(decnum)) {
     if (decNumberIsInfinite(decnum))
       result[0] = decNumberIsNegative(decnum) ? 0x20 : 0xC0;
@@ -952,7 +971,7 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
   uByte const* end = bytes + len;
 
   // Decode the adjusted exponent
-  p = decInfiniteUnpackExponent(&(decnum->exponent), p, end);
+  p = decInfiniteUnpackExponent(decnum, p, end);
   if (!p.pos) return 0; // Too large an exponent
 
   // Decode the significand
@@ -968,55 +987,6 @@ decNumber* decInfiniteToNumber(size_t len, uint8_t const bytes[len], decNumber* 
 
 int decInfiniteIsSpecial(size_t len, uint8_t const bytes[len]) {
   return (len == 1 && (bytes[0]  == 0x00 || bytes[0] == 0x20 || bytes[0] == 0xC0 || bytes[0] == 0xE0));
-}
-
-inline int decInfiniteSign(uint8_t const* bytes) {
-  return (*bytes) & 0x80 ? 1 : -1;
-}
-
-int32_t decInfiniteExponent(size_t len, uint8_t const bytes[len]) {
-  if (decInfiniteIsSpecial(len, bytes))
-    return (decInfiniteSign(bytes) * (1 << DECINF_EXPSIZE));
-  bitPos p = { .pos = (uByte*)&bytes[0], .free = 5 };
-  uByte const* end = bytes + len;
-  int32_t exponent;
-  decInfiniteUnpackExponent(&exponent, p, end);
-  return exponent;
-}
-
-/**
- * \brief Initializes \a p so that it points to the starting bit of the mantissa.
- *
- * \param p The position to be set
- * \param len The number of bytes of the encoded decimal
- * \param bytes The encoded decimal
- *
- * \return \a p
- */
-static bitPos advanceToMantissa(bitPos p, size_t len, uint8_t bytes[len]) {
-  uByte T = *p.pos & 0x10; // Extract the encoding of the exponent sign
-  uByte const* end = bytes + len;
-  uCount n;
-
-  if (T)
-    n = decInfiniteReadUnaryPrefix1(&p, end);
-  else
-    n = decInfiniteReadUnaryPrefix0(&p, end);
-
-  if (n) {
-    size_t offset =  3 + 2 * n - 1;
-    p.pos = bytes + (offset / 8);
-    p.free = offset % 8;
-    return p;
-  }
-  else {
-    p.pos = 0;
-    return p;
-  }
-}
-
-char* decInfiniteCoefficient(size_t len, uint8_t const bytes[len], char* significand) {
-  return 0;
 }
 
 char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes) {
