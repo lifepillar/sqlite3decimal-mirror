@@ -444,7 +444,6 @@ static void sqlite_decimal_test_decissubnormal(void) {
   mu_assert_query(db, "select decIsSubnormal('Inf')", "0");
   mu_assert_query(db, "select decIsSubnormal('-Inf')", "0");
   mu_assert_query(db, "select decIsSubnormal('NaN')", "0");
-  mu_skip_if(1, "Crashes!");
   mu_assert_query(db, "select decIsSubnormal('.1e-999999999')", "1");
 }
 
