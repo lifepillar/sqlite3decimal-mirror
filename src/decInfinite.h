@@ -174,8 +174,6 @@ int32_t decInfiniteExponent(size_t len, uint8_t const bytes[len]);
  *        (#DECNUMDIGITS digits, a dot, the string terminator).
  *
  * \return \a significand, or `0` if a decoding error occurs.
- *
- * TODO: return the mantissa as a decInfinite integer instead?
  */
 char* decInfiniteCoefficient(size_t len, uint8_t const bytes[len], char* significand);
 
