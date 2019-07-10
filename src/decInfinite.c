@@ -984,41 +984,6 @@ int32_t decInfiniteExponent(size_t len, uint8_t const bytes[len]) {
   return exponent;
 }
 
-/**
- * \brief Initializes \a p so that it points to the starting bit of the mantissa.
- *
- * \param p The position to be set
- * \param len The number of bytes of the encoded decimal
- * \param bytes The encoded decimal
- *
- * \return \a p
- */
-static bitPos advanceToMantissa(bitPos p, size_t len, uint8_t bytes[len]) {
-  uByte T = *p.pos & 0x10; // Extract the encoding of the exponent sign
-  uByte const* end = bytes + len;
-  uCount n;
-
-  if (T)
-    n = decInfiniteReadUnaryPrefix1(&p, end);
-  else
-    n = decInfiniteReadUnaryPrefix0(&p, end);
-
-  if (n) {
-    size_t offset =  3 + 2 * n - 1;
-    p.pos = bytes + (offset / 8);
-    p.free = offset % 8;
-    return p;
-  }
-  else {
-    p.pos = 0;
-    return p;
-  }
-}
-
-char* decInfiniteCoefficient(size_t len, uint8_t const bytes[len], char* significand) {
-  return 0;
-}
-
 char* decInfiniteToBytes(size_t len, uint8_t const bytes[len], char* hexes) {
   if (len > DECINF_MAXSIZE) return 0;
   for (size_t i = 0; i < len; ++i) sprintf(hexes + 3 * i, "%02x ", bytes[i]);
