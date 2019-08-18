@@ -226,28 +226,28 @@ extern "C" {
 #define mu_assert_ne(expected, value) mu_assert_cmp(expected, !=, value)
 
   /**
-   * \brief Succeeds when \a expected is greater than \a value.
+   * \brief Succeeds when \a value is greater than \a expected.
    * \see #mu_assert_cmp().
    */
-#define mu_assert_gt(expected, value) mu_assert_cmp(expected, >, value)
+#define mu_assert_gt(expected, value) mu_assert_cmp(value, >, expected)
 
   /**
-   * \brief Succeeds when \a expected is greater than or equal to \a value.
+   * \brief Succeeds when \a value is greater than or equal to \a expected.
    * \see #mu_assert_cmp().
    */
 
-#define mu_assert_ge(expected, value) mu_assert_cmp(expected, >=, value)
+#define mu_assert_ge(expected, value) mu_assert_cmp(value, >=, expected)
   /**
-   * \brief Succeeds when \a expected is less than \a value.
+   * \brief Succeeds when \a value is less than \a expected.
    * \see #mu_assert_cmp().
    */
-#define mu_assert_lt(expected, value) mu_assert_cmp(expected, <, value)
+#define mu_assert_lt(expected, value) mu_assert_cmp(value, <, expected)
 
   /**
-   * \brief Succeeds when \a expected is less than or equal to \a value.
+   * \brief Succeeds when \a value is less than or equal to \a expected.
    * \see #mu_assert_cmp().
    */
-#define mu_assert_le(expected, value) mu_assert_cmp(expected, <=, value)
+#define mu_assert_le(expected, value) mu_assert_cmp(value, <=, expected)
 
   /**
    * \brief Succeeds when \a value is a `NULL` pointer.
