@@ -73,28 +73,28 @@ extern "C" {
       )
 
   /**
-   * \brief Returns a `void*` if \a X is a pointer, otherwise returns the value
-   *        itself.
+   * \brief Returns a `void const*` if \a X is a pointer, otherwise returns the
+   *        value itself.
    *
    * \param X A value of any type
    */
-#define MU_CONVERT(X)                                          \
-  _Generic((X),                                                \
-      char:               (X),                                 \
-      signed char:        (X),                                 \
-      unsigned char:      (X),                                 \
-      signed short:       (X),                                 \
-      unsigned short:     (X),                                 \
-      signed:             (X),                                 \
-      unsigned:           (X),                                 \
-      signed long:        (X),                                 \
-      unsigned long:      (X),                                 \
-      signed long long:   (X),                                 \
-      unsigned long long: (X),                                 \
-      float:              (X),                                 \
-      double:             (X),                                 \
-      long double:        (X),                                 \
-      default:            ((void*){ 0 } = MU_FORCE_POINTER(X)) \
+#define MU_CONVERT(X)                                                \
+  _Generic((X),                                                      \
+      char:               (X),                                       \
+      signed char:        (X),                                       \
+      unsigned char:      (X),                                       \
+      signed short:       (X),                                       \
+      unsigned short:     (X),                                       \
+      signed:             (X),                                       \
+      unsigned:           (X),                                       \
+      signed long:        (X),                                       \
+      unsigned long:      (X),                                       \
+      signed long long:   (X),                                       \
+      unsigned long long: (X),                                       \
+      float:              (X),                                       \
+      double:             (X),                                       \
+      long double:        (X),                                       \
+      default:            ((void const*){ 0 } = MU_FORCE_POINTER(X)) \
       )
 
   /**
