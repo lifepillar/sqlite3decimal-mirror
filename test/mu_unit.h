@@ -307,16 +307,14 @@ extern "C" {
   /**
    * \brief Registers a function as a test function.
    *
-   * Each test is a function without parameters that returns `0` upon success
-   * or `1` if the test fails. Every such function must be registered using
-   * this macro. For example:
+   * Each test is a function `f` with signature `void f(void)`. Every such
+   * function must be registered using this macro. For example:
    *
    *     #include "mu_unit.h"
    *
    *     // A simple test
    *     static int will_9_by_9_make_81(void) {
    *       mu_assert_eq(81, 9 * 9);
-   *       return 0;
    *     }
    *
    *     static void my_test_suite(void) {
@@ -329,7 +327,7 @@ extern "C" {
    *       mu_test_summary();
    *       return (mu_tests_failed > 0);
    *     }
-
+   *
    * \param test The name of the function.
    */
 #define mu_test(test)               \
