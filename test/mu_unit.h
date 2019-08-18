@@ -121,6 +121,7 @@ extern "C" {
       double:             "" M "%.12f",  \
       long double:        "" M "%.20Lf", \
       char*:              "" M "%s",     \
+      char const:*        "" M "%s",     \
       default:            "" M "%p"      \
       )
 
