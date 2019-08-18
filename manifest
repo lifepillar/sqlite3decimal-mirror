@@ -1,5 +1,5 @@
-C Force\sconvert\sto\sconst\spointer\sin\smu_unit.h.
-D 2019-08-18T07:54:36.023
+C Add\schar\sconst*\scase\sto\sMU_FORMAT\sgeneric.\n\nFor\ssome\sreason,\sLLDB\sseems\sto\sdistinguish\s`char*`\sand\s`char\sconst*`\sin\ngenerics.
+D 2019-08-18T08:33:47.345
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -71,14 +71,14 @@ F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150
 F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473c9da9f3
 F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
 F src/version.h c63e72333aef88f63eeb86d6dfa2f33047bbdb059ad9a4e7f47042e9bde90023
-F test/mu_unit.h 7b10624717407bcf0a271d76853e9264d8a9dc60422f4b8ac85fea405937d5be
+F test/mu_unit.h e99ea4d008d96b1bcb4ba5c32369dc895ed29d7d5e9f0217e05d9e810f8bbae2
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c ad00a62eecfa5ee8a53a2b065d5c6c2d504b2788f1624938c30ca439af7b8745
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P fe35b69c25bb32295eae5bb5ee90a6f04a53cf7a98a34620e105ebeaddbbb301
-R 2e9949919995a8e624eecb302c78950b
+P f5a3f06ff39b59cfaec763f48b619c9bb74418db9471fb316c25e01f7dea5ba2
+R 829aa7379464f4c9101dec19b458edcb
 U lifepillar
-Z 7dab7bf63bc7af89989cc3b35681d9c7
+Z 85600ddc510e95f2afaebe839df6952a
 # Remove this line to create a well-formed Fossil manifest.
