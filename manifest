@@ -1,5 +1,5 @@
-C Merge\sMU\sUnit\supdate.
-D 2019-08-20T13:30:24.695
+C Update\ssrc/version.h.
+D 2019-08-20T13:33:37.392
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -70,15 +70,15 @@ F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e
 F src/sqlite/sqlite3.c 1dbae33bff261f979d0042338f72c9e734b11a80720fb32498bae9150cc576e7
 F src/sqlite/sqlite3.h dd4fd8fc5e9196aea616f52656b775132e7c257176a7373c23a670473c9da9f3
 F src/sqlite/sqlite3ext.h 960f1b86c3610fa23cb6a267572a97dcf286e77aa0dd3b9b23292ffaa1ea8683
-F src/version.h c63e72333aef88f63eeb86d6dfa2f33047bbdb059ad9a4e7f47042e9bde90023
+F src/version.h 0dcd239c93acdaa04fbbb303a36b5d677a26cbcd11ea301d16e545d30a61e62b
 F test/mu_unit.h b4920d17b06cd6415b653b408976453935ffc74dbcd1bafc58b6f358665717ef
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/runtests.c 3af56c2c6639726d1d846a93cb402b02cbfdd02947ad003569a9645c0399e3ec
 F test/test_common.c ad00a62eecfa5ee8a53a2b065d5c6c2d504b2788f1624938c30ca439af7b8745
 F util/mkversion.c 9d1389672b02bd399da840278c7a79fe7dd54b1e0c1163ffb6a95d761504b0e7
-P bd8a880fecdea37353b789c4a14e11bd19f5ba222554fb750b4082f03b629bb8 3716bfbc6e288133013d67929edd570c6959f29b7e685ae8f0637ad56469ddf4
-R 6a620b0fa5586ab106bb2d1d21e4bc19
+P 7336a80838600fdfc77843bbc638282405a019076cb9aba41c76d4316dadf22b
+R 278687a97d4b547225bfe21a34721498
 U lifepillar
-Z b6adc37b81fc943b4d69981521a4dc2a
+Z 3211b45d0c25ebcbab061b0c08921416
 # Remove this line to create a well-formed Fossil manifest.
