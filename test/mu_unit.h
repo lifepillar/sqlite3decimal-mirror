@@ -44,6 +44,19 @@ extern "C" {
 #define MU_MSG(...) do { fprintf(MU_OUT, __VA_ARGS__); } while (0)
 
   /**
+   * \brief Determines whether a value is a char pointer.
+   *
+   * \param X A value of any type
+   * \returns `1` if the argument is a `char` pointer; `0` otherwise
+   */
+#define IS_STRING(X)  \
+  _Generic((X),       \
+      char*:       1, \
+      char const*: 1, \
+      default:     0  \
+      )
+
+  /**
    * \brief Returns a value that can be interpreted as a pointer value.
    *
    * That is, any pointer will be returned as such, but other arithmetic
@@ -191,22 +204,26 @@ extern "C" {
    * \param value The expression to be compared.
    *
    * \return Nothing
+   *
+   * \note For comparing strings, use mu_assert_streq().
    */
-#define mu_assert_cmp(expected, cmp, value)                 \
-  do {                                                      \
-    ++mu_assert_num;                                        \
-    if (!mu_test_status && !((expected) cmp (value))) {     \
-      MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num); \
-      MU_PRINT_VALUE("  Expected  ", expected);             \
-      if (strncmp("==", #cmp, 2) == 0) {                    \
-        MU_PRINT_VALUE("\n   but got  ", value);            \
-      }                                                     \
-      else {                                                \
-        MU_PRINT_VALUE("\n     to be  " #cmp, value);       \
-      }                                                     \
-      MU_MSG("\n\n");                                       \
-      mu_test_status = 1;                                   \
-    }                                                       \
+#define mu_assert_cmp(expected, cmp, value)                         \
+  do {                                                              \
+    ++mu_assert_num;                                                \
+    if (!mu_test_status && !((expected) cmp (value))) {             \
+      MU_MSG("\n\n  ASSERTION %d FAILED\n", mu_assert_num);         \
+      MU_PRINT_VALUE("  Expected  ", expected);                     \
+      if (strncmp("==", #cmp, 2) == 0) {                            \
+        MU_PRINT_VALUE("\n   but got  ", value);                    \
+      }                                                             \
+      else {                                                        \
+        MU_PRINT_VALUE("\n     to be  " #cmp, value);               \
+      }                                                             \
+      if (IS_STRING(expected) || IS_STRING(value))                  \
+        MU_MSG("\n  WARN: Did you mean to use mu_assert_streq()?"); \
+      MU_MSG("\n\n");                                               \
+      mu_test_status = 1;                                           \
+    }                                                               \
   } while (0)
 
   /**
