@@ -73,28 +73,28 @@ extern "C" {
       )
 
   /**
-   * \brief Returns a `void*` if \a X is a pointer, otherwise returns the value
-   *        itself.
+   * \brief Returns a `void const*` if \a X is a pointer, otherwise returns the
+   *        value itself.
    *
    * \param X A value of any type
    */
-#define MU_CONVERT(X)                                          \
-  _Generic((X),                                                \
-      char:               (X),                                 \
-      signed char:        (X),                                 \
-      unsigned char:      (X),                                 \
-      signed short:       (X),                                 \
-      unsigned short:     (X),                                 \
-      signed:             (X),                                 \
-      unsigned:           (X),                                 \
-      signed long:        (X),                                 \
-      unsigned long:      (X),                                 \
-      signed long long:   (X),                                 \
-      unsigned long long: (X),                                 \
-      float:              (X),                                 \
-      double:             (X),                                 \
-      long double:        (X),                                 \
-      default:            ((void*){ 0 } = MU_FORCE_POINTER(X)) \
+#define MU_CONVERT(X)                                                \
+  _Generic((X),                                                      \
+      char:               (X),                                       \
+      signed char:        (X),                                       \
+      unsigned char:      (X),                                       \
+      signed short:       (X),                                       \
+      unsigned short:     (X),                                       \
+      signed:             (X),                                       \
+      unsigned:           (X),                                       \
+      signed long:        (X),                                       \
+      unsigned long:      (X),                                       \
+      signed long long:   (X),                                       \
+      unsigned long long: (X),                                       \
+      float:              (X),                                       \
+      double:             (X),                                       \
+      long double:        (X),                                       \
+      default:            ((void const*){ 0 } = MU_FORCE_POINTER(X)) \
       )
 
   /**
@@ -121,6 +121,7 @@ extern "C" {
       double:             "" M "%.12f",  \
       long double:        "" M "%.20Lf", \
       char*:              "" M "%s",     \
+      char const*:        "" M "%s",     \
       default:            "" M "%p"      \
       )
 
@@ -225,28 +226,28 @@ extern "C" {
 #define mu_assert_ne(expected, value) mu_assert_cmp(expected, !=, value)
 
   /**
-   * \brief Succeeds when \a expected is greater than \a value.
+   * \brief Succeeds when \a value is greater than \a expected.
    * \see #mu_assert_cmp().
    */
-#define mu_assert_gt(expected, value) mu_assert_cmp(expected, >, value)
+#define mu_assert_gt(expected, value) mu_assert_cmp(value, >, expected)
 
   /**
-   * \brief Succeeds when \a expected is greater than or equal to \a value.
+   * \brief Succeeds when \a value is greater than or equal to \a expected.
    * \see #mu_assert_cmp().
    */
 
-#define mu_assert_ge(expected, value) mu_assert_cmp(expected, >=, value)
+#define mu_assert_ge(expected, value) mu_assert_cmp(value, >=, expected)
   /**
-   * \brief Succeeds when \a expected is less than \a value.
+   * \brief Succeeds when \a value is less than \a expected.
    * \see #mu_assert_cmp().
    */
-#define mu_assert_lt(expected, value) mu_assert_cmp(expected, <, value)
+#define mu_assert_lt(expected, value) mu_assert_cmp(value, <, expected)
 
   /**
-   * \brief Succeeds when \a expected is less than or equal to \a value.
+   * \brief Succeeds when \a value is less than or equal to \a expected.
    * \see #mu_assert_cmp().
    */
-#define mu_assert_le(expected, value) mu_assert_cmp(expected, <=, value)
+#define mu_assert_le(expected, value) mu_assert_cmp(value, <=, expected)
 
   /**
    * \brief Succeeds when \a value is a `NULL` pointer.
@@ -307,16 +308,14 @@ extern "C" {
   /**
    * \brief Registers a function as a test function.
    *
-   * Each test is a function without parameters that returns `0` upon success
-   * or `1` if the test fails. Every such function must be registered using
-   * this macro. For example:
+   * Each test is a function `f` with signature `void f(void)`. Every such
+   * function must be registered using this macro. For example:
    *
    *     #include "mu_unit.h"
    *
    *     // A simple test
    *     static int will_9_by_9_make_81(void) {
    *       mu_assert_eq(81, 9 * 9);
-   *       return 0;
    *     }
    *
    *     static void my_test_suite(void) {
@@ -329,7 +328,7 @@ extern "C" {
    *       mu_test_summary();
    *       return (mu_tests_failed > 0);
    *     }
-
+   *
    * \param test The name of the function.
    */
 #define mu_test(test)               \
