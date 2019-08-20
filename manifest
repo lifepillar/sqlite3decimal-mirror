@@ -1,14 +1,9 @@
-C Cherrypick\scommits\sfrom\strunk.
-D 2019-08-20T13:27:29.922
-F test/mu_unit.h ba3fdd2bda8d486dd2ba49b1ed346a20e6c951934d31196bbabea5b7521868d5
+C Warn\swhen\strying\sto\scompare\sto\schar\spointers\swith\sa\scomparison\sassertion\ndifferent\sfrom\smu_assert_streq().
+D 2019-08-20T13:29:37.271
+F test/mu_unit.h b4920d17b06cd6415b653b408976453935ffc74dbcd1bafc58b6f358665717ef
 F test/mu_unit_sqlite.h 9bfa145068af2e53798d8cdcb1f7609e9ba72877db402bcac91412f6f12317d1
-P aedcd4fc1559ab557d3c7258c4567cfb10c9aa42181c13e0747ed937247feb2b
-Q +37bb34aaef124a8a7b05cec6515b3179599330251ab589930fc5aebf3ccf2b83
-Q +bd8a880fecdea37353b789c4a14e11bd19f5ba222554fb750b4082f03b629bb8
-Q +f5a3f06ff39b59cfaec763f48b619c9bb74418db9471fb316c25e01f7dea5ba2
-Q +fe35b69c25bb32295eae5bb5ee90a6f04a53cf7a98a34620e105ebeaddbbb301
-Q +ff7cbff5bb39e44ed2293782ab414dba172d8fff48b3290470843bd01c48585f
-R bf049e8b617b3447a404605390feae54
+P 1bf67ceaebf7fe436849850c109301daaa1da8141f081af0a681a836a25996e6
+R ec1b56c3fa21c1bf7c52d14620955c58
 U lifepillar
-Z bc09eff2099e0de51d6f5cf31d74ddbb
+Z cb847841060aeff4632c158f5fb9dd56
 # Remove this line to create a well-formed Fossil manifest.
