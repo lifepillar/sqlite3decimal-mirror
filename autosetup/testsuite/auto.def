@@ -1,0 +1,268 @@
+# unit tests for all the built-in autosetup commands
+
+# Use tcltest - need to run at the global scope, while
+# auto.def runs at level 1
+
+uplevel #0 {
+
+# Don't allow autosetup arguments to interfere with tcltest
+set argv {}
+set argc 0
+# And pretend we ran this as the main script
+set argv0 [info script]
+
+# Suppress msg-result
+proc msg-result {msg} { }
+
+source [file dir $argv0]/tcltest.tcl
+
+if {[info exists tcl_patchLevel]} {
+	set interp "[info nameofexecutable] ($tcl_patchLevel)"
+} else {
+	set interp "[info nameofexecutable] ([info version])"
+}
+# out-of-tree build?
+set OOT [get-env OOT 0]
+if {$OOT} {
+	set oot "out of tree "
+} else {
+	set oot ""
+}
+
+puts "Testing ${oot}with Tcl interpreter $interp"
+
+use system
+
+test list-non-empty-1.1 {simple} {
+	list-non-empty {a b c}
+} {a b c}
+
+test list-non-empty-1.2 {some empty elements} {
+	list-non-empty {{} a "" b c {}}
+} {a b c}
+
+test list-non-empty-1.3 {empty list} {
+	list-non-empty {}
+} {}
+
+test list-non-empty-1.4 {all empty elements} {
+	list-non-empty {{} {} {}}
+} {}
+
+test define-1.1 {define value} {
+	define abc ABC
+	list [get-define abc] [get-define abc DEFAULT]
+} {ABC ABC}
+
+test define-1.2 {define default value} {
+	define abc
+	list [get-define abc] [get-define abc DEFAULT]
+} {1 1}
+
+test define-1.3 {get-define on undefined var} {
+	undefine abc
+	list [get-define abc] [get-define abc DEFAULT]
+} {0 DEFAULT}
+
+test define-1.4 {get-define on never defined var} {
+	list [get-define def] [get-define def DEFAULT]
+} {0 DEFAULT}
+
+test define-1.5 {is-defined} {
+	define ghi
+	list [is-defined abc] [is-defined def] [is-defined ghi]
+} {0 0 1}
+
+test define-1.6 {define-append} {
+	define a A
+	define b
+	undefine c
+	define d {2 1}
+	define e {2 2}
+
+	# define-append will append with a space
+	# and will ignore empty values
+	define-append a 1 "" 2
+	define-append a ""
+	define-append a
+	define-append b "" 1 2
+	define-append c 1 2
+	define-append d 1 2
+	define-append e 1 2
+	define-append f 1 2
+	list [get-define a] [get-define b] [get-define c] [get-define d] [get-define e]
+} {{A 1 2} {1 1 2} {1 2} {2 1 1 2} {2 2 1 2}}
+
+test define-1.7 {define-append-argv quoted} {
+	undefine a
+	define-append-argv a cc
+	define-append-argv a "CFLAGS=-Wall -Werror"
+	define-append-argv a -Dabc=\"space\ sep\"
+	get-define a
+} {cc "CFLAGS=-Wall -Werror" "-Dabc=\"space sep\""}
+
+test defined-1.8 {define-append-argv with spaces} {
+	undefine a
+	define-append-argv a {-Dx=with spaces}
+	define-append-argv a {-I/path with spaces/tmp}
+	get-define a
+} {"-Dx=with spaces" "-I/path with spaces/tmp"}
+
+test max-1.1 {ints} {
+	max 5 10
+} {10}
+
+test max-1.2 {reversed ints} {
+	max 10 5
+} {10}
+
+test max-1.3 {reals} {
+	max 5.5 9.7
+} {9.7}
+
+test max-1.4 {reversed reals} {
+	max 9.7 5.5
+} {9.7}
+
+test max-1.5 {single string} {
+	max abc def
+} {def}
+
+test max-1.6 {multiple strings} {
+	max def abc
+} {def}
+
+test get-env-1.1 {get-env various} {
+	list [get-env ENV1 undef] [get-env ENVCLI undef] [get-env CLI1 undef] [get-env UNDEFINED undef] [get-env ENV0 undef] [get-env CLI0 undef]
+} {abc jkl ghi undef {} {}}
+
+test env-is-set-1.1 {env-is-set various} {
+	list [env-is-set ENV1] [env-is-set ENVCLI] [env-is-set CLI1] [env-is-set UNDEFINED] [env-is-set ENV0] [env-is-set CLI0]
+} {1 1 1 0 0 1}
+
+test compare-versions-1.1 {two elements} {
+	compare-versions 0.2 0.3
+} {-1}
+
+test compare-versions-1.2 {two vs three elements} {
+	compare-versions 0.2.5 0.2
+} {1}
+
+test compare-versions-1.3 {two vs three elements equal} {
+	compare-versions 1.1 1.1.0
+} {0}
+
+test compare-versions-1.4 {trailing plus} {
+	compare-versions 1.1.2 1.1.2+
+} {-1}
+
+test compare-versions-1.5 {trailing plus} {
+	compare-versions 1.1.3 1.1.2+
+} {1}
+
+test suffix-1.1 {suffix with a single element} {
+	suffix .c a
+} {a.c}
+
+test suffix-1.2 {suffix with a multiple elements} {
+	suffix .c {a b c}
+} {a.c b.c c.c}
+
+test prefix-1.1 {prefix with a single element} {
+	prefix jim- a.c
+} {jim-a.c}
+
+test prefix-1.2 {prefix with a multiple elements} {
+	prefix jim- {a.c b.c c.c}
+} {jim-a.c jim-b.c jim-c.c}
+
+test prefix-1.3 {prefix then suffix} {
+	suffix .c [prefix jim- {a b c}]
+} {jim-a.c jim-b.c jim-c.c}
+
+test prefix-1.3 {suffix then prefix} {
+	prefix jim- [suffix .c {a b c}]
+} {jim-a.c jim-b.c jim-c.c}
+
+test system-1.1 {abs_top_srcdir} {
+	if {$OOT} {
+		set exp [file-normalize ..]
+	} else {
+		set exp [pwd]
+	}
+	set result [get-define abs_top_srcdir]
+	if {$result ne $exp} {
+		error "$result != $exp"
+	}
+} {}
+
+test system-1.2 {abs_top_builddir} {
+	if {$OOT} {
+		set exp [file-normalize ../_build]
+	} else {
+		set exp [pwd]
+	}
+	set result [get-define abs_top_builddir]
+	if {$result ne $exp} {
+		error "$result != $exp"
+	}
+} {}
+
+test template-1.1 {make-template at top level} -body {
+	define abc ABC
+	make-template template.in template.out
+	set result [readfile template.out]
+	if {$OOT} {
+		set exp "srcdir=..,top_srcdir=..,abc=ABC"
+	} else {
+		set exp "srcdir=.,top_srcdir=.,abc=ABC"
+	}
+	if {$result ne $exp} {
+		error "$result != $exp"
+	}
+} -result {} -cleanup {
+	file delete template.out
+}
+
+test template-1.2 {make-template in subdir} -body {
+	make-template subdir/template.in subdir/template.out
+	set result [readfile subdir/template.out]
+	if {$OOT} {
+		set exp "srcdir=../../subdir,top_srcdir=../..,abc=ABC"
+	} else {
+		set exp "srcdir=.,top_srcdir=..,abc=ABC"
+	}
+	if {$result ne $exp} {
+		error "$result != $exp"
+	}
+} -result {} -cleanup {
+	file delete subdir/template.out
+}
+
+test template-1.3 {make-template with @include} -body {
+	define abc ABC
+	make-template template-a.in template.out
+	readfile template.out
+} -result {abc=ABC
+In include file 2: abc=ABC, def=UNDEF
+def=UNDEF} -cleanup {
+	file delete template.out
+}
+
+test template-1.4 {make-template with conditional @include} -body {
+	define abc ABC
+	define COND 1
+	make-template template-a.in template.out
+	readfile template.out
+} -result {abc=ABC
+In include file 1: abc=ABC, def=DEF
+def=DEF} -cleanup {
+	file delete template.out
+}
+
+file delete -force config.log
+catch {file delete subdir}
+
+testreport
+
+}

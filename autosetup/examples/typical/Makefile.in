@@ -1,0 +1,89 @@
+# Example of a typical Makefile template for autosetup
+
+# Tools. CC is standard. The rest are via cc-check-tools
+CC = @CC@
+RANLIB = @RANLIB@
+AR = @AR@
+STRIP = @STRIP@
+
+# FLAGS/LIBS
+# If CFLAGS is given on the command line or in the environment
+# it will replace the autosetup value
+CFLAGS ?= @CFLAGS@
+CXXFLAGS ?= @XXCFLAGS@
+CPPFLAGS ?= @CPPFLAGS@
+LDFLAGS ?= @LDFLAGS@
+LDLIBS += @LIBS@
+
+# For gnu make it is simplest if we take over the command to add $(AS_CFLAGS) etc.
+# before user-specified CFLAGS
+COMPILE.c = $(CC) @AS_CFLAGS@ @AS_CPPFLAGS@ $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+COMPILE.cc = $(CXX) @AS_CXXFLAGS@ @AS_CPPFLAGS@ $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+
+# Install destination
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+DESTDIR = $(prefix)
+
+# Project-specific CFLAGS
+
+# VPATH support for out-of-tree build
+ifeq (@srcdir@,.)
+AS_CPPFLAGS += -I.
+else
+AS_CPPFLAGS += -I@srcdir@
+VPATH := @srcdir@
+endif
+
+APPOBJS := main.o
+LIBOBJS := funcs.o
+
+APP := app@EXEEXT@
+
+all: $(APP)
+
+# shared vs. static library
+ifeq (@shared@,1)
+# Shared library support from cc-shared
+LIB = libtest.so
+# All objects destined for the shared library need these flags
+AS_CPPFLAGS += @SH_CFLAGS@
+
+$(LIB): $(LIBOBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) @SH_LDFLAGS@ -o $@ $^ $(LDLIBS)
+
+else
+LIB = libtest.a
+
+$(LIB): $(LIBOBJS)
+	$(AR) cr $@ $^
+	$(RANLIB) $@
+endif
+
+$(APP): $(APPOBJS) $(LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) @SH_LINKFLAGS@ -o $@ $(APPOBJS) $(LIB) $(LDLIBS)
+
+install: all
+	@echo Installing from @srcdir@ and `pwd` to $(DESTDIR)
+
+clean:
+	rm -f *.o *.so lib*.a $(APP) conftest.*
+
+distclean: clean
+	rm -f config.h Makefile config.log
+
+# automake compatibility. do nothing for all these targets
+EMPTY_AUTOMAKE_TARGETS := dvi pdf ps info html tags ctags mostlyclean maintainer-clean check installcheck installdirs \
+ install-pdf install-ps install-info install-html -install-dvi uninstall install-exec install-data distdir
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
+
+# Reconfigure if needed
+ifeq ($(findstring clean,$(MAKECMDGOALS)),)
+Makefile: @AUTODEPS@ @srcdir@/Makefile.in
+	@@AUTOREMAKE@
+endif
+
+# Or on demand
+reconfig:
+	@AUTOREMAKE@
