@@ -11,7 +11,7 @@ SRCDIR              = @srcdir@/src
 DECDIR              = $(SRCDIR)/decNumber
 SQLITEDIR           = $(SRCDIR)/sqlite
 TESTDIR             = @srcdir@/test
-UTILDIR             = @srcdir@/util
+TOOLDIR             = @srcdir@/tools
 
 AR                  = @AR@
 RANLIB              = @RANLIB@
@@ -73,11 +73,11 @@ $(LIB): $(OBJS)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(SH_LDFLAGS) -o $@ $(OBJS)
 @endif
 
-$(SRCDIR)/version.h: $(UTILDIR)/mkversion Makefile
-	$(UTILDIR)/mkversion manifest.uuid manifest Makefile >src/version.h
+$(SRCDIR)/version.h: $(TOOLDIR)/mkversion
+	$(TOOLDIR)/mkversion manifest.uuid manifest VERSION >src/version.h
 
-$(UTILDIR)/mkversion: $(UTILDIR)/mkversion.c
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $(UTILDIR)/mkversion.c
+$(TOOLDIR)/mkversion: $(TOOLDIR)/mkversion.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $(TOOLDIR)/mkversion.c
 
 # Dependencies
 $(DECDIR)/decContext.o:       $(DECDIR)/decContext.c
@@ -142,7 +142,7 @@ doc:
 
 .PHONY: clean
 clean:
-	-rm -f $(OBJS) $(TESTOBJS) $(UTILDIR)/*.o
+	-rm -f $(OBJS) $(TESTOBJS) $(TOOLDIR)/*.o
 	-rm -f $(LIB)
 
 .PHONY: distclean
@@ -153,7 +153,7 @@ distclean: clean
 	-rm -f -r @srcdir@/html
 	-rm -f @srcdir@/**/Session.vim
 	-rm -f @srcdir@/**/tags
-	-rm -f $(UTILDIR)/mkversion
+	-rm -f $(TOOLDIR)/mkversion
 
 Makefile: @AUTODEPS@ @srcdir@/Makefile.in
 	@AUTOREMAKE@
