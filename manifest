@@ -1,5 +1,5 @@
-C Update\sSQLite\sto\ssqlite-amalgamation-3500100.
-D 2025-06-15T13:35:20.734
+C Add\sxIntegrity\sparameter.\sThis\sis\sset\sto\sNULL\sat\sthe\smoment.
+D 2025-06-15T13:36:33.009
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -151,7 +151,7 @@ F src/decNumber/example6.c 69c84c94951458e4913d3aff609826cb5dde95c5e50fa7655d251
 F src/decNumber/example7.c 48cf18ce913ea151ce231bc04741960485303f47aaad9449e7d33ac1e1c28358
 F src/decNumber/example8.c e6343b5bdb8d235f32527906eac0e2cbd7c0911f56d1db49a07330b3154c91e6
 F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2f751cfeea67
-F src/decimal.c 585a4f0a322e76cbd406ead661a0bba8ac4cb3557bf3f7a0e41294f70225beda
+F src/decimal.c cfc0a448923934577a6aa5fd0ba9b3f54f9fda43dfda29be0c2e16b7542338c0
 F src/decimal.h c1945b2594960ec27424c03b5035768d4ebc99713c6c055337e93a9b7bd7a919
 F src/impl_decimal.h a912f5b78e38a7189b448de1d0e09ae979a7fa465d60093f248783ef251a3358
 F src/impl_decinfinite.c eaf9ada08b80eb94b79f80351ee0b50369a4ee6b46e88dd6fe80f922b4016cac
@@ -166,8 +166,8 @@ F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/tests.c dcf0fdfa4ec8a6b91ae5c8995ac0b49fd00f6107015fb4977e442347726b324c
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P c6ffafab01c24dc6006293c0c7f461dbb5b44ca33f90c5053292e48d25cb2af3
-R 50904fc2a70954bb2dfbbcaf679e8ab1
+P 042fb77c3fef2cdc23c59e7799fb53ef8f41b6eaba4a8a97221e17282e45758b
+R e1f525f73faaf2d172d405da582dac18
 U lifepillar
-Z dfd469fc48c258b184911b29b23f98b9
+Z 3337173c5819fef64f0615741e75e7f1
 # Remove this line to create a well-formed Fossil manifest.
