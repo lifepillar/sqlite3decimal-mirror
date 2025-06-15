@@ -193,18 +193,6 @@ int decimalSetTrap(void* decCtx, char const* flag, char** zErrMsg);
  */
 char const* decimalGetTrap(void* decCtx, size_t n);
 
-#pragma mark Operations
-
-// Operations
-#define SQLITE_DECIMAL_OP0_DECL(fun) void decimal ## fun(sqlite3_context* context);
-#define SQLITE_DECIMAL_OP1_DECL(fun) void decimal ## fun(sqlite3_context* context, sqlite3_value* x);
-#define SQLITE_DECIMAL_OP2_DECL(fun) void decimal ## fun(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
-#define SQLITE_DECIMAL_OPn_DECL(fun) void decimal ## fun(sqlite3_context* context, int argc, sqlite3_value** argv);
-// Aggregates
-#define SQLITE_DECIMAL_AGGR_DECL(fun) \
-  void decimal ## fun ## Step(sqlite3_context* context, int argc, sqlite3_value** argv); \
-void decimal ## fun ## Final(sqlite3_context* context);
-
 #pragma mark Nullary functions
 
 /**
@@ -215,7 +203,7 @@ void decimal ## fun ## Final(sqlite3_context* context);
  *
  *     delete from decStatus;
  */
-SQLITE_DECIMAL_OP0_DECL(ClearStatus)
+void decimalClearStatus(sqlite3_context* context);
 
   /**
    * \brief Returns a textual, implementation-defined, representation of the
@@ -223,7 +211,7 @@ SQLITE_DECIMAL_OP0_DECL(ClearStatus)
    *
    * \note This function is meant mostly for debugging.
    */
-SQLITE_DECIMAL_OP0_DECL(Status)
+void decimalStatus(sqlite3_context* context);
 
   /**
    * \brief Returns the version of this extension as text.
@@ -232,7 +220,7 @@ SQLITE_DECIMAL_OP0_DECL(Status)
    * #SQLITE_DECIMAL_VERSION. An implementation may add further details, such
    * as the version of the underlying library implementing decimal arithmetic.
    */
-SQLITE_DECIMAL_OP0_DECL(Version)
+void decimalVersion(sqlite3_context* context);
 
 #pragma mark Unary functions
 
@@ -241,7 +229,7 @@ SQLITE_DECIMAL_OP0_DECL(Version)
    *
    * NaNs are propagated.
    */
-SQLITE_DECIMAL_OP1_DECL(Abs)
+void decimalAbs(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Converts a decimal blob into a string of bits, ordered MSB to LSB.
@@ -249,7 +237,7 @@ SQLITE_DECIMAL_OP1_DECL(Abs)
    * \note This is useful mostly for debugging and may not be available in some
    *       implementations.
    */
-SQLITE_DECIMAL_OP1_DECL(Bits)
+void decimalBits(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Converts a decimal blob into a string of hexadecimal values.
@@ -257,14 +245,14 @@ SQLITE_DECIMAL_OP1_DECL(Bits)
    * \note This is useful mostly for debugging and may not be available in some
    *       implementations.
    */
-SQLITE_DECIMAL_OP1_DECL(Bytes)
+void decimalBytes(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the class of a decimal as text.
    *
    * The specific strings returned by this functions are implementation-defined.
    */
-SQLITE_DECIMAL_OP1_DECL(Class)
+void decimalClass(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Creates a decimal number.
@@ -272,7 +260,7 @@ SQLITE_DECIMAL_OP1_DECL(Class)
    * An implementation of this function should support at least conversion from
    * text and from a blob.
    */
-SQLITE_DECIMAL_OP1_DECL(Create)
+void decimalCreate(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the number of significant digits in a given decimal.
@@ -281,7 +269,7 @@ SQLITE_DECIMAL_OP1_DECL(Create)
    * not a finite number (i.e., it is an infinite or a NaN) are
    * implementation-defined.
    */
-SQLITE_DECIMAL_OP1_DECL(Digits)
+void decimalDigits(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Calculates `e^x` where `x` is the argument of the function.
@@ -293,17 +281,17 @@ SQLITE_DECIMAL_OP1_DECL(Digits)
    *
    * \note Rounding rules are implementation-defined.
    */
-SQLITE_DECIMAL_OP1_DECL(Exp)
+void decimalExp(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the coefficient (significand) of the given decimal as text.
    */
-SQLITE_DECIMAL_OP1_DECL(GetCoefficient)
+void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the exponent of the given decimal as an integer.
    */
-SQLITE_DECIMAL_OP1_DECL(GetExponent)
+void decimalGetExponent(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Carries out the digit-wise logical inversion of the given decimal
@@ -312,7 +300,7 @@ SQLITE_DECIMAL_OP1_DECL(GetExponent)
    * The operand must be zero or a finite positive integer consisting only of
    * zeroes and ones, otherwise an error is raised.
    */
-SQLITE_DECIMAL_OP1_DECL(Invert)
+void decimalInvert(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number's encoding is canonical;
@@ -320,7 +308,7 @@ SQLITE_DECIMAL_OP1_DECL(Invert)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsCanonical)
+void decimalIsCanonical(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is finite, `0` otherwise.
@@ -329,7 +317,7 @@ SQLITE_DECIMAL_OP1_DECL(IsCanonical)
    * returns `0` otherwise. The returned value is a SQLite3 integer, not
    * a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsFinite)
+void decimalIsFinite(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is an infinity; returns `0`
@@ -337,7 +325,7 @@ SQLITE_DECIMAL_OP1_DECL(IsFinite)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsInfinite)
+void decimalIsInfinite(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is finite and has exponent
@@ -345,7 +333,7 @@ SQLITE_DECIMAL_OP1_DECL(IsInfinite)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsInteger)
+void decimalIsInteger(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is a valid argument for
@@ -353,7 +341,7 @@ SQLITE_DECIMAL_OP1_DECL(IsInteger)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsLogical)
+void decimalIsLogical(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is `NaN`; returns `0`
@@ -361,7 +349,7 @@ SQLITE_DECIMAL_OP1_DECL(IsLogical)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsNaN)
+void decimalIsNaN(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is (strictly) less than
@@ -372,7 +360,7 @@ SQLITE_DECIMAL_OP1_DECL(IsNaN)
    * \note `-0` is still zero, so this function returns `0` is its argument is
    *       `-0`.
    */
-SQLITE_DECIMAL_OP1_DECL(IsNegative)
+void decimalIsNegative(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is normal; returns `0`
@@ -386,7 +374,7 @@ SQLITE_DECIMAL_OP1_DECL(IsNegative)
    *
    * \note Zero is neither normal nor subnormal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsNormal)
+void decimalIsNormal(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is (strictly) greater than
@@ -394,7 +382,7 @@ SQLITE_DECIMAL_OP1_DECL(IsNormal)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsPositive)
+void decimalIsPositive(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number has a negative sign;
@@ -404,7 +392,7 @@ SQLITE_DECIMAL_OP1_DECL(IsPositive)
    *
    * \note Zeroes and NaNs may have a negative signs.
    */
-SQLITE_DECIMAL_OP1_DECL(IsSigned)
+void decimalIsSigned(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is subnormal; returns `0`
@@ -417,7 +405,7 @@ SQLITE_DECIMAL_OP1_DECL(IsSigned)
    *
    * \note Zero is neither normal nor subnormal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsSubnormal)
+void decimalIsSubnormal(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `1` if the given decimal number is zero; returns `0`
@@ -425,7 +413,7 @@ SQLITE_DECIMAL_OP1_DECL(IsSubnormal)
    *
    * The returned value is a SQLite3 integer, not a decimal.
    */
-SQLITE_DECIMAL_OP1_DECL(IsZero)
+void decimalIsZero(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Calculates the natural logarithm of the argument.
@@ -435,7 +423,7 @@ SQLITE_DECIMAL_OP1_DECL(IsZero)
    *
    * \note: Rounding rules are implementation-defined.
    */
-SQLITE_DECIMAL_OP1_DECL(Ln)
+void decimalLn(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Calculates the base-10 logarithm of the argument.
@@ -446,7 +434,7 @@ SQLITE_DECIMAL_OP1_DECL(Ln)
    *
    * \note: Rounding rules are implementation-defined.
    */
-SQLITE_DECIMAL_OP1_DECL(Log10)
+void decimalLog10(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the adjusted exponent of the given number, according to IEEE
@@ -462,7 +450,7 @@ SQLITE_DECIMAL_OP1_DECL(Log10)
    * value of the number is used. If the number is `1` then the result is `0`.
    * NaNs are handled (propagated) as for arithmetic operations.
    */
-SQLITE_DECIMAL_OP1_DECL(LogB)
+void decimalLogB(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Negates a number.
@@ -472,21 +460,21 @@ SQLITE_DECIMAL_OP1_DECL(LogB)
    * for arithmetic operations (the sign of a `NaN` is not affected). A zero
    * result has positive sign.
    */
-SQLITE_DECIMAL_OP1_DECL(Minus)
+void decimalMinus(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the "next" decimal number in the direction of -Infinity
    *        according to IEEE 754 rules for "nextDown".
    */
-SQLITE_DECIMAL_OP1_DECL(NextDown)
+void decimalNextDown(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the "next" decimal number in the direction of +Infinity
    *        according to IEEE 754 rules for "nextUp".
    */
-SQLITE_DECIMAL_OP1_DECL(NextUp)
+void decimalNextUp(sqlite3_context* context, sqlite3_value* x);
 
-SQLITE_DECIMAL_OP1_DECL(Norm)
+void decimalNorm(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `0+x` where `x` is the given decimal number.
@@ -496,7 +484,7 @@ SQLITE_DECIMAL_OP1_DECL(Norm)
    * for arithmetic operations (the sign of a NaN is not affected). A zero
    * result has positive sign.
    */
-SQLITE_DECIMAL_OP1_DECL(Plus)
+void decimalPlus(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Reduces the coefficient of the given decimal to its shortest possible
@@ -507,28 +495,28 @@ SQLITE_DECIMAL_OP1_DECL(Plus)
    * number). Infinities and NaNs are unchanged. If the argument is a zero the
    * exponent of the result is zero.
    */
-SQLITE_DECIMAL_OP1_DECL(Reduce)
+void decimalReduce(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Calculates the square root of the argument.
    *
    * \note Rounding rules are implementation-defined.
    */
-SQLITE_DECIMAL_OP1_DECL(Sqrt)
+void decimalSqrt(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the given decimal rounded to a 32-bit integer.
    *
    * The current rounding mode is used.
    */
-SQLITE_DECIMAL_OP1_DECL(ToInt32)
+void decimalToInt32(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns the given decimal rounded to a 64-bit integer.
    *
    * The current rounding mode is used.
    */
-SQLITE_DECIMAL_OP1_DECL(ToInt64)
+void decimalToInt64(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Rounds the given decimal to an integral value.
@@ -540,12 +528,12 @@ SQLITE_DECIMAL_OP1_DECL(ToInt64)
    *
    * \note The current rounding mode is used.
    */
-SQLITE_DECIMAL_OP1_DECL(ToIntegral)
+void decimalToIntegral(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns a textual representation of a decimal blob.
    */
-SQLITE_DECIMAL_OP1_DECL(ToString)
+void decimalToString(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Removes insignificant trailing zeroes from a number, unconditionally.
@@ -555,7 +543,7 @@ SQLITE_DECIMAL_OP1_DECL(ToString)
    * exponent accordingly. See `decReduce()` if you want to remove all trailing
    * zeroes.
    */
-SQLITE_DECIMAL_OP1_DECL(Trim)
+void decimalTrim(sqlite3_context* context, sqlite3_value* x);
 
 #pragma mark Binary functions
 
@@ -566,7 +554,7 @@ SQLITE_DECIMAL_OP1_DECL(Trim)
    * zeroes and ones; otherwise, the operation results in an error (e.g.,
    * `'Invalid operation'`).
    */
-SQLITE_DECIMAL_OP2_DECL(And)
+void decimalAnd(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Compares two numbers numerically.
@@ -579,14 +567,14 @@ SQLITE_DECIMAL_OP2_DECL(And)
    * \note The result is a decimal, not a SQLite3 integer: you may use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(Compare)
+void decimalCompare(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Performs the division of two decimals.
    *
    * NaNs inputs propagate to the result.
    */
-SQLITE_DECIMAL_OP2_DECL(Divide)
+void decimalDivide(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Performs integer division of two decimals.
@@ -599,7 +587,7 @@ SQLITE_DECIMAL_OP2_DECL(Divide)
    *       (because it has too many digits) then an error is raised (e.g.,
    *       `Division impossible`).
    */
-SQLITE_DECIMAL_OP2_DECL(DivideInteger)
+void decimalDivideInteger(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the two decimals are (mathematically) equal; returns
@@ -608,7 +596,7 @@ SQLITE_DECIMAL_OP2_DECL(DivideInteger)
    * \note The returned value is a decimal, not a SQLite3 integer. Use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(Equal)
+void decimalEqual(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the first decimal is strictly greater than the second;
@@ -618,7 +606,7 @@ SQLITE_DECIMAL_OP2_DECL(Equal)
    * \note The returned value is a decimal, not a SQLite3 integer. Use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(GreaterThan)
+void decimalGreaterThan(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the first decimal is greater than or equal to the
@@ -628,7 +616,7 @@ SQLITE_DECIMAL_OP2_DECL(GreaterThan)
    * \note The returned value is a decimal, not a SQLite3 integer. Use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(GreaterThanOrEqual)
+void decimalGreaterThanOrEqual(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the first decimal is strictly less than the second;
@@ -638,7 +626,7 @@ SQLITE_DECIMAL_OP2_DECL(GreaterThanOrEqual)
    * \note The returned value is a decimal, not a SQLite3 integer. Use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(LessThan)
+void decimalLessThan(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the first decimal is less than or equal to the second;
@@ -648,7 +636,7 @@ SQLITE_DECIMAL_OP2_DECL(LessThan)
    * \note The returned value is a decimal, not a SQLite3 integer. Use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(LessThanOrEqual)
+void decimalLessThanOrEqual(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the two decimal are not (mathematically) equal;
@@ -658,7 +646,7 @@ SQLITE_DECIMAL_OP2_DECL(LessThanOrEqual)
    * \note The returned value is a decimal, not a SQLite3 integer. Use
    *       decToInt32() to convert it to an integer.
    */
-SQLITE_DECIMAL_OP2_DECL(NotEqual)
+void decimalNotEqual(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Carries out the digit-wise logical Or of two bit sequences.
@@ -666,7 +654,7 @@ SQLITE_DECIMAL_OP2_DECL(NotEqual)
    * The operands must be integer, zero or (finite) positive and consist only of
    * zeroes and ones; otherwise, the operation results in an error.
    */
-SQLITE_DECIMAL_OP2_DECL(Or)
+void decimalOr(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Raises the first argument to the power of the second argument.
@@ -675,13 +663,13 @@ SQLITE_DECIMAL_OP2_DECL(Or)
    *
    * \note Rounding rules are implementation-defined.
    */
-SQLITE_DECIMAL_OP2_DECL(Power)
+void decimalPower(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Modifies a number so that its exponent has a specific value, equal to
    *        the exponent of the second argument.
    */
-SQLITE_DECIMAL_OP2_DECL(Quantize)
+void decimalQuantize(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns the remainder of the integer division of the arguments.
@@ -690,7 +678,7 @@ SQLITE_DECIMAL_OP2_DECL(Quantize)
    *       intermediate result as a decimal integer. If the result has too many
    *       digits, an error is raised.
    */
-SQLITE_DECIMAL_OP2_DECL(Remainder)
+void decimalRemainder(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Rotates the digits of the coefficient without adjusting the exponent.
@@ -703,13 +691,13 @@ SQLITE_DECIMAL_OP2_DECL(Remainder)
    * The second argument is the count of positions to rotate and it must be a
    * finite integer. The range of allowed values is implementation-defined.
    */
-SQLITE_DECIMAL_OP2_DECL(Rotate)
+void decimalRotate(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Returns `1` if the operands have the same exponent or are both `NaN`
    *        or both infinite; return `0` otherwise.
    */
-SQLITE_DECIMAL_OP2_DECL(SameQuantum)
+void decimalSameQuantum(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Calculates `x times 10^b`, where `x` is the first argument and `y` is the
@@ -720,7 +708,7 @@ SQLITE_DECIMAL_OP2_DECL(SameQuantum)
    *
    * \note Overflow and underflow may occur.
    */
-SQLITE_DECIMAL_OP2_DECL(ScaleB)
+void decimalScaleB(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Shifts the digits of the coefficient without adjusting the exponent.
@@ -734,12 +722,12 @@ SQLITE_DECIMAL_OP2_DECL(ScaleB)
    * The second argument is the count of positions to shift and it must be a
    * finite integer. The range of allowed values is implementation-defined.
    */
-SQLITE_DECIMAL_OP2_DECL(Shift)
+void decimalShift(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Subtracts the second argument from the first.
    */
-SQLITE_DECIMAL_OP2_DECL(Subtract)
+void decimalSubtract(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
    * \brief Carries out the digit-wise logical exclusive Or of two bit sequences.
@@ -747,7 +735,7 @@ SQLITE_DECIMAL_OP2_DECL(Subtract)
    * The operands must be integer, zero or (finite) positive and consist only of
    * zeroes and ones; otherwise, the operation results in an error.
    */
-SQLITE_DECIMAL_OP2_DECL(Xor)
+void decimalXor(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
 #pragma mark Ternary functions
 
@@ -768,7 +756,7 @@ SQLITE_DECIMAL_OP2_DECL(Xor)
    *       then the result is `null`. If any of the argument is a NaN then the
    *       result is a NaN.
    */
-SQLITE_DECIMAL_OPn_DECL(Add)
+void decimalAdd(sqlite3_context* context, int argc, sqlite3_value** argv);
 
   /**
    * \brief Returns the maximum of zero or more numbers.
@@ -779,7 +767,7 @@ SQLITE_DECIMAL_OPn_DECL(Add)
    *
    * \note When this function is invoked without arguments, it returns +Inf.
    */
-SQLITE_DECIMAL_OPn_DECL(Max)
+void decimalMax(sqlite3_context* context, int argc, sqlite3_value** argv);
 
   /**
    * \brief Returns the decimal with maximum absolute value among the given
@@ -790,7 +778,7 @@ SQLITE_DECIMAL_OPn_DECL(Max)
    *
    * \note When this function is invoked without arguments, it returns +Inf.
    */
-SQLITE_DECIMAL_OPn_DECL(MaxMag)
+void decimalMaxMag(sqlite3_context* context, int argc, sqlite3_value** argv);
 
   /**
    * \brief Returns the minimum of zero or more decimal numbers.
@@ -801,7 +789,7 @@ SQLITE_DECIMAL_OPn_DECL(MaxMag)
    *
    * \note When this function is invoked without arguments, it returns -Inf.
    */
-SQLITE_DECIMAL_OPn_DECL(Min)
+void decimalMin(sqlite3_context* context, int argc, sqlite3_value** argv);
 
   /**
    * \brief Returns the decimal with minimum absolute value among the given
@@ -812,7 +800,7 @@ SQLITE_DECIMAL_OPn_DECL(Min)
    *
    * \note When this function is invoked without arguments, it returns zero.
    */
-SQLITE_DECIMAL_OPn_DECL(MinMag)
+void decimalMinMag(sqlite3_context* context, int argc, sqlite3_value** argv);
 
   /**
    * \brief Multiplies zero or more decimals.
@@ -823,29 +811,33 @@ SQLITE_DECIMAL_OPn_DECL(MinMag)
    *
    * \note When this function is invoked without arguments, it returns `1`.
    */
-SQLITE_DECIMAL_OPn_DECL(Multiply)
+void decimalMultiply(sqlite3_context* context, int argc, sqlite3_value** argv);
 
 #pragma mark Aggregate functions
 
   /**
    * \brief Aggregate sum for decimals.
    */
-SQLITE_DECIMAL_AGGR_DECL(Sum)
+void decimalSumStep(sqlite3_context* context, int argc, sqlite3_value** argv);
+void decimalSumFinal(sqlite3_context* context);
 
   /**
    * \brief Aggregate min for decimals.
    */
-SQLITE_DECIMAL_AGGR_DECL(Min)
+void decimalMinStep(sqlite3_context* context, int argc, sqlite3_value** argv);
+void decimalMinFinal(sqlite3_context* context);
 
   /**
    * \brief Aggregate max for decimals.
    */
-SQLITE_DECIMAL_AGGR_DECL(Max)
+void decimalMaxStep(sqlite3_context* context, int argc, sqlite3_value** argv);
+void decimalMaxFinal(sqlite3_context* context);
 
   /**
    * \brief Aggregate average for decimals.
    */
-SQLITE_DECIMAL_AGGR_DECL(Avg)
+void decimalAvgStep(sqlite3_context* context, int argc, sqlite3_value** argv);
+void decimalAvgFinal(sqlite3_context* context);
 
 #endif /* sqlite3_decimal_impl_h */
 

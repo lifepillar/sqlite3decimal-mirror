@@ -1,5 +1,5 @@
-C Put\stests\sin\sa\ssingle\sfile.
-D 2025-06-15T12:29:26.462
+C Expand\smacros\sin\simpl_decimal.h.
+D 2025-06-15T13:30:59.301
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -153,7 +153,7 @@ F src/decNumber/example8.c e6343b5bdb8d235f32527906eac0e2cbd7c0911f56d1db49a0733
 F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2f751cfeea67
 F src/decimal.c 585a4f0a322e76cbd406ead661a0bba8ac4cb3557bf3f7a0e41294f70225beda
 F src/decimal.h c1945b2594960ec27424c03b5035768d4ebc99713c6c055337e93a9b7bd7a919
-F src/impl_decimal.h 99a0430887f2347a2be0583cb145816bf33c2b563ae9968a0415dc12907708d3
+F src/impl_decimal.h a912f5b78e38a7189b448de1d0e09ae979a7fa465d60093f248783ef251a3358
 F src/impl_decinfinite.c eaf9ada08b80eb94b79f80351ee0b50369a4ee6b46e88dd6fe80f922b4016cac
 F src/impl_stub.c fff76b84949ba2432b4893c5eac4ea6bc6cdbc1aac75faac9069683ac8af6dbe
 F src/sqlite/shell.c 91b8661db27ee16cc58e54c9023bb122366544ecd512d3c16ffed3ef95e35311
@@ -164,10 +164,10 @@ F src/version.h cf3163a75a40545174d2428c44a25b2cc68fe0102cd1a28aff3320662ac403ff
 F test/mu_unit.h e33794313d81902c260e1a1f799f7139ca8a1c627b9cf0316feece7dc6bc3e45
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
-F test/tests.c dcf0fdfa4ec8a6b91ae5c8995ac0b49fd00f6107015fb4977e442347726b324c w test/runtests.c
+F test/tests.c dcf0fdfa4ec8a6b91ae5c8995ac0b49fd00f6107015fb4977e442347726b324c
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P 74cd3ead1731c3e7e83f1c94a53e0b5f1778f26ce3dbe4d5c61f311f2e628506
-R 8a973bb50a5c8df75f912cc6ad3f6a27
+P c929228be358e43ab3fa91422fc35a4060dc5e6fa00cf60981d7364d2176f84c
+R 2948414e61fb2ef9f03a88617b399e01
 U lifepillar
-Z 2a25ecb52dc8f16316c37751f75e42f5
+Z 4940a231c1bbe04cd36e32f0f577c52a
 # Remove this line to create a well-formed Fossil manifest.
