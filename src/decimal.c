@@ -40,11 +40,11 @@ SQLITE_EXTENSION_INIT1
 /**
  * \brief Prototype for generating nullary (0-ary) functions.
  */
-#define SQLITE_DECIMAL_OP0(fun)                                                                  \
-  static void decimal ## fun ## Func(sqlite3_context* context, int argc, sqlite3_value** argv) { \
-    (void)argc;                                                                                  \
-    (void)argv;                                                                                  \
-    decimal ## fun(context);                                                                     \
+#define SQLITE_DECIMAL_OP0(fun)                                                                           \
+  static void decimal ## fun ## Func(sqlite3_context* context, int argc, sqlite3_value* argv[static 1]) { \
+    (void)argc;                                                                                           \
+    (void)argv;                                                                                           \
+    decimal ## fun(context);                                                                              \
   }
 
 SQLITE_DECIMAL_OP0(ClearStatus)
@@ -56,11 +56,11 @@ SQLITE_DECIMAL_OP0(Version)
 /**
  * \brief Prototype for generating unary functions.
  */
-#define SQLITE_DECIMAL_OP1(fun)                                                                   \
-  static void decimal ## fun ## Func (sqlite3_context* context, int argc, sqlite3_value** argv) { \
-    (void) argc;                                                                                  \
-    CHECK_NULL(context, argv[0])                                                                  \
-    decimal ## fun(context, argv[0]);                                                             \
+#define SQLITE_DECIMAL_OP1(fun)                                                                            \
+  static void decimal ## fun ## Func (sqlite3_context* context, int argc, sqlite3_value* argv[static 1]) { \
+    (void) argc;                                                                                           \
+    CHECK_NULL(context, argv[0])                                                                           \
+    decimal ## fun(context, argv[0]);                                                                      \
   }
 
 SQLITE_DECIMAL_OP1(Abs)
@@ -105,12 +105,12 @@ SQLITE_DECIMAL_OP1(Trim)
 /**
  * \brief Prototype for generating binary functions.
  */
-#define SQLITE_DECIMAL_OP2(fun)                                                                   \
-  static void decimal ## fun ## Func (sqlite3_context* context, int argc, sqlite3_value** argv) { \
-    (void)argc;                                                                                   \
-    CHECK_NULL(context, argv[0])                                                                  \
-    CHECK_NULL(context, argv[1])                                                                  \
-    decimal ## fun(context, argv[0], argv[1]);                                                    \
+#define SQLITE_DECIMAL_OP2(fun)                                                                            \
+  static void decimal ## fun ## Func (sqlite3_context* context, int argc, sqlite3_value* argv[static 1]) { \
+    (void)argc;                                                                                            \
+    CHECK_NULL(context, argv[0])                                                                           \
+    CHECK_NULL(context, argv[1])                                                                           \
+    decimal ## fun(context, argv[0], argv[1]);                                                             \
   }
 
 SQLITE_DECIMAL_OP2(And)
@@ -445,6 +445,7 @@ typedef struct decimalContextCursor decimalContextCursor;
     decimal ## name ## Rollback,                      \
     0,                                                \
     decimal ## name ## Rename,                        \
+    0,                                                \
     0,                                                \
     0,                                                \
     0,                                                \
