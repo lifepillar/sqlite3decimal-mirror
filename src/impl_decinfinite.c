@@ -22,7 +22,7 @@
 #include <signal.h>
 #include <string.h>
 #include "decInfinite.h"
-#include "impl_decimal.h"
+#include "decimal.h"
 
 #pragma mark Helper functions
 
