@@ -52,7 +52,7 @@ LIB                 = lib@NAME@@SH_SOEXT@
 OBJS                = $(DECDIR)/decContext.o
 OBJS               += $(DECDIR)/decNumber.o
 OBJS               += $(SRCDIR)/decInfinite.o
-OBJS               += $(SRCDIR)/decimal.o
+OBJS               += $(SRCDIR)/sqlite3decimal.o
 OBJS               += $(SRCDIR)/impl_decinfinite.o
 
 .c.o:
@@ -88,12 +88,12 @@ $(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.c
 $(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.h
 $(SRCDIR)/decInfinite.o:      $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
 $(SRCDIR)/decInfinite.o:      $(SRCDIR)/autoconfig.h
-$(SRCDIR)/decimal.o:          $(SRCDIR)/decimal.c
-$(SRCDIR)/decimal.o:          $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h
-$(SRCDIR)/decimal.o:          $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
+$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/sqlite3decimal.c
+$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/impl_decimal.h $(SRCDIR)/sqlite3decimal.h
+$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 $(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/impl_decinfinite.c
 $(SRCDIR)/impl_decinfinite.o: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/decimal.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/sqlite3decimal.h
 $(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 
 
@@ -132,7 +132,7 @@ depend:
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decContext.o $(DECDIR)/decContext.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decNumber.o $(DECDIR)/decNumber.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decInfinite.o $(SRCDIR)/decInfinite.c
-	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decimal.o $(SRCDIR)/decimal.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT sqlite3decimal.o $(SRCDIR)/sqlite3decimal.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT impl_decinfinite.o $(SRCDIR)/impl_decinfinite.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) $(SQLITEFLAGS) -MM -MT tests.o $(TESTDIR)/tests.c
 

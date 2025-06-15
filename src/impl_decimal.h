@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include "sqlite3ext.h"
-#include "decimal.h"
+#include "sqlite3decimal.h"
 
 // Needed for dynamic linking
 SQLITE_EXTENSION_INIT3
