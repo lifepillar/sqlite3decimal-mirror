@@ -1,5 +1,5 @@
 /**
- * \file      impl_stub.h
+ * \file      stub.h
  * \author    Lifepillar
  * \copyright Copyright (c) 2019 Lifepillar.
  *            This program is free software; you can redistribute it and/or

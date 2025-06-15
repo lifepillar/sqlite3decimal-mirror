@@ -1,5 +1,5 @@
-C Rename\simpl_stub.c\s=>\sstub.c.
-D 2025-06-15T13:44:25.274
+C Update\scomment.
+D 2025-06-15T13:45:19.127
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -159,15 +159,15 @@ F src/sqlite/sqlite3.h 5d46e69d5e345c68308e2b864f8c7baa3843967f98543de7e28adbde3
 F src/sqlite/sqlite3ext.h 0bfd049bb2088cc44c2ad54f2079d1c6e43091a4e1ce8868779b75f6c1484f1e
 F src/sqlite3decimal.c 7bbdd9e7b04565fecd58fad872cff2dac6dbcfcda4a1b8db420dd78f5e1700db
 F src/sqlite3decimal.h c1945b2594960ec27424c03b5035768d4ebc99713c6c055337e93a9b7bd7a919
-F src/stub.c 64dbaa1e2b9c3ada8df45527cb493b6e3960a368a5c14259974c9f52f77583bd w src/impl_stub.c
+F src/stub.c 0d642d2b5f78e99d4f31ed2e8ba54eeb19f4564c3c2ab7ca43462f26f3cb5e39
 F src/version.h 1a1fd3a7ed4aa2a4b86719bb50be770bcc849b5f70ce298f806e5f59cbfcb16a
 F test/mu_unit.h e33794313d81902c260e1a1f799f7139ca8a1c627b9cf0316feece7dc6bc3e45
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/tests.c dcf0fdfa4ec8a6b91ae5c8995ac0b49fd00f6107015fb4977e442347726b324c
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P b4d6cf875e25317dc3416cb791ffcd0240ae866fb430e6db98432bf5e34acfa4
-R 59aa82794af978755beb71ca04938b18
+P f7dfbe2d3f1603012320163b191b9fc8c0b08a4c44bdda8cf1131216a7603e3c
+R c12db548ea39ca7d01564d4d4b69369f
 U lifepillar
-Z 10a648e89766ceb0581ab63511d9b5b8
+Z d428003616bac522ff57d995cea308fa
 # Remove this line to create a well-formed Fossil manifest.
