@@ -13,7 +13,7 @@
  */
 #include <signal.h>
 #include <string.h>
-#include "impl_decimal.h"
+#include "decimal.h"
 
 // Stub implementation
 

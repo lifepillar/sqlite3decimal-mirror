@@ -89,11 +89,11 @@ $(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.h
 $(SRCDIR)/decInfinite.o:      $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
 $(SRCDIR)/decInfinite.o:      $(SRCDIR)/autoconfig.h
 $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/sqlite3decimal.c
-$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/impl_decimal.h $(SRCDIR)/sqlite3decimal.h
+$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/decimal.h $(SRCDIR)/sqlite3decimal.h
 $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 $(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/impl_decinfinite.c
 $(SRCDIR)/impl_decinfinite.o: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/impl_decimal.h $(SRCDIR)/sqlite3decimal.h
+$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/decimal.h $(SRCDIR)/sqlite3decimal.h
 $(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 
 
