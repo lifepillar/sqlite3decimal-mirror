@@ -182,7 +182,7 @@ static void signalHandler(int signo) {
   signal(SIGFPE, signalHandler); // Re-enable
 }
 
-void* decimalInitSystem() {
+void* decimalInitSystem(void) {
   if (signal(SIGFPE, signalHandler) == SIG_ERR) {
     // Maybe, setting signal handling is disabled?
     // TODO: should we do something here?
@@ -211,7 +211,7 @@ static decContext* initDefaultContext(decContext* context) {
   return context;
 }
 
-void* decimalContextCreate() {
+void* decimalContextCreate(void) {
   decContext* context = sqlite3_malloc(sizeof(decContext));
   initDefaultContext(context);
   return context;
