@@ -1,5 +1,5 @@
 /**
- * \file test_common.c
+ * \file tests.c
  * \author    Lifepillar
  * \copyright Copyright (c) 2019 Lifepillar.
  *            This program is free software; you can redistribute it and/or
@@ -36,6 +36,8 @@
  *   information as possible should be preserved in NaN results of
  *   operations.")
  */
+#include "mu_unit_sqlite.h"
+
 static sqlite3* db;
 
 #pragma mark Test functions
@@ -1001,7 +1003,7 @@ static void sqlite_decimal_test_traps_insert_null_fails(void) {
 
 #pragma mark Test runner
 
-static void sqlite_test_context_setup() {
+static void sqlite_test_context_setup(void) {
   // Reset context
   mu_db_execute(db, "update decContext set "
       "prec = 39,"
@@ -1119,5 +1121,56 @@ static void sqlite_decimal_vtab_tests(void) {
   mu_test(sqlite_decimal_test_traps_default);
   mu_test(sqlite_decimal_test_traps_division_impossible_flag);
   mu_test(sqlite_decimal_test_traps_insert_null_fails);
+}
+
+
+static sqlite3* db;
+
+static int sqlite_decimal_test_init() {
+  int rc = sqlite3_open(":memory:", &db);
+  if (rc != SQLITE_OK) {
+    fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+    sqlite3_close(db);
+    return rc;
+  }
+
+  // sqlite3_enable_load_extension(db, 1);
+  if (sqlite3_db_config(db, SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION, 1, NULL) != SQLITE_OK) {
+    fprintf(stderr, "Can't enable extensions: %s\n", sqlite3_errmsg(db));
+    sqlite3_close(db);
+    return rc;
+  }
+
+  // Initialize decimal extension
+  char* zErrMsg;
+
+  rc = sqlite3_load_extension(db, "./libsqlite3decimal", "sqlite3_decimal_init", &zErrMsg);
+
+  if (rc != SQLITE_OK) {
+    fprintf(stderr, "[Decimal] %s\n", zErrMsg);
+  }
+
+  return rc;
+}
+
+
+static void sqlite_decimal_test_finish() {
+  sqlite3_close(db);
+}
+
+
+int main(void) {
+  int rc = sqlite_decimal_test_init();
+
+  if (rc != SQLITE_OK)
+    return EXIT_FAILURE;
+
+  mu_init();
+  mu_run_test_suite(sqlite_decimal_func_tests);
+  mu_run_test_suite(sqlite_decimal_vtab_tests);
+  mu_test_summary();
+  sqlite_decimal_test_finish();
+
+  return (mu_tests_failed > 0);
 }
 

@@ -1,7 +1,7 @@
 /**
  * \file      mu_unit.h
  * \author    Lifepillar
- * \copyright Copyright (c) 2017–2019 Lifepillar.
+ * \copyright Copyright (c) 2017 Lifepillar.
  *            This program is free software; you can redistribute it and/or
  *            modify it under the terms of the Simplified BSD License (also
  *            known as the "2-Clause License" or "FreeBSD License".)
