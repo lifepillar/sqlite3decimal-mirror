@@ -152,7 +152,7 @@ doc:
 
 .PHONY: clean
 clean:
-	-rm -f $(OBJS) $(TESTOBJS) $(TOOLDIR)/*.o
+	-rm -f $(OBJS) $(TESTBIN) $(TESTOBJS) $(TOOLDIR)/*.o
 	-rm -f $(LIB)
 
 .PHONY: distclean

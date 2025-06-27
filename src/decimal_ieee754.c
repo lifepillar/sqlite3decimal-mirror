@@ -306,7 +306,7 @@ static char const* roundingModeToString(enum rounding round) {
 
 static enum rounding roundingModeToEnum(char const* round) {
   if (strncmp(round, "DEFAULT", strlen("DEFAULT")) == 0)
-    return DEC_ROUND_HALF_UP; // ANSI X3.274
+    return DEC_ROUND_HALF_EVEN; // Default for IEEE 754 decimal128
 
   for (size_t i = 0; i < DEC_ROUND_MAX; i++) {
     // FIXME: this doesn't check for trailing garbage (e.g., `DEC_ROUND_UPPITY_BOO` is valid)
@@ -652,6 +652,7 @@ void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
       ++j;
     }
   }
+  hexbuf[--j] = '\0';
   // decQuadToString(df, buff);
   // printf(">%s> %s [big-endian]  %s\n", tag, hexbuf, buff);
   sqlite3_result_text(context, hexbuf, -1, SQLITE_TRANSIENT);
@@ -749,7 +750,8 @@ void decimalLessThanOrEqual(sqlite3_context* context, sqlite3_value* v1, sqlite3
   decContext* decCtx = sqlite3_user_data(context);
 
   if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
-    uint32_t result = !decQuadIsPositive(decQuadCompare(&cmp, &x, &y, decCtx));
+    decQuadCompare(&cmp, &x, &y, decCtx);
+    uint32_t result = !(decQuadIsNaN(&cmp) || decQuadIsPositive(&cmp));
     sqlite3_result_int(context, result);
   }
 }
@@ -773,7 +775,8 @@ void decimalGreaterThanOrEqual(sqlite3_context* context, sqlite3_value* v1, sqli
   decContext* decCtx = sqlite3_user_data(context);
 
   if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
-    uint32_t result = !decQuadIsNegative(decQuadCompare(&cmp, &x, &y, decCtx));
+    decQuadCompare(&cmp, &x, &y, decCtx);
+    uint32_t result = !(decQuadIsNaN(&cmp) || decQuadIsNegative(&cmp));
     sqlite3_result_int(context, result);
   }
 }
@@ -786,9 +789,7 @@ void decimalToInt32(sqlite3_context* context, sqlite3_value* value) {
   decContext* decCtx = sqlite3_user_data(context);
 
   if (decode(&decnum, decCtx, value, context)) {
-    // Need to trim trailing zeroes to make the exponent equal to zero (if the
-    // decimal is integer).
-    int result = decQuadToInt32(&decnum, decCtx, decCtx->round);
+    int result = decQuadToInt32Exact(&decnum, decCtx, decCtx->round);
 
     if (checkStatus(context, decCtx, decCtx->traps))
       sqlite3_result_int(context, result);
@@ -806,7 +807,7 @@ void decimalGetExponent(sqlite3_context* context, sqlite3_value* value) {
 }
 
 
-#pragma mark Dec x Dec -> Int
+#pragma mark Dec x Dec -> Dec
 
 void decimalCompare(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
   decQuad x;
@@ -819,6 +820,9 @@ void decimalCompare(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* 
     decQuadToSQLite3Blob(context, &result);
   }
 }
+
+
+#pragma mark Dec x Dec -> Int
 
 void decimalSameQuantum(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
   decQuad x;
