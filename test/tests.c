@@ -9,32 +9,8 @@
  *            but without any warranty; without even the implied warranty of
  *            merchantability or fitness for a particular purpose.
  *
- * \brief Test suite for the decInfinite implementation of SQLite3 Decimal.
+ * \brief Test suite for SQLite3 Decimal.
  *
- * Note that this implementation does not conform to SQL standard for decimals.
- * Besides, despite using the decNumber library, it does not conforms to IEEE
- * 754 decimal arithmetic. The main differences (currently) wrt to IEEE 754 are
- * as follows:
- *
- * - binary encodings are completely different;
- * - decNumber and IEEE 754 use different internal representations for numbers
- *   that are mathematically equal (for instance, 1.0 and 1.00 have different
- *   representations). decInfinite uses a unique (and totally ordered) internal
- *   representation, so that two decimals are mathematically equal if and only
- *   if their encodings are bit by bit equal.
- * - this implementation has only quiet NaNs (IEEE 754 prescribes signaling
- *   NaNs as well);
- * - most operations involving input NaNs (but not NULLs) returns `NaN`,
- *   including maximum and minimum operations (in contrast to decNumberMax()
- *   and decNumberMin()'s unusual behaviour). Note that SQL's operators
- *   (`max()`, `min()`, `==`, `<>`, `<`, `>`, ...) applied to encoded decimals use
- *   decInfinite's total ordering. So, for instance, the direct comparison
- *   `dec('-NaN') < dec(0)` is `true`, but `decLt('-NaN', 0)` is `NaN`;
- * - NaNs do not carry any information other than the fact that they do not
- *   represent a valid number (IEEE 754 §6.2 prescribes: "To facilitate
- *   propagation of diagnostic information contained in NaNs, as much of that
- *   information as possible should be preserved in NaN results of
- *   operations.")
  */
 #include "mu_unit_sqlite.h"
 
@@ -43,21 +19,17 @@ static sqlite3* db;
 #pragma mark Test functions
 
 static void sqlite_decimal_test_decbytes(void) {
-  mu_assert_query(db, "select decBytes(dec('-1.00'))", "2f 84");
-  mu_assert_query(db, "select decBytes(dec('-Inf'))", "20");
-  mu_assert_query(db, "select decBytes(dec('+Inf'))", "c0");
-  mu_assert_query(db, "select decBytes(dec('-0'))", "60");
-  mu_assert_query(db, "select decBytes(dec('0'))", "80");
-  mu_assert_query(db, "select decBytes(dec('-NaN'))", "00");
-  mu_assert_query(db, "select decBytes(dec('NaN'))", "e0");
+  mu_assert_query(db, "select decBytes(dec('-1.00'))", "80000000 00000000 00000000 008007a2");
+  mu_assert_query(db, "select decBytes(dec('-Inf'))",  "00000000 00000000 00000000 000000f8");
+  mu_assert_query(db, "select decBytes(dec('+Inf'))",  "00000000 00000000 00000000 00000078");
+  mu_assert_query(db, "select decBytes(dec('-0'))",    "00000000 00000000 00000000 000008a2");
+  mu_assert_query(db, "select decBytes(dec('0'))",     "00000000 00000000 00000000 00000822");
+  mu_assert_query(db, "select decBytes(dec('-NaN'))",  "00000000 00000000 00000000 000000fc");
+  mu_assert_query(db, "select decBytes(dec('NaN'))",   "00000000 00000000 00000000 0000007c");
   mu_assert_query( db,
       "select decBytes(dec('-0.001213872189473241234987231984754353498798734892374289399999999999'))",
-      "39 db a6 4c 34 34 a8 f6 c7 d5 14 c8 60 c8 d2 8a 1e 00"
+      "d351ef68 4c8fd314 d49ccff0 3511ffa5"
       );
-}
-
-static void sqlite_decimal_test_decbits(void) {
-  mu_assert_query(db, "select decBits(dec('-1.23'));", "00 1 011 1101101101");
 }
 
 static void sqlite_decimal_test_dec_NaN(void) {
@@ -93,8 +65,8 @@ static void sqlite_decimal_test_dec_parse_error(void) {
 static void sqlite_decimal_test_decabs(void) {
   mu_assert_query(db, "select decStr(decAbs(dec('-12.345')))", "12.345");
   mu_assert_query(db, "select decStr(decAbs(dec('+12.345')))", "12.345");
-  mu_assert_query(db, "select decStr(decAbs(dec('0.00')))", "0");
-  mu_assert_query(db, "select decStr(decAbs(dec('-0.00')))", "0");
+  mu_assert_query(db, "select decStr(decAbs(dec('0.00')))", "0.00");
+  mu_assert_query(db, "select decStr(decAbs(dec('-0.00')))", "0.00");
   mu_assert_query(db, "select decStr(decAbs(dec('NaN')))", "NaN");
   mu_assert_query(db, "select decStr(decAbs(dec('-NaN')))", "-NaN");
   mu_assert_query(db, "select decStr(decAbs('NaN'))", "NaN");
@@ -186,32 +158,20 @@ static void sqlite_decimal_test_deccompare(void) {
   mu_assert_query(db, "select decToInt32(decCompare('-1.2', '-3.20')) = 1", "1");
 }
 
-static void sqlite_decimal_test_decdigits(void) {
-  mu_skip_if(1, "Currently not implemented");
-  mu_assert_query(db, "select decDigits(dec('0.0000'))", "1");
-  mu_assert_query(db, "select decDigits(dec('9'))", "1");
-  mu_assert_query(db, "select decDigits(dec('0.0012345'))", "5");
-  mu_assert_query(db, "select decDigits(dec('0012345'))", "5");
-  mu_assert_query(db, "select decDigits(dec('123450000'))", "9");
-  mu_assert_query(db, "select decDigits(dec('Inf'))", "0");
-  mu_assert_query(db, "select decDigits(dec('-Inf'))", "0");
-  mu_assert_query(db, "select decDigits(dec('NaN'))", "0");
-}
-
 static void sqlite_decimal_test_decdivide(void) {
   mu_assert_query(db, "select decStr(decDiv('10.4', '2'))", "5.2");
   mu_assert_query(db, "select decStr(decDiv('10.4', '2.0'))", "5.2");
   mu_assert_query(db, "select decStr(decDiv('10.4', '2.000'))", "5.2");
-  mu_assert_query(db, "select decStr(decDiv('10.400', '2'))", "5.2");
+  mu_assert_query(db, "select decStr(decDiv('10.400', '2'))", "5.200");
   mu_assert_query(db, "select decStr(decDiv('0', '1'))", "0");
-  mu_assert_query(db, "select decStr(decDiv('0.00', '1'))", "0");
+  mu_assert_query(db, "select decStr(decDiv('0.00', '1'))", "0.00");
   mu_assert_query(db, "select decStr(decDiv('1', '0'))", "Division by zero");
   mu_assert_query(db, "select decStr(decDiv('-1', '0'))", "Division by zero");
-  mu_assert_query(db, "select decStr(decDiv('0', '1.00'))", "0");
-  mu_assert_query(db, "select decStr(decDiv('1.0', '1e-34'))", "1E+34");
+  mu_assert_query(db, "select decStr(decDiv('0', '1.00'))", "0E+2"); // FIXME: why is this using exp notation?
+  mu_assert_query(db, "select decStr(decDiv('1.0', '1e-34'))", "1.0E+34");
   mu_assert_query(db,
       "select decStr(decDiv('1', '7'))",
-      "0.142857142857142857142857142857142857143"
+      "0.1428571428571428571428571428571429"
       );
   mu_assert_query(db,
       "select decStr(decQuantize(decDiv('1', '7'), '1.000000000000000000000000000000000'))",
@@ -221,7 +181,7 @@ static void sqlite_decimal_test_decdivide(void) {
 
 static void sqlite_decimal_test_decdivideinteger(void) {
   mu_assert_query(db, "select decStr(decDivInt('10.4', '2'))", "5");
-  // mu_assert_query(db, "select decGetExp(decDivInt('10.4', '2'))", "0"); // FIXME: decGetExp() not implemented
+  mu_assert_query(db, "select decExponent(decDivInt('10.4', '2'))", "0");
   mu_assert_query(db, "select decStr(decDivInt('10.4', '2.0'))", "5");
   mu_assert_query(db, "select decStr(decDivInt('10.4', '2.000'))", "5");
   mu_assert_query(db, "select decStr(decDivInt('10.400', '2'))", "5");
@@ -230,12 +190,11 @@ static void sqlite_decimal_test_decdivideinteger(void) {
   mu_assert_query_fails(db, "select decStr(decDivInt('1', '0'))", "Division by zero");
   mu_assert_query_fails(db, "select decStr(decDivInt('-1', '0'))", "Division by zero");
   mu_assert_query(db, "select decStr(decDivInt('0', '1.00'))", "0");
-  // mu_assert_query(db, "select decGetExp(decDivInt('0', '1.000'))", "0"); // FIXME: decGetExp() not implemented
-  mu_assert_query(db, "select decStr(decDivInt('1.0', '1e-33'))", "1E+33");
+  mu_assert_query(db, "select decExponent(decDivInt('0', '1.000'))", "0");
+  mu_assert_query(db, "select decStr(decDivInt('1.0', '1e-33'))", "1000000000000000000000000000000000");
 }
 
 static void sqlite_decimal_test_deceq(void) {
-  mu_skip_if(1, "Not implemented");
   mu_assert_query(db, "select decEq('1.0', '1.00')", "1");
   mu_assert_query(db, "select decEq('1', '0.0001e4')", "1");
   mu_assert_query(db, "select decEq('Inf', 'Inf')", "1");
@@ -249,17 +208,20 @@ static void sqlite_decimal_test_deceq(void) {
   mu_assert_query(db, "select decEq('1.0', 'NaN')", "0");
   mu_assert_query(db, "select decEq('1e9999999990', 'Inf')", "1");
   mu_assert_query(db, "select decEq('-1e9999999990', '-Inf')", "1");
+  mu_assert_query(db,
+      "select decDiv(dec(1),dec(7)) = dec('0.1428571428571428571428571428571429')",
+      "1"
+      );
 }
 
 static void sqlite_decimal_test_decexp(void) {
-  mu_db_execute(db, "update decContext set emax = 99999, emin = -99999"); // Max range for decExp()
   mu_assert_query(db, "select decStr(decExp('0'))", "1");
   mu_assert_query(db, "select decStr(decExp('-Inf'))", "0");
   mu_assert_query(db, "select decStr(decExp('+Inf'))", "Infinity");
   mu_assert_query(db, "select decStr(decExp('NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decExp('-NaN'))", "-NaN");
-  mu_assert_query(db, "select prec from decContext", "39");
-  mu_assert_query(db, "select decStr(decExp('1'))", "2.71828182845904523536028747135266249776");
+  mu_assert_query(db, "select prec from decContext", "34");
+  mu_assert_query(db, "select decStr(decExp('1'))", "2.718281828459045235360287471352662");
   // The previous query adds Inexact result and Rounded result to decStatus
   mu_assert_query(db, "select flag from decStatus where flag = 'Inexact result'", "Inexact result");
   mu_assert_query(db, "select flag from decStatus where flag = 'Rounded result'", "Rounded result");
@@ -269,32 +231,7 @@ static void sqlite_decimal_test_decexp(void) {
   mu_assert_query(db, "select decStr(decExp('0'))", "1");
 }
 
-static void sqlite_decimal_test_direct_equality(void) {
-  mu_assert_query(db, "select dec('1.0') = dec('1.00')", "1");
-  mu_assert_query(db, "select dec('1') = dec('0.0001e4')", "1");
-  mu_assert_query(db, "select dec('Inf') = dec('Inf')", "1");
-  mu_assert_query(db, "select dec('-Inf') = dec('-Inf')", "1");
-  mu_assert_query(db, "select dec('1.999') = dec('2.00')", "0");
-  mu_assert_query(db, "select dec('2.001') = dec('2.00')", "0");
-  mu_assert_query(db, "select dec('Inf') = dec('2.00')", "0");
-  mu_assert_query(db, "select dec('-Inf') = dec('Inf')", "0");
-  mu_assert_query(db, "select dec('+NaN') = dec('NaN')", "1");
-  mu_assert_query(db, "select dec('NaN') = dec('-NaN')", "0");
-  mu_assert_query(db, "select dec('NaN') = dec('1.0')", "0");
-  mu_assert_query(db, "select dec('1e9999999990') = dec('Inf')", "1");
-  mu_assert_query(db, "select dec('-1e9999999990') = dec('-Inf')", "1");
-  mu_assert_query(db,
-      "select decDiv(dec(1),dec(7)) = dec('0.142857142857142857142857142857142857143')",
-      "1"
-      );
-}
-
 static void sqlite_decimal_test_decfma(void) {
-  // decNumberFMA() invokes decCheckMath(), which enforces a few restrictions,
-  // among which emax and -emin must be less than DEC_MAX_MATH (99999).
-  // So, by default decFMA() raises an Invalid context error.
-  mu_assert_query_fails(db, "select decStr(decFMA('3', '2.5', '4.67'))", "Invalid context");
-  mu_db_execute(db, "update decContext set emin = -99999, emax = 99999");
   mu_assert_query(db, "select decStr(decFMA('3', '2.5', '4.67'))", "12.17");
 }
 
@@ -315,10 +252,12 @@ static void sqlite_decimal_test_decgetexponent(void) {
 }
 
 static void sqlite_decimal_test_decgreatest(void) {
-  mu_assert_query(db, "select decStr(decGreatest(dec('1.0'), dec('2.0')))", "2");
-  mu_assert_query(db, "select decStr(decGreatest(dec('1.0'), dec('2.0'), dec('3.0')))", "3");
-  mu_assert_query(db, "select decStr(decGreatest(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-1");
-  mu_assert_query(db, "select decStr(decGreatest(dec('1.0'), dec('1.0')))", "1");
+  mu_assert_query(db, "select decStr(decGreatest(dec('1.0'), dec('2.0')))", "2.0");
+  mu_assert_query(db, "select decStr(decGreatest(dec('1.0'), dec('2.0'), dec('3.0')))", "3.0");
+  mu_assert_query(db, "select decStr(decGreatest(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-1.0");
+  mu_assert_query(db, "select decStr(decGreatest(dec('1.00'), dec('2.000')))", "2.000");
+  mu_assert_query(db, "select decStr(decGreatest(dec('1.00'), dec('-2.000')))", "1.00");
+  mu_assert_query(db, "select decStr(decGreatest(dec('1.0'), dec('1.0')))", "1.0");
   mu_assert_query(db, "select decStr(decGreatest(null)) is null", "1");
   mu_assert_query(db, "select decStr(decGreatest('1', '1.0', null)) is null", "1");
   mu_assert_query(db, "select decStr(decGreatest('1', '-Inf'))", "1");
@@ -330,7 +269,7 @@ static void sqlite_decimal_test_decgreatest(void) {
   mu_assert_query(db, "select decStr(decGreatest('NaN', '1', 'NaN'))", "1");
   mu_assert_query(db, "select decStr(decGreatest('NaN', 'NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decGreatest('NaN', 'NaN', 'NaN'))", "NaN");
-  mu_assert_query(db, "select decStr(decGreatest('NaN', 'NaN', 'NaN', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decGreatest('NaN', 'NaN', 'NaN', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decGreatest('NaN', 'NaN', 'NaN', '1.0', NULL)) is null", "1");
   mu_assert_query(db, "select decStr(decGreatest('NaN', 'NaN', NULL, 'NaN', '1.0')) is null", "1");
   mu_assert_query(db, "select decStr(decGreatest(NULL, 'NaN', 'NaN', 'NaN', '1.0')) is null", "1");
@@ -342,7 +281,7 @@ static void sqlite_decimal_test_decgreatest(void) {
 static void sqlite_decimal_test_decinvert(void) {
   mu_assert_query(db,
       "select decStr(decInvert('1100101'))",
-      "111111111111111111111111111111110011010"
+      "1111111111111111111111111110011010"
       );
   mu_assert_query_fails(db, "select decInvert('012')", "Invalid operation");
 }
@@ -446,7 +385,7 @@ static void sqlite_decimal_test_decissubnormal(void) {
   mu_assert_query(db, "select decIsSubnormal('Inf')", "0");
   mu_assert_query(db, "select decIsSubnormal('-Inf')", "0");
   mu_assert_query(db, "select decIsSubnormal('NaN')", "0");
-  mu_assert_query(db, "select decIsSubnormal('.1e-999999999')", "1");
+  mu_assert_query(db, "select decIsSubnormal('1e-6176')", "1");
 }
 
 static void sqlite_decimal_test_deciszero(void) {
@@ -461,10 +400,12 @@ static void sqlite_decimal_test_deciszero(void) {
 }
 
 static void sqlite_decimal_test_decleast(void) {
-  mu_assert_query(db, "select decStr(decLeast(dec('1.0'), dec('2.0')))", "1");
-  mu_assert_query(db, "select decStr(decLeast(dec('1.0'), dec('2.0'), dec('3.0')))", "1");
-  mu_assert_query(db, "select decStr(decLeast(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-3");
-  mu_assert_query(db, "select decStr(decLeast(dec('1.0'), dec('1.0')))", "1");
+  mu_assert_query(db, "select decStr(decLeast(dec('1.0'), dec('2.0')))", "1.0");
+  mu_assert_query(db, "select decStr(decLeast(dec('1.00'), dec('2.000')))", "1.00");
+  mu_assert_query(db, "select decStr(decLeast(dec('1.00'), dec('-2.000')))", "-2.000");
+  mu_assert_query(db, "select decStr(decLeast(dec('1.0'), dec('2.0'), dec('3.0')))", "1.0");
+  mu_assert_query(db, "select decStr(decLeast(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-3.0");
+  mu_assert_query(db, "select decStr(decLeast(dec('1.0'), dec('1.0')))", "1.0");
   mu_assert_query(db, "select decStr(decLeast(null)) is null", "1");
   mu_assert_query(db, "select decStr(decLeast('1', '1.0', null)) is null", "1");
   mu_assert_query(db, "select decStr(decLeast('1', '-Inf'))", "-Infinity");
@@ -476,7 +417,9 @@ static void sqlite_decimal_test_decleast(void) {
   mu_assert_query(db, "select decStr(decLeast('NaN', '1', 'NaN'))", "1");
   mu_assert_query(db, "select decStr(decLeast('NaN', 'NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decLeast('NaN', 'NaN', 'NaN'))", "NaN");
-  mu_assert_query(db, "select decStr(decLeast('NaN', 'NaN', 'NaN', '1.0'))", "1");
+  // «Unusually, if one operand is a quiet NaN and the other a number, then the
+  // number is returned» (decNumber manual, p. 37).
+  mu_assert_query(db, "select decStr(decLeast('NaN', 'NaN', 'NaN', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decLeast('NaN', 'NaN', 'NaN', '1.0', NULL)) is null", "1");
   mu_assert_query(db, "select decStr(decLeast('NaN', 'NaN', NULL, 'NaN', '1.0')) is null", "1");
   mu_assert_query(db, "select decStr(decLeast(NULL, 'NaN', 'NaN', 'NaN', '1.0')) is null", "1");
@@ -486,7 +429,6 @@ static void sqlite_decimal_test_decleast(void) {
 }
 
 static void sqlite_decimal_test_dec_less_than(void) {
-  mu_skip_if(1, "Not implemented");
   mu_assert_query(db, "select decLt('1.0', '1.00')", "0");
   mu_assert_query(db, "select decLt('1.0', '1.00')", "0");
   mu_assert_query(db, "select decLt('1', '0.0001e4')", "0");
@@ -496,41 +438,19 @@ static void sqlite_decimal_test_dec_less_than(void) {
   mu_assert_query(db, "select decLt('2.001', '2.00')", "0");
   mu_assert_query(db, "select decLt('Inf', '2.00')", "0");
   mu_assert_query(db, "select decLt('-Inf', 'Inf')", "1");
-  mu_assert_query(db, "select decLt('NaN', 'NaN')", "NaN");
-  mu_assert_query(db, "select decLt('NaN', '1.0')", "NaN");
-  mu_assert_query(db, "select decLt('1.0', 'NaN')", "NaN");
-  mu_assert_query(db, "select decLt('-NaN', '-Inf')", "NaN");
+  mu_assert_query(db, "select decLt('NaN', 'NaN')", "0");
+  mu_assert_query(db, "select decLt('NaN', '1.0')", "0");
+  mu_assert_query(db, "select decLt('1.0', 'NaN')", "0");
+  mu_assert_query(db, "select decLt('-NaN', '-Inf')", "0");
+  mu_assert_query(db, "select decLt('-Inf', '-NaN')", "0");
   mu_assert_query(db, "select decLt('-Inf', '-0')", "1");
-  mu_assert_query(db, "select decLt('-0', '0')", "1");
+  mu_assert_query(db, "select decLt('-0', '0')", "0");
   mu_assert_query(db, "select decLt('0', 'Inf')", "1");
-  mu_assert_query(db, "select decLt('Inf', 'NaN')", "NaN");
-}
-
-static void sqlite_decimal_test_direct_less_than(void) {
-  mu_assert_query(db, "select dec('1.0') < dec('1.00')", "0");
-  mu_assert_query(db, "select dec('1.0') < dec('1.00')", "0");
-  mu_assert_query(db, "select dec('1') < dec('0.0001e4')", "0");
-  mu_assert_query(db, "select dec('Inf') < dec('Inf')", "0");
-  mu_assert_query(db, "select dec('-Inf') < dec('-Inf')", "0");
-  mu_assert_query(db, "select dec('1.999') < dec('2.00')", "1");
-  mu_assert_query(db, "select dec('2.001') < dec('2.00')", "0");
-  mu_assert_query(db, "select dec('Inf') < dec('2.00')", "0");
-  mu_assert_query(db, "select dec('-Inf') < dec('Inf')", "1");
-  mu_assert_query(db, "select dec('NaN') < dec('NaN')", "0");
-  mu_assert_query(db, "select dec('-NaN') < dec('NaN')", "1");
-  mu_assert_query(db, "select dec('NaN') < dec('1.0')", "0");
-  mu_assert_query(db, "select dec('1.0') < dec('NaN')", "1");
-  // Check total ordering
-  mu_assert_query(db, "select dec('-NaN') < dec('-Inf')", "1");
-  mu_assert_query(db, "select dec('-Inf') < dec('-0')", "1");
-  mu_assert_query(db, "select dec('-0') < dec('0')", "1");
-  mu_assert_query(db, "select dec('0') < dec('Inf')", "1");
-  mu_assert_query(db, "select dec('Inf') < dec('NaN')", "1");
+  mu_assert_query(db, "select decLt('Inf', 'NaN')", "0");
+  mu_assert_query(db, "select decLt('NaN', 'Inf')", "0");
 }
 
 static void sqlite_decimal_test_dec_less_than_or_equal(void) {
-  mu_skip_if(1, "Not implemented");
-  mu_assert_query(db, "select decLe('1.0', '1.00')", "1");
   mu_assert_query(db, "select decLe('1.0', '1.00')", "1");
   mu_assert_query(db, "select decLe('1', '0.0001e4')", "1");
   mu_assert_query(db, "select decLe('Inf', 'Inf')", "1");
@@ -539,34 +459,19 @@ static void sqlite_decimal_test_dec_less_than_or_equal(void) {
   mu_assert_query(db, "select decLe('2.001', '2.00')", "0");
   mu_assert_query(db, "select decLe('Inf', '2.00')", "0");
   mu_assert_query(db, "select decLe('-Inf', 'Inf')", "1");
-  mu_assert_query(db, "select decLe('NaN', 'NaN')", "NaN");
-  mu_assert_query(db, "select decLe('NaN', '1.0')", "NaN");
-  mu_assert_query(db, "select decLe('1.0', 'NaN')", "NaN");
-}
-
-static void sqlite_decimal_test_direct_less_than_or_equal(void) {
-  mu_assert_query(db, "select dec('1.0') <= dec('1.00')", "1");
-  mu_assert_query(db, "select dec('1.0') <= dec('1.00')", "1");
-  mu_assert_query(db, "select dec('1') <= dec('0.0001e4')", "1");
-  mu_assert_query(db, "select dec('Inf') <= dec('Inf')", "1");
-  mu_assert_query(db, "select dec('-Inf') <= dec('-Inf')", "1");
-  mu_assert_query(db, "select dec('1.999') <= dec('2.00')", "1");
-  mu_assert_query(db, "select dec('2.001') <= dec('2.00')", "0");
-  mu_assert_query(db, "select dec('Inf') <= dec('2.00')", "0");
-  mu_assert_query(db, "select dec('-Inf') <= dec('Inf')", "1");
-  mu_assert_query(db, "select dec('NaN') <= dec('NaN')", "1");
-  mu_assert_query(db, "select dec('NaN') <= dec('1.0')", "0");
-  mu_assert_query(db, "select dec('1.0') <= dec('NaN')", "1");
-  // Check total ordering
-  mu_assert_query(db, "select dec('-NaN') <= dec('-Inf')", "1");
-  mu_assert_query(db, "select dec('-Inf') <= dec('-0')", "1");
-  mu_assert_query(db, "select dec('-0') <= dec('0')", "1");
-  mu_assert_query(db, "select dec('0') <= dec('Inf')", "1");
-  mu_assert_query(db, "select dec('Inf') <= dec('NaN')", "1");
+  mu_assert_query(db, "select decLe('NaN', 'NaN')", "0");
+  mu_assert_query(db, "select decLe('NaN', '1.0')", "0");
+  mu_assert_query(db, "select decLe('1.0', 'NaN')", "0");
+  mu_assert_query(db, "select decLe('-NaN', dec('-Inf'))", "0");
+  mu_assert_query(db, "select decLe('-Inf', dec('-0'))", "1");
+  mu_assert_query(db, "select decLe('-0', 0)", "1");
+  mu_assert_query(db, "select decLe('-0', '0')", "1");
+  mu_assert_query(db, "select decLe('-0', dec('0'))", "1");
+  mu_assert_query(db, "select decLe('0', dec('Inf'))", "1");
+  mu_assert_query(db, "select decLe('Inf', dec('NaN'))", "0");
 }
 
 static void sqlite_decimal_test_declogb(void) {
-  mu_skip_if(1, "Currently not implemented");
   mu_assert_query(db, "select decStr(decLogB('1'))", "0");
   mu_assert_query(db, "select decStr(decLogB('-1'))", "0");
   mu_assert_query(db, "select decStr(decLogB('123'))", "2");
@@ -577,19 +482,19 @@ static void sqlite_decimal_test_declogb(void) {
   mu_assert_query(db, "select decStr(decLogB('Inf'))", "Infinity");
   mu_assert_query(db, "select decStr(decLogB('-Inf'))", "Infinity");
   mu_assert_query(db, "select decStr(decLogB('NaN'))", "NaN");
-  // FIXME:
   mu_assert_query(db, "select decStr(decLogB('-NaN'))", "-NaN");
   mu_assert_query_fails(db, "select decStr(decLogB('0.0'))", "Division by zero");
 }
 
 static void sqlite_decimal_test_decmaxmag(void) {
-  mu_assert_query(db, "select decStr(decMaxMag(dec('1.0'), dec('2.0')))", "2");
-  mu_assert_query(db, "select decStr(decMaxMag(dec('1.0'), dec('-2.0')))", "-2");
-  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('2.0')))", "2");
-  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('-2.0')))", "-2");
-  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('2.0'), dec('-3.0')))", "-3");
-  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-3");
-  mu_assert_query(db, "select decStr(decMaxMag(dec('1.0'), dec('1.0')))", "1");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('1.0'), dec('2.0')))", "2.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('1.0'), dec('-2.0')))", "-2.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('2.0')))", "2.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('-2.0')))", "-2.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('2.0'), dec('-3.0')))", "-3.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-3.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('1.0'), dec('1.00')))", "1.0");
+  mu_assert_query(db, "select decStr(decMaxMag(dec('1.00'), dec('1.0')))", "1.0");
   mu_assert_query(db, "select decStr(decMaxMag(null)) is null", "1");
   mu_assert_query(db, "select decStr(decMaxMag('1', '1.0', null)) is null", "1");
   mu_assert_query(db, "select decStr(decMaxMag('-1', '-Inf'))", "-Infinity");
@@ -602,7 +507,7 @@ static void sqlite_decimal_test_decmaxmag(void) {
   mu_assert_query(db, "select decStr(decMaxMag('NaN', '-1', 'NaN'))", "-1");
   mu_assert_query(db, "select decStr(decMaxMag('NaN', 'NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decMaxMag('NaN', 'NaN', 'NaN'))", "NaN");
-  mu_assert_query(db, "select decStr(decMaxMag('NaN', 'NaN', 'NaN', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decMaxMag('NaN', 'NaN', 'NaN', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decMaxMag('NaN', 'NaN', 'NaN', '-1.0', NULL)) is null", "1");
   mu_assert_query(db, "select decStr(decMaxMag('NaN', 'NaN', NULL, 'NaN', '1.0')) is null", "1");
   mu_assert_query(db, "select decStr(decMaxMag(NULL, 'NaN', 'NaN', 'NaN', '1.0')) is null", "1");
@@ -612,13 +517,14 @@ static void sqlite_decimal_test_decmaxmag(void) {
 }
 
 static void sqlite_decimal_test_decminmag(void) {
-  mu_assert_query(db, "select decStr(decMinMag(dec('1.0'), dec('2.0')))", "1");
-  mu_assert_query(db, "select decStr(decMinMag(dec('1.0'), dec('-2.0')))", "1");
-  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('2.0')))", "-1");
-  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('-2.0')))", "-1");
-  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('2.0'), dec('-3.0')))", "-1");
-  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-1");
-  mu_assert_query(db, "select decStr(decMinMag(dec('1.0'), dec('1.0')))", "1");
+  mu_assert_query(db, "select decStr(decMinMag(dec('1.0'), dec('2.0')))", "1.0");
+  mu_assert_query(db, "select decStr(decMinMag(dec('1.0'), dec('-2.0')))", "1.0");
+  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('2.0')))", "-1.0");
+  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('-2.0')))", "-1.0");
+  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('2.0'), dec('-3.0')))", "-1.0");
+  mu_assert_query(db, "select decStr(decMinMag(dec('-1.0'), dec('-2.0'), dec('-3.0')))", "-1.0");
+  mu_assert_query(db, "select decStr(decMinMag(dec('1.00'), dec('1.0')))", "1.00");
+  mu_assert_query(db, "select decStr(decMinMag(dec('1.0'), dec('1.00')))", "1.00");
   mu_assert_query(db, "select decStr(decMinMag(null)) is null", "1");
   mu_assert_query(db, "select decStr(decMinMag('1', '1.0', null)) is null", "1");
   mu_assert_query(db, "select decStr(decMinMag('-1', '-Inf'))", "-1");
@@ -631,20 +537,20 @@ static void sqlite_decimal_test_decminmag(void) {
   mu_assert_query(db, "select decStr(decMinMag('NaN', '-1', 'NaN'))", "-1");
   mu_assert_query(db, "select decStr(decMinMag('NaN', 'NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decMinMag('NaN', 'NaN', 'NaN'))", "NaN");
-  mu_assert_query(db, "select decStr(decMinMag('NaN', 'NaN', 'NaN', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decMinMag('NaN', 'NaN', 'NaN', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decMinMag('NaN', 'NaN', 'NaN', '-1.0', NULL)) is null", "1");
   mu_assert_query(db, "select decStr(decMinMag('NaN', 'NaN', NULL, 'NaN', '1.0')) is null", "1");
   mu_assert_query(db, "select decStr(decMinMag(NULL, 'NaN', 'NaN', 'NaN', '1.0')) is null", "1");
   mu_assert_query(db, "select decStr(decMinMag('NaN', 'Inf'))", "Infinity");
   mu_assert_query(db, "select decStr(decMinMag('NaN', '-Inf'))", "-Infinity");
-  mu_assert_query(db, "select decStr(decMinMag('NaN', '-Inf', 'Inf', 'NaN', '0.0'))", "0");
+  mu_assert_query(db, "select decStr(decMinMag('NaN', '-Inf', 'Inf', 'NaN', '0.0'))", "0.0");
 }
 
 static void sqlite_decimal_test_decmultiply(void) {
   mu_assert_query(db, "select decStr(decMul())", "1");
-  mu_assert_query(db, "select decStr(decMul('1.00'))", "1");
-  mu_assert_query(db, "select decStr(decMul('2.00', '3.000'))", "6");
-  mu_assert_query(db, "select decStr(decMul('1.00', '3.00', '2.6543'))", "7.9629");
+  mu_assert_query(db, "select decStr(decMul('1.00'))", "1.00");
+  mu_assert_query(db, "select decStr(decMul('2.00', '3.000'))", "6.00000");
+  mu_assert_query(db, "select decStr(decMul('1.00', '3.00', '2.6543'))", "7.96290000");
   mu_assert_query(db, "select decStr(decMul(null)) is null", "1");
   mu_assert_query(db, "select decStr(decMul('2.00', null)) is null", "1");
   mu_assert_query(db, "select decStr(decMul('2.00', 'Inf'))", "Infinity");
@@ -657,15 +563,14 @@ static void sqlite_decimal_test_decmultiply(void) {
 }
 
 static void sqlite_decimal_test_decneg(void) {
-  mu_assert_query(db, "select decStr(decNeg('1.23'))", "-1.23");
-  mu_assert_query(db, "select decStr(decNeg('-1.23'))", "1.23");
-  mu_assert_query(db, "select decStr(decNeg('0.0'))", "0");
-  mu_assert_query(db, "select decStr(decNeg('-0.0'))", "0");
-  // FIXME:
-  mu_assert_query(db, "select decStr(decNeg('NaN'))", "NaN");
-  mu_assert_query(db, "select decStr(decNeg('-NaN'))", "-NaN");
-  mu_assert_query(db, "select decStr(decNeg('Inf'))", "-Infinity");
-  mu_assert_query(db, "select decStr(decNeg('-Inf'))", "Infinity");
+  mu_assert_query(db, "select decStr(decMinus('1.23'))", "-1.23");
+  mu_assert_query(db, "select decStr(decMinus('-1.23'))", "1.23");
+  mu_assert_query(db, "select decStr(decMinus('0.0'))", "0.0");
+  mu_assert_query(db, "select decStr(decMinus('-0.0'))", "0.0");
+  mu_assert_query(db, "select decStr(decMinus('NaN'))", "NaN");
+  mu_assert_query(db, "select decStr(decMinus('-NaN'))", "-NaN");
+  mu_assert_query(db, "select decStr(decMinus('Inf'))", "-Infinity");
+  mu_assert_query(db, "select decStr(decMinus('-Inf'))", "Infinity");
 }
 
 static void sqlite_decimal_test_decor(void) {
@@ -679,8 +584,8 @@ static void sqlite_decimal_test_decor(void) {
 static void sqlite_decimal_test_decplus(void) {
   mu_assert_query(db, "select decStr(decPlus('1.23'))", "1.23");
   mu_assert_query(db, "select decStr(decPlus('-1.23'))", "-1.23");
-  mu_assert_query(db, "select decStr(decPlus('0.0'))", "0");
-  mu_assert_query(db, "select decStr(decPlus('-0.0'))", "0");
+  mu_assert_query(db, "select decStr(decPlus('0.0'))", "0.0");
+  mu_assert_query(db, "select decStr(decPlus('-0.0'))", "0.0");
   mu_assert_query(db, "select decStr(decPlus('NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decPlus('-NaN'))", "-NaN");
   mu_assert_query(db, "select decStr(decPlus('Inf'))", "Infinity");
@@ -694,7 +599,7 @@ static void sqlite_decimal_test_decquantize(void) {
   mu_assert_query(db, "select decStr(decQuantize('1.235', '1.00'))", "1.24"); // round to even
   mu_assert_query(db, "select decStr(decQuantize('1.245', '1.00'))", "1.24"); // round to even
   mu_assert_query(db, "select decStr(decQuantize('1.235', '1'))", "1");
-  mu_assert_query(db, "select decStr(decQuantize('1.2', '1.00'))", "1.2");
+  mu_assert_query(db, "select decStr(decQuantize('1.2', '1.00'))", "1.20");
 }
 
 static void sqlite_decimal_test_decquantize_nulls(void) {
@@ -714,20 +619,20 @@ static void sqlite_decimal_test_decreduce(void) {
 
 static void sqlite_decimal_test_decremainder(void) {
   mu_assert_query(db, "select decStr(decRemainder('10.4', '2'))", "0.4");
-  // mu_assert_query(db, "select decGetExp(decRemainder('10.4', '2'))", "-1"); // FIXME: decGetExp() not implemented
+  mu_assert_query(db, "select decExponent(decRemainder('10.4', '2'))", "-1");
   mu_assert_query(db, "select decStr(decRemainder('10.4', '2.0'))", "0.4");
-  mu_assert_query(db, "select decStr(decRemainder('10.4', '2.000'))", "0.4");
-  mu_assert_query(db, "select decStr(decRemainder('10.400', '2'))", "0.4");
+  mu_assert_query(db, "select decStr(decRemainder('10.4', '2.000'))", "0.400");
+  mu_assert_query(db, "select decStr(decRemainder('10.400', '2'))", "0.400");
   mu_assert_query(db, "select decStr(decRemainder('0', '1'))", "0");
-  mu_assert_query(db, "select decStr(decRemainder('0.00', '1'))", "0");
+  mu_assert_query(db, "select decStr(decRemainder('0.00', '1'))", "0.00");
   mu_assert_query_fails(db, "select decStr(decRemainder('1', '0'))", "Invalid operation");
   mu_assert_query_fails(db, "select decStr(decRemainder('-1', '0'))", "Invalid operation");
-  mu_assert_query(db, "select decStr(decRemainder('0', '1.00'))", "0");
-  // mu_assert_query(db, "select decGetExp(decRemainder('0', '1.000'))", "-3"); // FIXME: decGetExp() not implemented
+  mu_assert_query(db, "select decStr(decRemainder('0', '1.00'))", "0.00");
+  mu_assert_query(db, "select decExponent(decRemainder('0', '1.000'))", "-3");
 }
 
 static void sqlite_decimal_test_decrotate(void) {
-  mu_assert_query(db, "select decStr(decRotate('1.2345', '2'))", "123.45");
+  mu_assert_query(db, "select decStr(decRotate('1.2345', '2'))", "123.4500");
   // The shift must be an integer
   mu_assert_query_fails(db, "select decStr(decRotate('1.2345', '1.2'))", "Invalid operation");
   // The shift must be finite
@@ -749,11 +654,11 @@ static void sqlite_decimal_test_decscaleb(void) {
 }
 
 static void sqlite_decimal_test_decshift(void) {
-  mu_assert_query(db, "select decStr(decShift('1.2345', '2'))", "123.45");
+  mu_assert_query(db, "select decStr(decShift('1.2345', '2'))", "123.4500");
   mu_assert_query(db, "select decStr(decShift('1.2345', '-2'))", "0.0123");
-  mu_assert_query(db, "select decStr(decShift('123.45', '4'))", "1.2345E+6"); // FIXME?
+  mu_assert_query(db, "select decStr(decShift('123.45', '4'))", "1234500.00");
   mu_assert_query(db, "select decStr(decShift('123.45', '-2'))", "1.23");
-  mu_assert_query(db, "select decStr(decShift('0.0012345', '3'))", "1.2345");
+  mu_assert_query(db, "select decStr(decShift('0.0012345', '3'))", "1.2345000");
   // The shift must be an integer
   mu_assert_query_fails(db, "select decStr(decShift('1.2345', '1.2'))", "Invalid operation");
   // The shift must be finite
@@ -776,8 +681,8 @@ static void sqlite_decimal_test_decstr_NaN(void) {
 }
 
 static void sqlite_decimal_test_decsubtract(void) {
-  mu_assert_query(db, "select decStr(decSub('1.0', '10.00'))", "-9");
-  mu_assert_query(db, "select decStr(decSub('1.0', '1.00'))", "0");
+  mu_assert_query(db, "select decStr(decSub('1.0', '10.00'))", "-9.00");
+  mu_assert_query(db, "select decStr(decSub('1.0', '1.00'))", "0.00");
   mu_assert_query(db, "select decStr(decSub('NaN', '1.00'))", "NaN");
   mu_assert_query(db, "select decStr(decSub('Inf', '1.00'))", "Infinity");
   mu_assert_query(db, "select decStr(decSub('Inf', 'Inf'))", "Invalid operation");
@@ -792,16 +697,14 @@ static void sqlite_decimal_test_decsum_null(void) {
 }
 
 static void sqlite_decimal_test_dectoint32(void) {
+  mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
   mu_assert_query(db, "select decToInt32('0')", "0");
   mu_assert_query(db, "select decToInt32('123')", "123");
-  // decToInt32() uses decNumberToInt32(), which sets DEC_Invalid_operation if
-  // its argument does not have an exponent of 0 (i.e., it's an integer), it is
-  // NaN or Infinity or if it is out-of-range
-  mu_assert_query_fails(db, "select decToInt32('123.5')", "Invalid operation");
-  mu_assert_query_fails(db, "select decToInt32('122.5')", "Invalid operation");
+  mu_assert_query(db, "select decToInt32('123.5')", "124");
+  mu_assert_query(db, "select decToInt32('122.5')", "122");
   mu_assert_query(db, "select decToInt32('-123')", "-123");
-  mu_assert_query_fails(db, "select decToInt32('-123.5')", "Invalid operation");
-  mu_assert_query_fails(db, "select decToInt32('-122.5')", "Invalid operation");
+  mu_assert_query(db, "select decToInt32('-123.5')", "-124");
+  mu_assert_query(db, "select decToInt32('-122.5')", "-122");
   mu_assert_query_fails(db, "select decToInt32('Inf')", "Invalid operation");
   mu_assert_query_fails(db, "select decToInt32('-Inf')", "Invalid operation");
   mu_assert_query_fails(db, "select decToInt32('NaN')", "Invalid operation");
@@ -831,9 +734,9 @@ static void sqlite_decimal_test_rounding_modes(void) {
   mu_assert_query(db, "select decStr(decQuantize('1.015', '1.00'))", "1.02");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1.1");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1'))", "2");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1.00");
   mu_assert_query(db, "select decStr(decQuantize('-1.015', '1.00'))", "-1.01");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1.0");
   mu_assert_query(db, "select decStr(decQuantize('-1.005', '1'))", "-1");
 
   mu_db_execute(db, "update decContext set round = 'ROUND_UP'");
@@ -859,37 +762,37 @@ static void sqlite_decimal_test_rounding_modes(void) {
   mu_db_execute(db, "update decContext set round = 'ROUND_HALF_UP'");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1.01");
   mu_assert_query(db, "select decStr(decQuantize('1.015', '1.00'))", "1.02");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1'))", "1");
   mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1.01");
   mu_assert_query(db, "select decStr(decQuantize('-1.015', '1.00'))", "-1.02");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1.0");
   mu_assert_query(db, "select decStr(decQuantize('-1.005', '1'))", "-1");
 
   mu_db_execute(db, "update decContext set round = 'ROUND_HALF_EVEN'");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1.00");
   mu_assert_query(db, "select decStr(decQuantize('1.015', '1.00'))", "1.02");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1'))", "1");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1.00");
   mu_assert_query(db, "select decStr(decQuantize('-1.015', '1.00'))", "-1.02");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1.0");
   mu_assert_query(db, "select decStr(decQuantize('-1.005', '1'))", "-1");
 
   mu_db_execute(db, "update decContext set round = 'ROUND_HALF_DOWN'");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1.00");
   mu_assert_query(db, "select decStr(decQuantize('1.015', '1.00'))", "1.01");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1'))", "1");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1.00");
   mu_assert_query(db, "select decStr(decQuantize('-1.015', '1.00'))", "-1.01");
-  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1");
+  mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.0'))", "-1.0");
   mu_assert_query(db, "select decStr(decQuantize('-1.005', '1'))", "-1");
 
   mu_db_execute(db, "update decContext set round = 'ROUND_FLOOR'");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.00'))", "1.00");
   mu_assert_query(db, "select decStr(decQuantize('1.015', '1.00'))", "1.01");
-  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1");
+  mu_assert_query(db, "select decStr(decQuantize('1.005', '1.0'))", "1.0");
   mu_assert_query(db, "select decStr(decQuantize('1.005', '1'))", "1");
   mu_assert_query(db, "select decStr(decQuantize('-1.005', '1.00'))", "-1.01");
   mu_assert_query(db, "select decStr(decQuantize('-1.015', '1.00'))", "-1.02");
@@ -898,7 +801,7 @@ static void sqlite_decimal_test_rounding_modes(void) {
 
   // Back to default
   mu_db_execute(db, "update decContext set round = 'DEFAULT'");
-  mu_assert_query(db, "select round from decContext", "ROUND_HALF_UP");
+  mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
 }
 
 #pragma mark Test vtables
@@ -914,30 +817,27 @@ static void sqlite_decimal_test_context_insert_fails(void) {
 }
 
 static void sqlite_decimal_test_context_max_exp(void) {
-  mu_assert_query(db, "select emax = 999999999 from decContext", "1");
+  mu_assert_query(db, "select emax = 6144 from decContext", "1");
 }
 
 static void
 sqlite_decimal_test_context_min_exp(void) {
-  mu_assert_query(db, "select emin = -999999999 from decContext", "1");
+  mu_assert_query(db, "select emin = -6143 from decContext", "1");
 }
 
 static void sqlite_decimal_test_context_precision(void) {
-  mu_assert_query(db, "select prec = 39 from decContext", "1");
+  mu_assert_query(db, "select prec = 34 from decContext", "1");
 }
 
 static void sqlite_decimal_test_context_rounding_default(void) {
-  // When the decimal context is initialized to DEC_INIT_BASE, the defaults for
-  // the ANSI X3.274 arithmetic subset are used. In particular, the round field
-  // of the context is set to ROUND_HALF_UP.
-  mu_assert_query(db, "select round from decContext", "ROUND_HALF_UP");
+  mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
 }
 
 static void sqlite_decimal_test_context_set_rounding(void) {
   mu_db_execute(db, "update decContext set round = 'ROUND_UP'");
   mu_assert_query(db, "select round from decContext", "ROUND_UP");
   mu_db_execute(db, "update decContext set round = 'DEFAULT'");
-  mu_assert_query(db, "select round from decContext", "ROUND_HALF_UP");
+  mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
 }
 
 static void sqlite_decimal_test_context_update_set_null_fails() {
@@ -1006,9 +906,9 @@ static void sqlite_decimal_test_traps_insert_null_fails(void) {
 static void sqlite_test_context_setup(void) {
   // Reset context
   mu_db_execute(db, "update decContext set "
-      "prec = 39,"
-      "emin = -999999999,"
-      "emax = 999999999,"
+      "prec = 34,"
+      "emin = -6143,"
+      "emax = 6144,"
       "round = 'DEFAULT'"
       );
   // Clear status
@@ -1031,7 +931,6 @@ static void sqlite_decimal_func_tests(void) {
   mu_teardown = mu_noop;
 
   mu_test(sqlite_decimal_test_decbytes);
-  mu_test(sqlite_decimal_test_decbits);
   mu_test(sqlite_decimal_test_dec_NaN);
   mu_test(sqlite_decimal_test_dec_Inf);
   mu_test(sqlite_decimal_test_dec_neg);
@@ -1049,12 +948,10 @@ static void sqlite_decimal_func_tests(void) {
   mu_test(sqlite_decimal_test_decavg_null);
   mu_test(sqlite_decimal_test_decclass);
   mu_test(sqlite_decimal_test_deccompare);
-  mu_test(sqlite_decimal_test_decdigits);
   mu_test(sqlite_decimal_test_decdivide);
   mu_test(sqlite_decimal_test_decdivideinteger);
   mu_test(sqlite_decimal_test_deceq);
   mu_test(sqlite_decimal_test_decexp);
-  mu_test(sqlite_decimal_test_direct_equality);
   mu_test(sqlite_decimal_test_decfma);
   mu_test(sqlite_decimal_test_decfromint);
   mu_test(sqlite_decimal_test_decgetexponent);
@@ -1074,9 +971,7 @@ static void sqlite_decimal_func_tests(void) {
   mu_test(sqlite_decimal_test_decisnan);
   mu_test(sqlite_decimal_test_decleast);
   mu_test(sqlite_decimal_test_dec_less_than);
-  mu_test(sqlite_decimal_test_direct_less_than);
   mu_test(sqlite_decimal_test_dec_less_than_or_equal);
-  mu_test(sqlite_decimal_test_direct_less_than_or_equal);
   mu_test(sqlite_decimal_test_declogb);
   mu_test(sqlite_decimal_test_decmaxmag);
   mu_test(sqlite_decimal_test_decminmag);
@@ -1138,6 +1033,7 @@ static int sqlite_decimal_test_init() {
   if (sqlite3_db_config(db, SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION, 1, NULL) != SQLITE_OK) {
     fprintf(stderr, "Can't enable extensions: %s\n", sqlite3_errmsg(db));
     sqlite3_close(db);
+
     return rc;
   }
 
