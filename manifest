@@ -1,5 +1,5 @@
-C Add\sdecEqual()\sand\sdecNotEqual()\sas\sun-shortened\ssynonyms\sfor\sdecEq()\sand\sdecNe(),\srespectively.
-D 2025-06-27T15:35:35.343
+C Update\stest/null_handling.sql.
+D 2025-06-27T15:35:48.456
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -161,11 +161,11 @@ F src/stub.c 16469a0410ce6dff5e6bf9dc2e63832279a7c4f7082de479167d68734ceb7145
 F src/version.h 49413b47b9b39f7326292e2690a86b8a541cf1d01329492472b3c4e726cde7b8
 F test/mu_unit.h e33794313d81902c260e1a1f799f7139ca8a1c627b9cf0316feece7dc6bc3e45
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
-F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
+F test/null_handling.sql 177b19ae25371b0b6e428f27f253d48f0b4dd0d213672843198bbd461411376b
 F test/tests.c dcf0fdfa4ec8a6b91ae5c8995ac0b49fd00f6107015fb4977e442347726b324c
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P a8a8a24152097f1a739c953cf5af6066ea9625e17475f404136f901851e62503
-R 418e9dde9c4cf5d3c3094f34be29f050
+P d6fe4fefd666af9d251e3acd47e05e19f612471cb7d790a5e36d1b85674db246
+R eb1176a586c4b81b714907880a651794
 U lifepillar
-Z 22b7cb247740710a0dbca84c0137987c
+Z 0dd0c8814ad5f93accaeaa9eed7a8e85
 # Remove this line to create a well-formed Fossil manifest.
