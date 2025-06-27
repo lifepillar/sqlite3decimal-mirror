@@ -11,8 +11,8 @@
  *
  * \brief     Interface for implementations
  */
-#ifndef sqlite3_decimal_impl_h
-#define sqlite3_decimal_impl_h
+#ifndef sqlite3_decimal_decimal_h
+#define sqlite3_decimal_decimal_h
 
 #include <stdlib.h>
 #include "sqlite3ext.h"
@@ -232,14 +232,6 @@ void decimalVersion(sqlite3_context* context);
 void decimalAbs(sqlite3_context* context, sqlite3_value* x);
 
   /**
-   * \brief Converts a decimal blob into a string of bits, ordered MSB to LSB.
-   *
-   * \note This is useful mostly for debugging and may not be available in some
-   *       implementations.
-   */
-void decimalBits(sqlite3_context* context, sqlite3_value* x);
-
-  /**
    * \brief Converts a decimal blob into a string of hexadecimal values.
    *
    * \note This is useful mostly for debugging and may not be available in some
@@ -261,15 +253,6 @@ void decimalClass(sqlite3_context* context, sqlite3_value* x);
    * text and from a blob.
    */
 void decimalCreate(sqlite3_context* context, sqlite3_value* x);
-
-  /**
-   * \brief Returns the number of significant digits in a given decimal.
-   *
-   * The values returned by this function when the argument is a zero or it is
-   * not a finite number (i.e., it is an infinite or a NaN) are
-   * implementation-defined.
-   */
-void decimalDigits(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Calculates `e^x` where `x` is the argument of the function.
@@ -473,8 +456,6 @@ void decimalNextDown(sqlite3_context* context, sqlite3_value* x);
    *        according to IEEE 754 rules for "nextUp".
    */
 void decimalNextUp(sqlite3_context* context, sqlite3_value* x);
-
-void decimalNorm(sqlite3_context* context, sqlite3_value* x);
 
   /**
    * \brief Returns `0+x` where `x` is the given decimal number.
@@ -700,7 +681,7 @@ void decimalRotate(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y)
 void decimalSameQuantum(sqlite3_context* context, sqlite3_value* x, sqlite3_value* y);
 
   /**
-   * \brief Calculates `x times 10^b`, where `x` is the first argument and `y` is the
+   * \brief Calculates `x times 10^y`, where `x` is the first argument and `y` is the
    *        second argument, which must be an integer.
    *
    * The range of allowed integers for the second argument is
@@ -839,5 +820,5 @@ void decimalMaxFinal(sqlite3_context* context);
 void decimalAvgStep(sqlite3_context* context, int argc, sqlite3_value** argv);
 void decimalAvgFinal(sqlite3_context* context);
 
-#endif /* sqlite3_decimal_impl_h */
+#endif /* sqlite3_decimal_decimal_h */
 

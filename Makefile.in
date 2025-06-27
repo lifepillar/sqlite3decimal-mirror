@@ -49,11 +49,15 @@ LIB                 = lib@NAME@.a
 LIB                 = lib@NAME@@SH_SOEXT@
 @endif
 
+# The decimal128 module is used as a “proxy” between the decNumber and decQuad formats.
+# The decimal128 module requires decimal64 (for shared code and tables)
 OBJS                = $(DECDIR)/decContext.o
+OBJS               += $(DECDIR)/decimal64.o
+OBJS               += $(DECDIR)/decimal128.o
+OBJS               += $(SRCDIR)/decimal_ieee754.o
 OBJS               += $(DECDIR)/decNumber.o
-OBJS               += $(SRCDIR)/decInfinite.o
+OBJS               += $(DECDIR)/decQuad.o
 OBJS               += $(SRCDIR)/sqlite3decimal.o
-OBJS               += $(SRCDIR)/impl_decinfinite.o
 
 .c.o:
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -c $< -o $*.o
@@ -82,19 +86,23 @@ $(TOOLDIR)/mkversion: $(TOOLDIR)/mkversion.c
 # Dependencies
 $(DECDIR)/decContext.o:       $(DECDIR)/decContext.c
 $(DECDIR)/decContext.o:       $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decimal64.o:        $(DECDIR)/decimal64.c $(DECDIR)/decimal64.h
+$(DECDIR)/decimal64.o:        $(DECDIR)/decNumber.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decimal64.o:        $(DECDIR)/decContext.h $(DECDIR)/decDPD.h
+$(DECDIR)/decimal128.o:       $(DECDIR)/decimal128.c $(DECDIR)/decimal128.h
+$(DECDIR)/decimal128.o:       $(DECDIR)/decNumber.h $(DECDIR)/decNumberLocal.h $(DECDIR)/decContext.h
+$(SRCDIR)/decimal_ieee754.o:  $(SRCDIR)/decimal_ieee754.c
+$(SRCDIR)/decimal_ieee754.o:  $(DECDIR)/decQuad.h $(DECDIR)/decContext.h $(DECDIR)/decimal128.h $(DECDIR)/decNumber.h
+$(SRCDIR)/decimal_ieee754.o:  $(SRCDIR)/decimal.h $(SRCDIR)/sqlite3decimal.h
+$(SRCDIR)/decimal_ieee754.o:  $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 $(DECDIR)/decNumber.o:        $(DECDIR)/decNumber.c
 $(DECDIR)/decNumber.o:        $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.c
-$(SRCDIR)/decInfinite.o:      $(SRCDIR)/decInfinite.h
-$(SRCDIR)/decInfinite.o:      $(DECDIR)/decNumber.h $(DECDIR)/decContext.h $(DECDIR)/decNumberLocal.h
-$(SRCDIR)/decInfinite.o:      $(SRCDIR)/autoconfig.h
+$(DECDIR)/decQuad.o:          $(DECDIR)/decQuad.c
+$(DECDIR)/decQuad.o:          $(DECDIR)/decContext.h $(DECDIR)/decQuad.h $(DECDIR)/decNumberLocal.h
+$(DECDIR)/decQuad.o:          $(DECDIR)/decCommon.c $(DECDIR)/decDPD.h $(DECDIR)/decBasic.c
 $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/sqlite3decimal.c
 $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/decimal.h $(SRCDIR)/sqlite3decimal.h
 $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/impl_decinfinite.c
-$(SRCDIR)/impl_decinfinite.o: $(DECDIR)/decNumber.h $(DECDIR)/decContext.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/decInfinite.h $(SRCDIR)/decimal.h $(SRCDIR)/sqlite3decimal.h
-$(SRCDIR)/impl_decinfinite.o: $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 
 
 @if DEC_STATICLIB
@@ -130,10 +138,12 @@ $(TESTDIR)/tests.o: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
 .PHONY: depend
 depend:
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decContext.o $(DECDIR)/decContext.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decimal64.o $(DECDIR)/decimal64.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decimal128.o $(DECDIR)/decimal128.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decimal_ieee754.o $(SRCDIR)/decimal_ieee754.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decNumber.o $(DECDIR)/decNumber.c
-	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decInfinite.o $(SRCDIR)/decInfinite.c
+	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT decQuad.o $(DECDIR)/decQuad.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT sqlite3decimal.o $(SRCDIR)/sqlite3decimal.c
-	@$(CC) $(CFLAGS) $(DECFLAGS) -MM -MT impl_decinfinite.o $(SRCDIR)/impl_decinfinite.c
 	@$(CC) $(CFLAGS) $(DECFLAGS) $(SQLITEFLAGS) -MM -MT tests.o $(TESTDIR)/tests.c
 
 .PHONY: doc

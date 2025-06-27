@@ -1,7 +1,7 @@
 /**
- * \file impl_decinfinite.c
+ * \file      decimal_ieee754.h
  * \author    Lifepillar
- * \copyright Copyright (c) 2019 Lifepillar.
+ * \copyright Copyright (c) 2025 Lifepillar.
  *            This program is free software; you can redistribute it and/or
  *            modify it under the terms of the Simplified BSD License (also
  *            known as the "2-Clause License" or "FreeBSD License".)
@@ -9,22 +9,60 @@
  *            but without any warranty; without even the implied warranty of
  *            merchantability or fitness for a particular purpose.
  *
- * \brief Implementation of decimal arithmetic using decNumber and the
- *        decimalInfinite encoding.
- *
- * \todo Optimize comparison functions
- * \todo Use signal handling mechanism instead of checkStatus()?
- * \todo Allow choosing allocation strategy (static vs dynamic) for local variables.
- * \todo Better error reporting for functions using decCheckMath() (currently,
- *       they report Invalid context)
- * \todo Reset context status after each successful operation?
+ * \brief     Stub for implementations
  */
 #include <signal.h>
 #include <string.h>
-#include "decInfinite.h"
+#include "decNumber/decQuad.h"
+#include "decNumber/decimal128.h"
 #include "decimal.h"
 
+
 #pragma mark Helper functions
+
+/**
+ * \brief Encodes a decimal value.
+ *
+ * \param context SQLite3 context
+ * \param decnum A decimal value to encode
+ */
+static inline void decQuadToSQLite3Blob(sqlite3_context* context, decQuad* decnum) {
+  sqlite3_result_blob(context, decnum->bytes, DECQUAD_Bytes, SQLITE_TRANSIENT);
+}
+
+/**
+ * \brief Builds a decimal from a blob field.
+ *
+ * Decimals are stored using the IEEE decimal128 format. If the blob does not
+ * have the correct format, the `DEC_Conversion_syntax` flag is set and the
+ * result is a quiet `NaN` or an error depending on whether the error is
+ * trapped.
+ *
+ * \param result The output decimal
+ * \param value A value of type `SQLITE_BLOB`
+ * \param decCtx decNumber's context
+ *
+ * \return \a result
+ *
+ * \see decQuad.h
+ **/
+static inline void decQuadFromSQLite3Blob(
+    decQuad*         result,
+    sqlite3_value*   value,
+    [[maybe_unused]] decContext* decCtx
+    ) {
+  int length = sqlite3_value_bytes(value);
+
+  if (length == DECQUAD_Bytes) {
+    uint8_t const* bytes = sqlite3_value_blob(value);
+    memcpy(&result->bytes, bytes, DECQUAD_Bytes);
+  }
+  else {
+    decQuadZero(result); // FIXME: set to NaN
+    decCtx->status|=DEC_Conversion_syntax;
+  }
+}
+
 
 /**
  * \brief Builds a decimal from a text field.
@@ -39,34 +77,14 @@
  * table contains `Conversion syntax`; otherwise, the result is a a quiet
  * `NaN` and `Conversion syntax` is inserted into the `decStatus` table.
  **/
-static decNumber* decNumberFromSQLite3Text(decNumber* result, sqlite3_value* value, decContext* decCtx) {
+static inline void decQuadFromSQLite3Text(
+    decQuad*       result,
+    sqlite3_value* value,
+    decContext*    decCtx
+    ) {
   char const* const string_num = (char*)sqlite3_value_text(value);
-  decNumberFromString(result, string_num, decCtx);
-  return result;
-}
 
-/**
- * \brief Builds a decimal from a blob field.
- *
- * Decimals are stored using the decimalInfinite format. If the blob does not
- * have the correct format, the `DEC_Conversion_syntax` flag is set and the
- * result is a quiet `NaN` or an error depending on whether the error is
- * trapped.
- *
- * \param result The output decimal
- * \param value A value of type `SQLITE_BLOB`
- * \param decCtx decNumber's context
- *
- * \return \a result
- *
- * \see decInfinite.h
- **/
-static decNumber* decNumberFromSQLite3Blob(decNumber* result, sqlite3_value* value, decContext* decCtx) {
-  int length = sqlite3_value_bytes(value);
-  uint8_t const* bytes = sqlite3_value_blob(value);
-  if (decInfiniteToNumber(length, bytes, result)) return result;
-  decContextSetStatusQuiet(decCtx, DEC_Conversion_syntax);
-  return result;
+  decQuadFromString(result, string_num, decCtx);  // TODO: check for status flags
 }
 
 /**
@@ -77,30 +95,13 @@ static decNumber* decNumberFromSQLite3Blob(decNumber* result, sqlite3_value* val
  *
  * \return \a result
  **/
-static decNumber* decNumberFromSQLite3Integer(decNumber* result, sqlite3_value* value) {
+static inline void decQuadFromSQLite3Integer(
+    decQuad*       result,
+    sqlite3_value* value
+    ) {
   int32_t n = sqlite3_value_int(value);
-  decNumberFromInt32(result, n);
-  return result;
-}
 
-/**
- * \brief Encodes a decimal value.
- *
- * \param context SQLite3 context
- * \param decnum A decimal value to encode
- *
- * \note This function **modifies** the input \a decnum. If you need to use the
- *       value after calling this function, **make a copy first**.
- */
-static void decNumberToSQLite3Blob(sqlite3_context* context, decNumber* decnum) {
-  uint8_t* bytes = sqlite3_malloc(DECINF_MAXSIZE * sizeof(uint8_t));
-  if (bytes) {
-    size_t length = decInfiniteFromNumber(DECINF_MAXSIZE, bytes, decnum);
-    sqlite3_result_blob(context, bytes, length, SQLITE_TRANSIENT); // FIXME: Use SQLITE_STATIC to avoid copy?
-    sqlite3_free(bytes);
-  }
-  else
-    sqlite3_result_error_nomem(context);
+  decQuadFromInt32(result, n); // Result is exact; no error is possible
 }
 
 /**
@@ -124,8 +125,10 @@ static int checkStatus(sqlite3_context* sqlCtx, decContext* decCtx, uint32_t mas
     sqlite3_result_error(sqlCtx, decContextStatusToString(&errCtx), -1);
     // Clear the flag(s) that generated the error
     decContextClearStatus(decCtx, mask);
+
     return 0;
   }
+
   return 1;
 }
 
@@ -141,23 +144,25 @@ static int checkStatus(sqlite3_context* sqlCtx, decContext* decCtx, uint32_t mas
  *
  * \return `1` upon success; `0` if an error occurs.
  **/
-static int decode(decNumber* decnum, decContext* decCtx, sqlite3_value* value, sqlite3_context* sqlCtx) {
+static int decode(decQuad* decnum, decContext* decCtx, sqlite3_value* value, sqlite3_context* sqlCtx) {
   switch (sqlite3_value_type(value)) {
     case SQLITE_BLOB:
-      decNumberFromSQLite3Blob(decnum, value, decCtx);
+      decQuadFromSQLite3Blob(decnum, value, decCtx);
       break;
     case SQLITE_TEXT:
-      decNumberFromSQLite3Text(decnum, value, decCtx);
+      decQuadFromSQLite3Text(decnum, value, decCtx);
       break;
     case SQLITE_INTEGER:
-      decNumberFromSQLite3Integer(decnum, value);
+      decQuadFromSQLite3Integer(decnum, value);
       break;
     default:
       sqlite3_result_error(sqlCtx, "Cannot create decimal from the given type", -1);
       return 0;
   }
+
   return checkStatus(sqlCtx, decCtx, decCtx->traps);
 }
+
 
 #pragma mark Context functions
 
@@ -177,8 +182,7 @@ static int decode(decNumber* decnum, decContext* decCtx, sqlite3_value* value, s
  *
  * \see decNumber's manual, pp. 14-15 and p. 23.
  */
-static void signalHandler(int signo) {
-  (void)signo;
+static void signalHandler([[maybe_unused]] int signo) {
   signal(SIGFPE, signalHandler); // Re-enable
 }
 
@@ -199,8 +203,7 @@ void* decimalInitSystem(void) {
  * \return \a context
  */
 static decContext* initDefaultContext(decContext* context) {
-  decContextDefault(context, DEC_INIT_BASE);
-  context->digits = DECNUMDIGITS;
+  decContextDefault(context, DEC_INIT_DECQUAD);
   context->traps |= (DEC_Conversion_syntax   |
                      DEC_Division_by_zero    |
                      DEC_Division_undefined  |
@@ -225,6 +228,7 @@ void decimalContextDestroy(void* context) {
   if (context) sqlite3_free((decContext*)context);
 }
 
+
 #pragma mark Helper functions for context virtual table
 
 int decimalPrecision(void* decCtx) {
@@ -239,38 +243,30 @@ int decimalMinExp(void* decCtx) {
   return ((decContext*)decCtx)->emin;
 }
 
-int decimalSetPrecision(void* decCtx, int new_prec, char** zErrMsg) {
-  if (new_prec <= 0) {
-    *zErrMsg = sqlite3_mprintf("Precision must be positive");
+int decimalSetPrecision([[maybe_unused]] void* decCtx, int new_prec, char** zErrMsg) {
+  if (new_prec != DECQUAD_Pmax) {
+    *zErrMsg = sqlite3_mprintf("The only allowed precision is %d\n", DECQUAD_Pmax);
     return SQLITE_ERROR;
   }
-  else if (new_prec > DECNUMDIGITS) {
-    *zErrMsg = sqlite3_mprintf("Maximum allowed precision is %d\n", DECNUMDIGITS);
-    return SQLITE_ERROR;
-  }
-  else if (new_prec % 3 != 0) {
-    *zErrMsg = sqlite3_mprintf("Precision must be a multiple of three");
-    return SQLITE_ERROR;
-  }
-  ((decContext*)decCtx)->digits = new_prec;
+
   return SQLITE_OK;
 }
 
-int decimalSetMaxExp(void* decCtx, int new_exp, char** zErrMsg) {
-  if (new_exp <= 0 || new_exp > 999999999) {
-    *zErrMsg = sqlite3_mprintf("Exponent value out of range");
+int decimalSetMaxExp([[maybe_unused]] void* decCtx, int new_exp, char** zErrMsg) {
+  if (new_exp != DECQUAD_Emax) {
+    *zErrMsg = sqlite3_mprintf("The only valid maximum exponent is %d\n", DECQUAD_Emax);
     return SQLITE_ERROR;
   }
-  ((decContext*)decCtx)->emax = new_exp;
+
   return SQLITE_OK;
 }
 
-int decimalSetMinExp(void* decCtx, int new_exp, char** zErrMsg) {
-  if (new_exp >= 0 || new_exp < -999999999) {
-    *zErrMsg = sqlite3_mprintf("Exponent value out of range");
+int decimalSetMinExp([[maybe_unused]] void* decCtx, int new_exp, char** zErrMsg) {
+  if (new_exp != DECQUAD_Emin) {
+    *zErrMsg = sqlite3_mprintf("The only valid minimum exponent is %d\n", DECQUAD_Emin);
     return SQLITE_ERROR;
   }
-  ((decContext*)decCtx)->emin = new_exp;
+
   return SQLITE_OK;
 }
 
@@ -311,10 +307,13 @@ static char const* roundingModeToString(enum rounding round) {
 static enum rounding roundingModeToEnum(char const* round) {
   if (strncmp(round, "DEFAULT", strlen("DEFAULT")) == 0)
     return DEC_ROUND_HALF_UP; // ANSI X3.274
+
   for (size_t i = 0; i < DEC_ROUND_MAX; i++) {
+    // FIXME: this doesn't check for trailing garbage (e.g., `DEC_ROUND_UPPITY_BOO` is valid)
     if (strncmp(round, rounding_mode[i].name, strlen(rounding_mode[i].name)) == 0)
       return rounding_mode[i].value;
   }
+
   return DEC_ROUND_MAX;
 }
 
@@ -367,6 +366,7 @@ static uint32_t flag_string_to_int(char const* flag) {
     if (strncmp(flag, extended_flags[i].name, strlen(extended_flags[i].name)) == 0)
       return extended_flags[i].flag;
   }
+
   return FLAGS_MAX;
 }
 
@@ -376,7 +376,9 @@ int decimalClearFlag(void* decCtx, char const* flag, char** zErrMsg) {
     *zErrMsg = sqlite3_mprintf("Invalid flag: %s", flag);
     return SQLITE_ERROR;
   }
+
   decContextClearStatus(decCtx, status);
+
   return SQLITE_OK;
 }
 
@@ -386,47 +388,65 @@ int decimalSetFlag(void* decCtx, char const* flag, char** zErrMsg) {
     *zErrMsg = sqlite3_mprintf("Invalid flag: %s", flag);
     return SQLITE_ERROR;
   }
+
   decContextSetStatusQuiet(decCtx, status);
+
   return SQLITE_OK;
 }
 
 char const* decimalGetFlag(void* decCtx, size_t n) {
   size_t k = n + 1;
   for (size_t i = 0; i < FLAGS_MAX; ++i) {
-    if (decContextTestStatus(decCtx, extended_flags[i].flag)) --k;
-    if (k == 0) return extended_flags[i].name;
+    if (decContextTestStatus(decCtx, extended_flags[i].flag))
+      --k;
+
+    if (k == 0)
+      return extended_flags[i].name;
   }
+
   return 0;
 }
 
 int decimalClearTrap(void* decCtx, char const* flag, char** zErrMsg) {
   uint32_t status = flag_string_to_int(flag);
+
   if (status == FLAGS_MAX) {
     *zErrMsg = sqlite3_mprintf("Invalid flag: %s", flag);
     return SQLITE_ERROR;
   }
+
   ((decContext*)decCtx)->traps &= ~status;
+
   return SQLITE_OK;
 }
 
 int decimalSetTrap(void* decCtx, char const* flag, char** zErrMsg) {
   uint32_t status = flag_string_to_int(flag);
+
   if (status == FLAGS_MAX) {
     *zErrMsg = sqlite3_mprintf("Invalid flag: %s", flag);
     return SQLITE_ERROR;
   }
+
   ((decContext*)decCtx)->traps |= status;
+
   return SQLITE_OK;
 }
 
 char const* decimalGetTrap(void* decCtx, size_t n) {
   size_t k = n + 1;
+
   for (size_t i = 0; i < FLAGS_MAX; ++i) {
-    if (((decContext*)decCtx)->traps & extended_flags[i].flag) --k;
-    if (k == 0) return extended_flags[i].name;
+    if (((decContext*)decCtx)->traps & extended_flags[i].flag)
+      --k;
+
+    if (k == 0)
+      return extended_flags[i].name;
   }
+
   return 0;
 }
+
 
 #pragma mark Nullary functions
 
@@ -437,8 +457,10 @@ void decimalClearStatus(sqlite3_context* context) {
 
 void decimalStatus(sqlite3_context* context) {
   decContext* sharedCtx = sqlite3_user_data(context);
+
   uint32_t status = decContextGetStatus(sharedCtx);
   char* res = sqlite3_mprintf("%08x", status);
+
   sqlite3_result_text(context, res, -1, SQLITE_TRANSIENT);
   sqlite3_free(res);
 }
@@ -447,83 +469,157 @@ void decimalVersion(sqlite3_context* context) {
   // decNumberVersion() returns at most 16 characters (decNumber manual, p. 47)
   char version[sizeof(SQLITE_DECIMAL_VERSION) + 16 + 4] = SQLITE_DECIMAL_VERSION;
   strcat(version, " (");
-  strcat(version, decNumberVersion());
+  strcat(version, decQuadVersion());
   strcat(version, ")");
   sqlite3_result_text(context, version, -1, SQLITE_TRANSIENT);
 }
 
+
 #pragma mark . -> Dec
 
 void decimalCreate(sqlite3_context* context, sqlite3_value* value) {
-  decNumber decnum;
+  decQuad decnum;
   decContext* decCtx = sqlite3_user_data(context);
-  if (decode(&decnum, decCtx, value, context))
-    decNumberToSQLite3Blob(context, &decnum);
+
+  if (decode(&decnum, decCtx, value, context)) {
+    decQuadToSQLite3Blob(context, &decnum);
+  }
 }
+
 
 #pragma mark Dec -> Dec
 
 #define SQLITE_DECIMAL_OP1(fun, op)                                     \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
-    decNumber decnum;                                                   \
+    decQuad decnum;                                                     \
     decContext* decCtx = sqlite3_user_data(context);                    \
     if (decode(&decnum, decCtx, value, context)) {                      \
-      decNumber result;                                                 \
+      decQuad result;                                                   \
       op(&result, &decnum, decCtx);                                     \
       if (checkStatus(context, decCtx, decCtx->traps)) {                \
-        decNumberToSQLite3Blob(context, &result);                       \
+        decQuadToSQLite3Blob(context, &result);                         \
       }                                                                 \
     }                                                                   \
   }
 
-SQLITE_DECIMAL_OP1(Abs,        decNumberAbs)
-// calls decCheckMath()
-SQLITE_DECIMAL_OP1(Exp,        decNumberExp)
-SQLITE_DECIMAL_OP1(NextDown,   decNumberNextMinus)
-SQLITE_DECIMAL_OP1(NextUp,     decNumberNextPlus)
-SQLITE_DECIMAL_OP1(Invert,     decNumberInvert)
-// calls decCheckMath()
-SQLITE_DECIMAL_OP1(Ln,         decNumberLn)
-// calls decCheckMath()
-SQLITE_DECIMAL_OP1(Log10,      decNumberLog10)
-SQLITE_DECIMAL_OP1(LogB,       decNumberLogB)
-SQLITE_DECIMAL_OP1(Minus,      decNumberMinus)
-SQLITE_DECIMAL_OP1(Plus,       decNumberPlus)
-SQLITE_DECIMAL_OP1(Reduce,     decNumberReduce)
-SQLITE_DECIMAL_OP1(Sqrt,       decNumberSquareRoot)
-SQLITE_DECIMAL_OP1(ToIntegral, decNumberToIntegralValue)
+#define SQLITE_DECIMAL_OP1_DECNUMBER(fun, op)                           \
+  void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
+    decQuad d;                                                          \
+    decContext* decCtx = sqlite3_user_data(context);                    \
+    if (decode(&d, decCtx, value, context)) {                           \
+      decNumber a;                                                      \
+      decQuadToNumber(&d, &a);                                          \
+      op(&a, &a, decCtx);                                               \
+      decQuadFromNumber(&d, &a, decCtx);                                \
+                                                                        \
+      if (checkStatus(context, decCtx, decCtx->traps)) {                \
+        decQuadToSQLite3Blob(context, &d);                              \
+      }                                                                 \
+    }                                                                   \
+  }
+
+SQLITE_DECIMAL_OP1(Abs,             decQuadAbs)
+SQLITE_DECIMAL_OP1(NextDown,        decQuadNextMinus)
+SQLITE_DECIMAL_OP1(NextUp,          decQuadNextPlus)
+SQLITE_DECIMAL_OP1(Invert,          decQuadInvert)
+SQLITE_DECIMAL_OP1(Minus,           decQuadMinus)
+SQLITE_DECIMAL_OP1(Plus,            decQuadPlus)
+SQLITE_DECIMAL_OP1(Reduce,          decQuadReduce)
+SQLITE_DECIMAL_OP1(ToIntegral,      decQuadToIntegralExact)
+
+SQLITE_DECIMAL_OP1_DECNUMBER(Exp,   decNumberExp)
+SQLITE_DECIMAL_OP1_DECNUMBER(Ln,    decNumberLn)
+SQLITE_DECIMAL_OP1_DECNUMBER(LogB,  decNumberLogB)
+SQLITE_DECIMAL_OP1_DECNUMBER(Log10, decNumberLog10)
+SQLITE_DECIMAL_OP1_DECNUMBER(Sqrt,  decNumberSquareRoot)
+
+void decimalTrim(sqlite3_context* context, sqlite3_value* value) {
+  decQuad d;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&d, decCtx, value, context)) {
+    decNumber a;
+    decQuadToNumber(&d, &a);
+    decNumberTrim(&a);
+    decQuadFromNumber(&d, &a, decCtx);
+
+    if (checkStatus(context, decCtx, decCtx->traps)) {
+      decQuadToSQLite3Blob(context, &d);
+    }
+  }
+}
+
+void decimalIsInteger(sqlite3_context* context, sqlite3_value* value) {
+  decQuad d;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&d, decCtx, value, context)) {
+    uint32_t result = decQuadIsInteger(&d);
+    sqlite3_result_int(context, result);
+  }
+}
+
 
 #pragma mark Dec x Dec -> Dec
 
 #define SQLITE_DECIMAL_OP2(fun, op)                                                             \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value1, sqlite3_value* value2) { \
-    decNumber d1;                                                                               \
-    decNumber d2;                                                                               \
+    decQuad d1;                                                                                 \
+    decQuad d2;                                                                                 \
     decContext* decCtx = sqlite3_user_data(context);                                            \
     if (decode(&d1, decCtx, value1, context) && decode(&d2, decCtx, value2, context)) {         \
-      decNumber result;                                                                         \
+      decQuad result;                                                                           \
       op(&result, &d1, &d2, decCtx);                                                            \
       if (checkStatus(context, decCtx, decCtx->traps)) {                                        \
-        decNumberToSQLite3Blob(context, &result);                                               \
+        decQuadToSQLite3Blob(context, &result);                                                 \
       }                                                                                         \
     }                                                                                           \
   }
 
-SQLITE_DECIMAL_OP2(And,           decNumberAnd)
-SQLITE_DECIMAL_OP2(Divide,        decNumberDivide)
-SQLITE_DECIMAL_OP2(DivideInteger, decNumberDivideInteger)
-SQLITE_DECIMAL_OP2(Or,            decNumberOr)
-// calls decCheckMath()
-SQLITE_DECIMAL_OP2(Power,         decNumberPower)
-SQLITE_DECIMAL_OP2(Quantize,      decNumberQuantize)
-SQLITE_DECIMAL_OP2(Remainder,     decNumberRemainder)
-SQLITE_DECIMAL_OP2(Rotate,        decNumberRotate)
-SQLITE_DECIMAL_OP2(ScaleB,        decNumberScaleB)
-SQLITE_DECIMAL_OP2(Shift,         decNumberShift)
-SQLITE_DECIMAL_OP2(Subtract,      decNumberSubtract)
-SQLITE_DECIMAL_OP2(Xor,           decNumberXor)
+SQLITE_DECIMAL_OP2(And,           decQuadAnd)
+SQLITE_DECIMAL_OP2(Divide,        decQuadDivide)
+SQLITE_DECIMAL_OP2(DivideInteger, decQuadDivideInteger)
+SQLITE_DECIMAL_OP2(Or,            decQuadOr)
+SQLITE_DECIMAL_OP2(Quantize,      decQuadQuantize)
+SQLITE_DECIMAL_OP2(Remainder,     decQuadRemainder)
+SQLITE_DECIMAL_OP2(Rotate,        decQuadRotate)
+SQLITE_DECIMAL_OP2(ScaleB,        decQuadScaleB)
+SQLITE_DECIMAL_OP2(Shift,         decQuadShift)
+SQLITE_DECIMAL_OP2(Subtract,      decQuadSubtract)
+SQLITE_DECIMAL_OP2(Xor,           decQuadXor)
+
+void decimalPower(sqlite3_context* context, sqlite3_value* value1, sqlite3_value* value2) {
+  decQuad d1;
+  decQuad d2;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&d1, decCtx, value1, context) && decode(&d2, decCtx, value2, context)) {
+    decNumber a;
+    decNumber b;
+    decQuadToNumber(&d1, &a);
+    decQuadToNumber(&d2, &b);
+    decNumberPower(&a, &a, &b, decCtx);
+    decQuadFromNumber(&d1, &a, decCtx);
+
+    if (checkStatus(context, decCtx, decCtx->traps)) {
+      decQuadToSQLite3Blob(context, &d1);
+    }
+  }
+}
 
 #pragma mark Dec -> Text
+
+void decimalToString(sqlite3_context* context, sqlite3_value* value) {
+  decQuad decnum;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&decnum, decCtx, value, context)) {
+    char s[DECQUAD_String + 14];
+
+    decQuadToString(&decnum, s);
+    sqlite3_result_text(context, s, -1, SQLITE_TRANSIENT);
+  }
+}
 
 void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
   switch (sqlite3_value_type(value)) {
@@ -535,80 +631,30 @@ void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
       sqlite3_result_error(context, "Currently, only blob arguments are accepted", -1);
       return;
   }
-  char* const hexes = sqlite3_malloc(3 * DECINF_MAXSIZE);
-  if (hexes) {
-    size_t length = sqlite3_value_bytes(value);
-    if (length > DECINF_MAXSIZE) {
-      sqlite3_result_error(context, "Encoding too long", -1);
-      return;
+
+  // Adapted from decFloatShow() in decCommon.c
+  uint8_t const* const bytes = sqlite3_value_blob(value);
+  char hexbuf[DECQUAD_Bytes * 2 + DECQUAD_Bytes / 4 + 1]; // NB blank after every fourth
+                                                          // char buff[DECQUAD_String];                              // For value in decimal
+  size_t i;
+  size_t j = 0;
+
+  for (i = 0; i < DECQUAD_Bytes; ++i) {
+#if DECLITEND
+    sprintf(&hexbuf[j], "%02x", bytes[DECQUAD_Bytes - 1 - i]);
+#else
+    sprintf(&hexbuf[j], "%02x", bytes[i]);
+#endif
+    j += 2;
+    // the next line adds blank (and terminator) after final pair, too
+    if ((i + 1) % 4 == 0) {
+      strcpy(&hexbuf[j], " ");
+      ++j;
     }
-    uint8_t const* const bytes = sqlite3_value_blob(value);
-    decInfiniteToBytes(length, bytes, hexes);
-    sqlite3_result_text(context, hexes, -1, SQLITE_TRANSIENT);
-    sqlite3_free(hexes);
   }
-  else
-    sqlite3_result_error_nomem(context);
-}
-
-void decimalBits(sqlite3_context* context, sqlite3_value* value) {
-  switch (sqlite3_value_type(value)) {
-    case SQLITE_BLOB:
-      break;
-    case SQLITE_TEXT:
-    case SQLITE_INTEGER:
-    default:
-      sqlite3_result_error(context, "Currently, only blob arguments are accepted", -1);
-      return;
-  }
-  char* const bits = sqlite3_malloc(9 * DECINF_MAXSIZE + 1); // Loose upper bound
-  if (bits) {
-    size_t length = sqlite3_value_bytes(value);
-    if (length > DECINF_MAXSIZE) {
-      sqlite3_result_error(context, "Encoding too long", -1);
-      return;
-    }
-    uint8_t const* const bytes = sqlite3_value_blob(value);
-    decInfiniteToBits(length, bytes, bits);
-    sqlite3_result_text(context, bits, -1, SQLITE_TRANSIENT);
-    sqlite3_free(bits);
-  }
-  else
-    sqlite3_result_error_nomem(context);
-}
-
-// FIXME
-void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* value) {
-  decNumber decnum;
-  decContext* decCtx = sqlite3_user_data(context);
-  if (decode(&decnum, decCtx, value, context)) {
-    // bcd_coeff is an array of DECNUMDIGITS elements, one digit in each byte
-    // (BCD8 encoding); the first (most significant) digit is ignored if the
-    // result will be a NaN; all are ignored if the result is finite.
-    // All bytes must be in the range 0-9 (decNumber's mmanual, p. 56).
-    uint8_t bcd_coeff[DECNUMDIGITS];
-    // No error is possible from decNumberGetCoefficient(), and no status is set
-    //decNumberGetCoefficient(&decnum, &bcd_coeff[0]);
-    char digits[DECNUMDIGITS + 1];
-    for (size_t i = 0; i < DECNUMDIGITS; ++i)
-      sprintf(&digits[i], "%01d", bcd_coeff[i]);
-    digits[DECNUMDIGITS] = '\0';
-    sqlite3_result_text(context, digits, -1, SQLITE_TRANSIENT);
-  }
-}
-
-void decimalToString(sqlite3_context* context, sqlite3_value* value) {
-  decNumber decnum;
-  decContext* decCtx = sqlite3_user_data(context);
-  if (decode(&decnum, decCtx, value, context)) {
-    // Converting a decNumber to a string requires a buffer
-    // DECQUAD_String + 14 bytes long.
-    char s[DECNUMDIGITS + 14];
-    // No error is possible from decNumberToString() and decNumberTrim(), and
-    // no status is set
-    decNumberToString(decNumberTrim(&decnum), s);
-    sqlite3_result_text(context, s, -1, SQLITE_TRANSIENT);
-  }
+  // decQuadToString(df, buff);
+  // printf(">%s> %s [big-endian]  %s\n", tag, hexbuf, buff);
+  sqlite3_result_text(context, hexbuf, -1, SQLITE_TRANSIENT);
 }
 
 /**
@@ -627,17 +673,18 @@ void decimalToString(sqlite3_context* context, sqlite3_value* value) {
  * - `NaN`: NaN.
  */
 void decimalClass(sqlite3_context* context, sqlite3_value* value) {
-  decNumber decnum;
+  decQuad decnum;
   decContext* decCtx = sqlite3_user_data(context);
   if (decode(&decnum, decCtx, value, context))
-    sqlite3_result_text(context, decNumberClassToString(decNumberClass(&decnum, decCtx)), -1, SQLITE_STATIC);
+    sqlite3_result_text(context, decQuadClassString(&decnum), -1, SQLITE_STATIC);
 }
+
 
 #pragma mark Dec -> Bool
 
 #define SQLITE_DECIMAL_INT1(fun, op)                                    \
   void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
-    decNumber decnum;                                                   \
+    decQuad decnum;                                                     \
     decContext* decCtx = sqlite3_user_data(context);                    \
     if (decode(&decnum, decCtx, value, context)) {                      \
       int result = op(&decnum);                                         \
@@ -645,73 +692,142 @@ void decimalClass(sqlite3_context* context, sqlite3_value* value) {
     }                                                                   \
   }
 
-#define decNumberIsNeg(d) \
-  (decNumberIsNegative(d) && !decNumberIsZero(d) && !decNumberIsNaN(d))
+SQLITE_DECIMAL_INT1(IsCanonical, decQuadIsCanonical)
+SQLITE_DECIMAL_INT1(IsFinite,    decQuadIsFinite)
+SQLITE_DECIMAL_INT1(IsInfinite,  decQuadIsInfinite)
+SQLITE_DECIMAL_INT1(IsNaN,       decQuadIsNaN)
+SQLITE_DECIMAL_INT1(IsNegative,  decQuadIsNegative)
+SQLITE_DECIMAL_INT1(IsNormal,    decQuadIsNormal)
+SQLITE_DECIMAL_INT1(IsPositive,  decQuadIsPositive)
+SQLITE_DECIMAL_INT1(IsSigned,    decQuadIsSigned)
+SQLITE_DECIMAL_INT1(IsSubnormal, decQuadIsSubnormal)
+SQLITE_DECIMAL_INT1(IsZero,      decQuadIsZero)
 
-#define decNumberIsPos(d) \
-  (!decNumberIsNegative(d) && !decNumberIsZero(d) && !decNumberIsNaN(d))
-
-SQLITE_DECIMAL_INT1(IsCanonical, decNumberIsCanonical)
-SQLITE_DECIMAL_INT1(IsFinite,    decNumberIsFinite)
-SQLITE_DECIMAL_INT1(IsInfinite,  decNumberIsInfinite)
-//SQLITE_DECIMAL_INT1(IsInteger,   decNumberIsInteger)
-//SQLITE_DECIMAL_INT1(IsLogical,   decNumberIsLogical)
-SQLITE_DECIMAL_INT1(IsNaN,       decNumberIsNaN)
-SQLITE_DECIMAL_INT1(IsNegative,  decNumberIsNeg)
-SQLITE_DECIMAL_INT1(IsPositive,  decNumberIsPos)
-//SQLITE_DECIMAL_INT1(IsSigned,    decNumberIsSigned)
-SQLITE_DECIMAL_INT1(IsZero,      decNumberIsZero)
 
 #pragma mark Dec x Dec -> Bool
 
-#define SQLITE_DECIMAL_INT1_CTX(fun, op)                                \
-  void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
-    decNumber decnum;                                                   \
-    decContext* decCtx = sqlite3_user_data(context);                    \
-    if (decode(&decnum, decCtx, value, context)) {                      \
-      int result = op(&decnum, decCtx);                                 \
-      sqlite3_result_int(context, result);                              \
-    }                                                                   \
+  void decimalEqual(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
+    decQuad x;
+    decQuad y;
+    decQuad cmp;
+    decContext* decCtx = sqlite3_user_data(context);
+
+    if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
+      uint32_t result = decQuadIsZero(decQuadCompare(&cmp, &x, &y, decCtx));
+      sqlite3_result_int(context, result);
+    }
   }
 
-SQLITE_DECIMAL_INT1_CTX(IsNormal,          decNumberIsNormal)
-SQLITE_DECIMAL_INT1_CTX(IsSubnormal, decNumberIsSubnormal)
+void decimalNotEqual(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
+  decQuad x;
+  decQuad y;
+  decQuad cmp;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
+    uint32_t result = !decQuadIsZero(decQuadCompare(&cmp, &x, &y, decCtx));
+    sqlite3_result_int(context, result);
+  }
+}
+
+void decimalLessThan(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
+  decQuad x;
+  decQuad y;
+  decQuad cmp;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
+    uint32_t result = decQuadIsNegative(decQuadCompare(&cmp, &x, &y, decCtx));
+    sqlite3_result_int(context, result);
+  }
+}
+
+void decimalLessThanOrEqual(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
+  decQuad x;
+  decQuad y;
+  decQuad cmp;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
+    uint32_t result = !decQuadIsPositive(decQuadCompare(&cmp, &x, &y, decCtx));
+    sqlite3_result_int(context, result);
+  }
+}
+
+void decimalGreaterThan(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
+  decQuad x;
+  decQuad y;
+  decQuad cmp;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
+    uint32_t result = decQuadIsPositive(decQuadCompare(&cmp, &x, &y, decCtx));
+    sqlite3_result_int(context, result);
+  }
+}
+
+void decimalGreaterThanOrEqual(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
+  decQuad x;
+  decQuad y;
+  decQuad cmp;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
+    uint32_t result = !decQuadIsNegative(decQuadCompare(&cmp, &x, &y, decCtx));
+    sqlite3_result_int(context, result);
+  }
+}
+
 
 #pragma mark Dec -> Int
 
 void decimalToInt32(sqlite3_context* context, sqlite3_value* value) {
-  decNumber decnum;
+  decQuad decnum;
   decContext* decCtx = sqlite3_user_data(context);
+
   if (decode(&decnum, decCtx, value, context)) {
     // Need to trim trailing zeroes to make the exponent equal to zero (if the
     // decimal is integer).
-    int result = decNumberToInt32(decNumberTrim(&decnum), decCtx);
+    int result = decQuadToInt32(&decnum, decCtx, decCtx->round);
+
     if (checkStatus(context, decCtx, decCtx->traps))
       sqlite3_result_int(context, result);
   }
 }
 
+void decimalGetExponent(sqlite3_context* context, sqlite3_value* value) {
+  decQuad decnum;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&decnum, decCtx, value, context)) {
+    int32_t exponent = decQuadGetExponent(&decnum);
+    sqlite3_result_int(context, exponent);
+  }
+}
+
+
 #pragma mark Dec x Dec -> Int
 
 void decimalCompare(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
-  decNumber x;
-  decNumber y;
+  decQuad x;
+  decQuad y;
   decContext* decCtx = sqlite3_user_data(context);
+
   if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
-    decNumber result;
-    decNumberCompare(&result, &x, &y, decCtx);
-    decNumberToSQLite3Blob(context, &result);
+    decQuad result;
+    decQuadCompare(&result, &x, &y, decCtx);
+    decQuadToSQLite3Blob(context, &result);
   }
 }
 
 void decimalSameQuantum(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) {
-  decNumber x;
-  decNumber y;
+  decQuad x;
+  decQuad y;
   decContext* decCtx = sqlite3_user_data(context);
+
   if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context)) {
-    decNumber result;
-    decNumberSameQuantum(&result, &x, &y);
-    sqlite3_result_int(context, decNumberToUInt32(&result, decCtx));
+    uint32_t result = decQuadSameQuantum(&x, &y);
+    sqlite3_result_int(context, result);
   }
 }
 
@@ -719,32 +835,36 @@ void decimalSameQuantum(sqlite3_context* context, sqlite3_value* v1, sqlite3_val
 #pragma mark Dec x Dec x Dec -> Dec
 
 void decimalFMA(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2, sqlite3_value* v3) {
-  decNumber x;
-  decNumber y;
-  decNumber z;
+  decQuad x;
+  decQuad y;
+  decQuad z;
   decContext* decCtx = sqlite3_user_data(context);
+
   if (decode(&x, decCtx, v1, context) && decode(&y, decCtx, v2, context) && decode(&z, decCtx, v3, context)) {
-    decNumber result;
-    decNumberFMA(&result, &x, &y, &z, decCtx);
-    if (checkStatus(context, decCtx, decCtx->traps))
-      decNumberToSQLite3Blob(context, &result);
+    decQuad result;
+    decQuadFMA(&result, &x, &y, &z, decCtx);
+
+    if (checkStatus(context, decCtx, decCtx->traps)) {
+      decQuadToSQLite3Blob(context, &result);
+    }
   }
 }
+
 
 #pragma mark Dec x ... x Dec -> Dec
 
 #define SQLITE_DECIMAL_OPn(fun, op, defaultValue)                                 \
   void decimal ## fun(sqlite3_context* context, int argc, sqlite3_value** argv) { \
     decContext* decCtx = sqlite3_user_data(context);                              \
-    decNumber result;                                                             \
+    decQuad result;                                                               \
     if (argc == 0) {                                                              \
       defaultValue(&result, decCtx);                                              \
-      decNumberToSQLite3Blob(context, &result);                                   \
+      decQuadToSQLite3Blob(context, &result);                                     \
       return;                                                                     \
     }                                                                             \
     if (decode(&result, decCtx, argv[0], context)) {                              \
       for (int i = 1; i < argc; i++) {                                            \
-        decNumber decnum;                                                         \
+        decQuad decnum;                                                           \
         if (decode(&decnum, decCtx, argv[i], context)) {                          \
           op(&result, &result, &decnum, decCtx);                                  \
         }                                                                         \
@@ -753,49 +873,48 @@ void decimalFMA(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2, 
         }                                                                         \
       }                                                                           \
       if (checkStatus(context, decCtx, decCtx->traps)) {                          \
-        decNumberToSQLite3Blob(context, &result);                                 \
+        decQuadToSQLite3Blob(context, &result);                                   \
       }                                                                           \
     }                                                                             \
   }
 
-static void decimalAddDefault(decNumber* decnum, decContext* decCtx) {
+static void decimalAddDefault(decQuad* decnum, decContext* decCtx) {
   (void)decCtx;
-  decNumberZero(decnum);
+  decQuadZero(decnum);
 }
 
-static void decimalMaxDefault(decNumber* decnum, decContext* decCtx) {
-  (void)decCtx;
-  decnum->bits = DECINF;
+static void decimalMaxDefault(decQuad* decnum, decContext* decCtx) {
+  decQuadFromString(decnum, "inf", decCtx);
 }
 
-static void decimalMinDefault(decNumber* decnum, decContext* decCtx) {
-  (void)decCtx;
-  decnum->bits = DECNEG | DECINF;
+static void decimalMinDefault(decQuad* decnum, decContext* decCtx) {
+  decQuadFromString(decnum, "-inf", decCtx);
 }
 
-static void decimalMultiplyDefault(decNumber* decnum, decContext* decCtx) {
-  decNumberFromString(decnum, "1", decCtx);
+static void decimalMultiplyDefault(decQuad* decnum, decContext* decCtx) {
+  decQuadFromString(decnum, "1", decCtx);
 }
 
-SQLITE_DECIMAL_OPn(Add,      decNumberAdd,      decimalAddDefault)
-SQLITE_DECIMAL_OPn(Max,      decNumberMax,      decimalMaxDefault)
-SQLITE_DECIMAL_OPn(MaxMag,   decNumberMaxMag,   decimalMaxDefault)
-SQLITE_DECIMAL_OPn(Min,      decNumberMin,      decimalMinDefault)
-SQLITE_DECIMAL_OPn(MinMag,   decNumberMinMag,   decimalAddDefault)
-SQLITE_DECIMAL_OPn(Multiply, decNumberMultiply, decimalMultiplyDefault)
+  SQLITE_DECIMAL_OPn(Add,      decQuadAdd,      decimalAddDefault)
+  SQLITE_DECIMAL_OPn(Max,      decQuadMax,      decimalMaxDefault)
+  SQLITE_DECIMAL_OPn(MaxMag,   decQuadMaxMag,   decimalMaxDefault)
+  SQLITE_DECIMAL_OPn(Min,      decQuadMin,      decimalMinDefault)
+  SQLITE_DECIMAL_OPn(MinMag,   decQuadMinMag,   decimalAddDefault)
+SQLITE_DECIMAL_OPn(Multiply, decQuadMultiply, decimalMultiplyDefault)
 
-/**
- * \brief Holds the cumulative sum computed by decSum().
- */
-typedef struct AggregateData AggregateData;
-
-struct AggregateData {
-  decNumber value;
-  decContext* decCtx;
-  uint32_t count;
-};
 
 #pragma mark Aggregate functions
+
+  /**
+   * \brief Holds the cumulative sum computed by decSum().
+   */
+  typedef struct AggregateData AggregateData;
+
+  struct AggregateData {
+    decQuad value;
+    decContext* decCtx;
+    uint32_t count;
+  };
 
 #define SQLITE_DECIMAL_AGGR_STEP(fun, aggr)                                                          \
   void decimal ## fun ## Step(sqlite3_context* context, int argc, sqlite3_value** argv) {            \
@@ -812,7 +931,7 @@ struct AggregateData {
       }                                                                                              \
     }                                                                                                \
     else {                                                                                           \
-      decNumber value;                                                                               \
+      decQuad value;                                                                                 \
       if (decode(&value, data->decCtx, argv[0], context)) {                                          \
         aggr(&(data->value), &(data->value), &value, data->decCtx);                                  \
         data->count++;                                                                               \
@@ -820,31 +939,32 @@ struct AggregateData {
     }                                                                                                \
   }
 
-SQLITE_DECIMAL_AGGR_STEP(Sum, decNumberAdd)
-SQLITE_DECIMAL_AGGR_STEP(Min, decNumberMin)
-SQLITE_DECIMAL_AGGR_STEP(Max, decNumberMax)
-SQLITE_DECIMAL_AGGR_STEP(Avg, decNumberAdd)
+  SQLITE_DECIMAL_AGGR_STEP(Sum, decQuadAdd)
+  SQLITE_DECIMAL_AGGR_STEP(Min, decQuadMin)
+  SQLITE_DECIMAL_AGGR_STEP(Max, decQuadMax)
+SQLITE_DECIMAL_AGGR_STEP(Avg, decQuadAdd)
 
-#define SQLITE_DECIMAL_AGGR_FINAL(fun, defaultValue, finalize)                                       \
-  void decimal ## fun ## Final(sqlite3_context* context) {                                           \
-    AggregateData* data = (AggregateData*)sqlite3_aggregate_context(context, sizeof(AggregateData)); \
-                                                                                                     \
-    if (data == 0) return;                                                                           \
-                                                                                                     \
-    if (data->count == 0) {                                                                          \
-      data->decCtx = sqlite3_user_data(context);                                                     \
-      defaultValue(data);                                                                            \
-    }                                                                                                \
-                                                                                                     \
-    finalize(data);                                                                                  \
-                                                                                                     \
-    if (checkStatus(context, data->decCtx, data->decCtx->traps))                                     \
-    decNumberToSQLite3Blob(context, &(data->value));                                                 \
+
+#define SQLITE_DECIMAL_AGGR_FINAL(fun, defaultValue, finalize)                                         \
+    void decimal ## fun ## Final(sqlite3_context* context) {                                           \
+      AggregateData* data = (AggregateData*)sqlite3_aggregate_context(context, sizeof(AggregateData)); \
+                                                                                                       \
+      if (data == 0) return;                                                                           \
+                                                                                                       \
+      if (data->count == 0) {                                                                          \
+        data->decCtx = sqlite3_user_data(context);                                                     \
+        defaultValue(data);                                                                            \
+      }                                                                                                \
+                                                                                                       \
+      finalize(data);                                                                                  \
+                                                                                                       \
+      if (checkStatus(context, data->decCtx, data->decCtx->traps))                                     \
+      decQuadToSQLite3Blob(context, &(data->value));                                                   \
+    }
+
+  static void sumAggrDefault(AggregateData* data) {
+    decQuadZero(&(data->value));
   }
-
-static void sumAggrDefault(AggregateData* data) {
-  decNumberZero(&(data->value));
-}
 
 static void maxAggrDefault(AggregateData* data) {
   decimalMaxDefault(&(data->value), data->decCtx);
@@ -855,13 +975,13 @@ static void minAggrDefault(AggregateData* data) {
 }
 
 static void avgAggrDefault(AggregateData* data) {
-  decNumberFromString(&(data->value), "NaN", data->decCtx);
+  decQuadFromString(&(data->value), "NaN", data->decCtx);
 }
 
 static void avgAggrFinOp(AggregateData* data) {
-  decNumber count;
-  decNumberFromUInt32(&count, data->count);
-  decNumberDivide(&(data->value), &(data->value), &count, data->decCtx);
+  decQuad count;
+  decQuadFromUInt32(&count, data->count);
+  decQuadDivide(&(data->value), &(data->value), &count, data->decCtx);
 }
 
 static void aggrNoOp(AggregateData* data) {
@@ -873,46 +993,18 @@ SQLITE_DECIMAL_AGGR_FINAL(Max, maxAggrDefault, aggrNoOp)
 SQLITE_DECIMAL_AGGR_FINAL(Min, minAggrDefault, aggrNoOp)
 SQLITE_DECIMAL_AGGR_FINAL(Avg, avgAggrDefault, avgAggrFinOp)
 
+
 #pragma mark Not implemented
 
-#define SQLITE_DECIMAL_NOT_IMPL1(fun)                                   \
-  void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
-    (void)context;                                                      \
-    (void)value;                                                        \
-    sqlite3_result_error(context, "Operation not implemented", -1);     \
-    return;                                                             \
-  }
+#define SQLITE_DECIMAL_NOT_IMPL1(fun)                                     \
+    void decimal ## fun(sqlite3_context* context, sqlite3_value* value) { \
+      (void)context;                                                      \
+      (void)value;                                                        \
+      sqlite3_result_error(context, "Operation not implemented", -1);     \
+      return;                                                             \
+    }
 
-#define SQLITE_DECIMAL_NOT_IMPL2(fun)                                                   \
-  void decimal ## fun(sqlite3_context* context, sqlite3_value* v1, sqlite3_value* v2) { \
-    (void)context;                                                                      \
-    (void)v1;                                                                           \
-    (void)v2;                                                                           \
-    sqlite3_result_error(context, "Operation not implemented", -1);                     \
-    return;                                                                             \
-  }
-
-SQLITE_DECIMAL_NOT_IMPL1(GetExponent)
-// Not implemented by decNumber
-SQLITE_DECIMAL_NOT_IMPL1(IsInteger)
-// Not implemented by decNumber
+SQLITE_DECIMAL_NOT_IMPL1(GetCoefficient)
 SQLITE_DECIMAL_NOT_IMPL1(IsLogical)
-// Not implemented by decNumber
-SQLITE_DECIMAL_NOT_IMPL1(IsSigned)
-// Not implemented by decNumber
 SQLITE_DECIMAL_NOT_IMPL1(ToInt64)
-// Unnecessary
-SQLITE_DECIMAL_NOT_IMPL1(Trim)
-// Use decCompare() or SQL comparisons
-SQLITE_DECIMAL_NOT_IMPL2(Equal)
-// Use decCompare() or SQL comparisons
-SQLITE_DECIMAL_NOT_IMPL2(GreaterThan)
-// Use decCompare() or SQL comparisons
-SQLITE_DECIMAL_NOT_IMPL2(GreaterThanOrEqual)
-// Use decCompare() or SQL comparisons
-SQLITE_DECIMAL_NOT_IMPL2(LessThan)
-// Use decCompare() or SQL comparisons
-SQLITE_DECIMAL_NOT_IMPL2(LessThanOrEqual)
-// Use decCompare() or SQL comparisons
-SQLITE_DECIMAL_NOT_IMPL2(NotEqual)
 

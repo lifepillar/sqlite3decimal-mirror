@@ -64,11 +64,9 @@ SQLITE_DECIMAL_OP0(Version)
   }
 
 SQLITE_DECIMAL_OP1(Abs)
-SQLITE_DECIMAL_OP1(Bits)
 SQLITE_DECIMAL_OP1(Bytes)
 SQLITE_DECIMAL_OP1(Class)
 SQLITE_DECIMAL_OP1(Create)
-SQLITE_DECIMAL_OP1(Digits)
 SQLITE_DECIMAL_OP1(Exp)
 SQLITE_DECIMAL_OP1(GetCoefficient)
 SQLITE_DECIMAL_OP1(GetExponent)
@@ -722,17 +720,11 @@ SQLITE_DECIMAL_MODULE(Traps)
 __declspec(dllexport)
 #endif
 
-int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines const* pApi) {
-
-  (void)pzErrMsg;
-
-  int rc = SQLITE_OK;
-  SQLITE_EXTENSION_INIT2(pApi);
-
-  void* decimalSharedContext = decimalInitSystem();
-  if (decimalSharedContext == 0)
-    return SQLITE_NOMEM;
-
+int sqlite3_decimal_init(
+    sqlite3* db,
+    [[maybe_unused]] char** pzErrMsg,
+    sqlite3_api_routines const* pApi
+    ) {
   static const struct {
     char const* zName;
     int nArg;
@@ -742,20 +734,17 @@ int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines cons
     { SQLITE_DECIMAL_PREFIX "Abs",            1, decimalAbsFunc                },
     { SQLITE_DECIMAL_PREFIX "Add",           -1, decimalAddFunc                },
     { SQLITE_DECIMAL_PREFIX "And",            2, decimalAndFunc                },
-    { SQLITE_DECIMAL_PREFIX "Bits",           1, decimalBitsFunc               },
     { SQLITE_DECIMAL_PREFIX "Bytes",          1, decimalBytesFunc              },
     { SQLITE_DECIMAL_PREFIX "Class",          1, decimalClassFunc              },
     { SQLITE_DECIMAL_PREFIX "ClearStatus",    0, decimalClearStatusFunc        },
     { SQLITE_DECIMAL_PREFIX "Compare",        2, decimalCompareFunc            },
-    { SQLITE_DECIMAL_PREFIX "Digits",         1, decimalDigitsFunc             },
     { SQLITE_DECIMAL_PREFIX "Div",            2, decimalDivideFunc             },
     { SQLITE_DECIMAL_PREFIX "DivInt",         2, decimalDivideIntegerFunc      },
     { SQLITE_DECIMAL_PREFIX "Eq",             2, decimalEqualFunc              },
     { SQLITE_DECIMAL_PREFIX "Exp",            1, decimalExpFunc                },
+    { SQLITE_DECIMAL_PREFIX "Exponent",       1, decimalGetExponentFunc        },
     { SQLITE_DECIMAL_PREFIX "FMA",            3, decimalFMAFunc                },
     { SQLITE_DECIMAL_PREFIX "Ge",             2, decimalGreaterThanOrEqualFunc },
-    { SQLITE_DECIMAL_PREFIX "GetCoeff",       1, decimalGetCoefficientFunc     },
-    { SQLITE_DECIMAL_PREFIX "GetExp",         1, decimalGetExponentFunc        },
     { SQLITE_DECIMAL_PREFIX "Greatest",      -1, decimalMaxFunc                },
     { SQLITE_DECIMAL_PREFIX "Gt",             2, decimalGreaterThanFunc        },
     { SQLITE_DECIMAL_PREFIX "Invert",         1, decimalInvertFunc             },
@@ -781,6 +770,7 @@ int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines cons
     { SQLITE_DECIMAL_PREFIX "LogB",           1, decimalLogBFunc               },
     { SQLITE_DECIMAL_PREFIX "Ln",             1, decimalLnFunc                 },
     { SQLITE_DECIMAL_PREFIX "Lt",             2, decimalLessThanFunc           },
+    { SQLITE_DECIMAL_PREFIX "Mantissa",       1, decimalGetCoefficientFunc     },
     { SQLITE_DECIMAL_PREFIX "MaxMag",        -1, decimalMaxMagFunc             },
     { SQLITE_DECIMAL_PREFIX "MinMag",        -1, decimalMinMagFunc             },
     { SQLITE_DECIMAL_PREFIX "Neg",            1, decimalMinusFunc              },
@@ -821,6 +811,13 @@ int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines cons
     { SQLITE_DECIMAL_PREFIX "Max", 1, decimalMaxStepFunc, decimalMaxFinalFunc },
     { SQLITE_DECIMAL_PREFIX "Avg", 1, decimalAvgStepFunc, decimalAvgFinalFunc },
   };
+
+  int rc = SQLITE_OK;
+  SQLITE_EXTENSION_INIT2(pApi);
+
+  void* decimalSharedContext = decimalInitSystem();
+  if (decimalSharedContext == 0)
+    return SQLITE_NOMEM;
 
   for (size_t i = 0; i < sizeof(aFunc) / sizeof(aFunc[0]) && rc == SQLITE_OK; i++) {
     rc = sqlite3_create_function(db, aFunc[i].zName, aFunc[i].nArg,

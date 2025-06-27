@@ -11,8 +11,8 @@
  *
  * \brief     SQLite3 Decimal public header
  */
-#ifndef sqlite_decimal_h
-#define sqlite_decimal_h
+#ifndef sqlite3_decimal_h
+#define sqlite3_decimal_h
 
 #include "autoconfig.h"
 #include "version.h"
@@ -20,7 +20,7 @@
 /**
  * \brief SQLite Decimal long version string.
  */
-#define SQLITE_DECIMAL_VERSION "Decimal v" SQLITE_DECIMAL_SHORT_VERSION
+#define SQLITE_DECIMAL_VERSION "SQLite3Decimal v" SQLITE_DECIMAL_SHORT_VERSION
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,5 +34,5 @@ int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines cons
 }
 #endif
 
-#endif /* sqlite_decimal_h */
+#endif /* sqlite3_decimal_h */
 
