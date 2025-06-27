@@ -1,5 +1,5 @@
-C Add\san\simplementation\sof\sbased\son\sdecQuad.\n\nThis\sis\sgoing\sto\sreplace\sthe\simplementation\sbased\son\sdecInfinite.\sDecimals\scan\nbe\sstored\sas\sstrings\sor\sas\s16-byte\sblobs\sconforming\sto\sthe\sIEEE754\sdecimal128\nrepresentation.
-D 2025-06-27T14:27:58.395
+C Remove\sdecInfinite\sfiles.
+D 2025-06-27T14:30:03.910
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -116,8 +116,6 @@ F autosetup/testsuite/testoptions/test7.exp bceffbcd5957ef6c177388b0658d5c4200f0
 F autosetup/tmake.auto eaebc74ad538dfdd3c817c27eefc31930c20510c4f3a3704071f6cb0629ed71f
 F autosetup/tmake.tcl a275793ec1b6f8708179af0acef1f6f10d46c2920739743f7a8720c6d700c7a9
 F configure 9a00b21dfd13757bbfb8d89b30660a89ec1f8f3a79402b8f9f9b6fc475c3303a x
-F src/decInfinite.c ca22da09b26cb54086baa85d05e65331633b3e970a765c683e14317615c4a354
-F src/decInfinite.h 4c3dcd266fa7340b0993ceefd0fffe806e9c9fa1cfc20df4708326f121416b3b
 F src/decNumber/ICU-license.html 73cd9fad2344ce254cffc7fae641435e85badcaddc3fb9235119bd074b6a6060
 F src/decNumber/decBasic.c ba359a0c16f71b478dd57227a75ffa1d842e2f2286c112f3cc0cd28b7234cc47
 F src/decNumber/decCommon.c cdd443151abceb126348db179104a9c442ab25c6ff1ed6e284b87931fd21945d
@@ -153,7 +151,6 @@ F src/decNumber/example8.c e6343b5bdb8d235f32527906eac0e2cbd7c0911f56d1db49a0733
 F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2f751cfeea67
 F src/decimal.h 1024a93d78e02e03409ee01ac58ec41a02a957c6fcb0ff493f89c366829a457a
 F src/decimal_ieee754.c 6729321ecc7a0f13a3ddd5d78cc8e38ab062697cdfd810dcf188cea57765caf4
-F src/impl_decinfinite.c 4a2f52fe33cac93bec4fbbb8b2e285dea2ef7a1a8cb47a7440e8de80ae88f481
 F src/sqlite/shell.c eec0247ca1323bd76712342fbc5e5f2a6a548731dc0c53fb6355189efa666f4a
 F src/sqlite/sqlite3.c c3bdffa01dab94be370bdcaeb819cda4a6e0c61f0c6e19a6f94ccba76fc9eeca
 F src/sqlite/sqlite3.h 5d46e69d5e345c68308e2b864f8c7baa3843967f98543de7e28adbde3a7ebedc
@@ -167,8 +164,8 @@ F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a
 F test/null_handling.sql 797cdec34edd90b0ff5f189ba767afdbc31b2b9dcd5f4cf3b64317ba61c490cf
 F test/tests.c dcf0fdfa4ec8a6b91ae5c8995ac0b49fd00f6107015fb4977e442347726b324c
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P e7260fcfc0bbb7cd5e87bb8c2b5b3f7c34ee79824dbdca48edefe93a29cb295c
-R 00283d04ef096c2eb71d4bab9c3b8cab
+P 28fee4bc8acaa9449495642654dda2e5f77b1b2a8b339cd844371d5d53b99b3b
+R 8545efa1e417f789e720d242dda761dc
 U lifepillar
-Z 898280ac2fb5c732b7e9af4cae1c6638
+Z 57a45107dbbe6146b0df975b6b443e43
 # Remove this line to create a well-formed Fossil manifest.
