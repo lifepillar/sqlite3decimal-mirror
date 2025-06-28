@@ -77,8 +77,8 @@ $(LIB): $(OBJS)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(SH_LDFLAGS) -o $@ $(OBJS)
 @endif
 
-$(SRCDIR)/version.h: $(TOOLDIR)/mkversion
-	$(TOOLDIR)/mkversion manifest.uuid manifest VERSION >src/version.h
+$(SRCDIR)/version.h: $(TOOLDIR)/mkversion VERSION
+	$(TOOLDIR)/mkversion VERSION >src/version.h
 
 $(TOOLDIR)/mkversion: $(TOOLDIR)/mkversion.c
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $(TOOLDIR)/mkversion.c
