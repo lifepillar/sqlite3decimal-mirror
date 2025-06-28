@@ -1,5 +1,5 @@
-C Add\spatch\snumber\sto\sdecNumber's\sversion\snumber.
-D 2025-06-28T14:10:32.216
+C Fix\swarning\sabout\scounter\svariable\sbeing\sset,\sbut\snot\sused.
+D 2025-06-28T14:18:42.327
 F src/decNumber/ICU-license.html 73cd9fad2344ce254cffc7fae641435e85badcaddc3fb9235119bd074b6a6060
 F src/decNumber/decBasic.c ec89e09e5cb71cf08dc887ab88a8de03ec8b1d58dbd9312b26926492537655fd
 F src/decNumber/decCommon.c cdd443151abceb126348db179104a9c442ab25c6ff1ed6e284b87931fd21945d
@@ -25,7 +25,7 @@ F src/decNumber/decimal128.c d7fb3f95442598db4615c72552a593c61cfdac2cef9317afc61
 F src/decNumber/decimal128.h 025a62cc301650c665812a2660cddb516b67090e18f19faf3e64cbaacdcafc53
 F src/decNumber/decimal32.c 7e3b4f61cd8e8df0fbf7a74d95c5950f61070770b4128609222352401aed7633
 F src/decNumber/decimal32.h 27d7ea20388b977db4d288d7e873850ae2e69d549876f4d2349ffb8b5041513d
-F src/decNumber/decimal64.c d11e086d9be6f45b4bd4340b4b53b37def46a9459be52c544f24fbe44c33100c
+F src/decNumber/decimal64.c e9654bcbac0c6805dbf29642ac95f7e9c44e89bceb46261cf2c42a03f2317736
 F src/decNumber/decimal64.h dc31e8ee960b6fc085c3d646daf9557b2d5e968c57da656272d5ffe26ec15c79
 F src/decNumber/decnumber.pdf 3079bd53ea51954acc03466307c8730df94e819e108b9894891f6a0e87a53a19
 F src/decNumber/example1.c 5a54b7f3130192504ab99b07c77de31943d067b35964655091499b6bbf72dbbb
@@ -37,8 +37,8 @@ F src/decNumber/example6.c 69c84c94951458e4913d3aff609826cb5dde95c5e50fa7655d251
 F src/decNumber/example7.c 48cf18ce913ea151ce231bc04741960485303f47aaad9449e7d33ac1e1c28358
 F src/decNumber/example8.c e6343b5bdb8d235f32527906eac0e2cbd7c0911f56d1db49a07330b3154c91e6
 F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2f751cfeea67
-P 92892e9169eb908f09fe484df9817a21946628feb2dc4a3c5208dcbf594de8dd
-R af33bc0dfdcfcc6a1353c0ec8a6072ff
+P 6d02aa752e79f277878663d5fecbb33491050d38f91b2a216816405f4e7e4e86
+R f6fe0fd71130dc10123f9d7eacd522e1
 U lifepillar
-Z c7eeb19864b7c05b7e8352692279586b
+Z 7ecf7345bcbd339b1809b63ec3cb15b4
 # Remove this line to create a well-formed Fossil manifest.
