@@ -466,8 +466,8 @@ void decimalStatus(sqlite3_context* context) {
 }
 
 void decimalVersion(sqlite3_context* context) {
-  // decNumberVersion() returns at most 16 characters (decNumber manual, p. 47)
-  char version[sizeof(SQLITE_DECIMAL_VERSION) + 16 + 4] = SQLITE_DECIMAL_VERSION;
+  // decNumberVersion() returns at most 19 characters (see DECNUMBER macro)
+  char version[sizeof(SQLITE_DECIMAL_VERSION) + 19 + 4] = SQLITE_DECIMAL_VERSION;
   strcat(version, " (");
   strcat(version, decQuadVersion());
   strcat(version, ")");
