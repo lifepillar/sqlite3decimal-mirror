@@ -112,12 +112,12 @@ $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 TESTBIN             = tests
 TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/tests.o
 
-.PHONY: check
-check: tests
+.PHONY: test
+test: buildtests
 	@srcdir@/tests
 
 .PHONY: tests
-tests: $(LIB) $(TESTBIN)
+buildtests: $(LIB) $(TESTBIN)
 
 $(TESTBIN): $(TESTOBJS)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $(TESTOBJS)
@@ -165,7 +165,7 @@ distclean: clean
 	-rm -f @srcdir@/**/tags
 	-rm -f $(TOOLDIR)/mkversion
 
-Makefile: @AUTODEPS@ @srcdir@/Makefile.in
+Makefile: @AUTODEPS@ @srcdir@/Makefile.in VERSION
 	@AUTOREMAKE@
 	touch @builddir@/Makefile
 
