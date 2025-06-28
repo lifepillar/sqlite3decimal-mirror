@@ -1,5 +1,5 @@
-C Fix\saccidentally\sintroduced\scircular\sdependency\sin\sMakefile.\n\nAlso\slet\sMakefile\sdepend\son\s`VERSION`.
-D 2025-06-28T07:29:41.980
+C Update\sversion.h.
+D 2025-06-28T10:29:43.047
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -158,14 +158,14 @@ F src/sqlite/sqlite3ext.h 0bfd049bb2088cc44c2ad54f2079d1c6e43091a4e1ce8868779b75
 F src/sqlite3decimal.c f7844afc14c173d2b9088cf4db69137b4d26129f735fd0aa4b26ba50ff72ca97
 F src/sqlite3decimal.h 1e0855a0ccedfc01cf684e9120bba5cade44b3721e54241caf4834afbcb35606
 F src/stub.c 16469a0410ce6dff5e6bf9dc2e63832279a7c4f7082de479167d68734ceb7145
-F src/version.h 301cdb47c6d64db07c1f7107398e6a1bcdf6ca6cb45a0c8f8b289193e23c1e39
+F src/version.h 812c662080a2bedb39bd8f2d0abb6e01e2fd94c4ee57347f0ba002e855a1d3c8
 F test/mu_unit.h e33794313d81902c260e1a1f799f7139ca8a1c627b9cf0316feece7dc6bc3e45
 F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a695eb3c4
 F test/null_handling.sql 177b19ae25371b0b6e428f27f253d48f0b4dd0d213672843198bbd461411376b
 F test/tests.c ac2e2a1ddd8ae8d034d3c02c3a102f31a0eb29afe2691bdc5e2a2a9ec132084d
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P 34442bd5116331dead26b2c9293623ab04be0f59c58b71b1c475992a868d0150
-R 3e4c74a01fdcb1d886bf0084322260dc
+P 0ea4f394b9f94cf1bee2c116cc820504b56f4be396255821ae2dfe6e7f33e62d
+R 4ed67a7bbf733e701c75507624712ca8
 U lifepillar
-Z 03e22a0243ce56f463549991c895be40
+Z 74dea43a3162a0d2d80eece399266c7c
 # Remove this line to create a well-formed Fossil manifest.
