@@ -1,5 +1,5 @@
-C Fix\swarning\sabout\scounter\svariable\sbeing\sset,\sbut\snot\sused.
-D 2025-06-28T14:18:42.327
+C Bump\sdecNumber's\spatch\snumber.
+D 2025-06-28T14:19:06.531
 F src/decNumber/ICU-license.html 73cd9fad2344ce254cffc7fae641435e85badcaddc3fb9235119bd074b6a6060
 F src/decNumber/decBasic.c ec89e09e5cb71cf08dc887ab88a8de03ec8b1d58dbd9312b26926492537655fd
 F src/decNumber/decCommon.c cdd443151abceb126348db179104a9c442ab25c6ff1ed6e284b87931fd21945d
@@ -14,7 +14,7 @@ F src/decNumber/decNumber368_patches/Readme.md acabc3eede64dcf95b120e61e49326dba
 F src/decNumber/decNumber368_patches/decBasic.c.patch 22551f915e0867c70e96c17e178f02e52d8e64cf6f30f91497f55d190fb3610a
 F src/decNumber/decNumber368_patches/decNumber.c.patch 72c5c967e9fbebc2ec1d4dbee63741e307e992d0b07d1ca68fb4555d1478d4f5
 F src/decNumber/decNumber368_patches/decNumberLocal.h.patch bc11916596c0ca6e3bdb047533bbe99ff05201c8a7b40124e1557c5c6d4b744b
-F src/decNumber/decNumberLocal.h 1b335419197c8262b9f908829bd281081ff502e1a291d3625695fc92445476de
+F src/decNumber/decNumberLocal.h dfb4ff12e1a61b6eb9d78ec387dd0797901bfe4252ecb0172aa30bf6160e4953
 F src/decNumber/decPacked.c 89599c236d10d49f5d16413430c0c65db7cec0c57a78ff7e95bfb472694d78cd
 F src/decNumber/decPacked.h 06ea46980451c022b9821dc3596344d9d261cbb2bbe8c4e7494ff534a5d5a136
 F src/decNumber/decQuad.c f6f1f688d9a92eedc6fe264a27892a56ff1e988bc3e373e42ec4dd387c97e8e3
@@ -37,8 +37,8 @@ F src/decNumber/example6.c 69c84c94951458e4913d3aff609826cb5dde95c5e50fa7655d251
 F src/decNumber/example7.c 48cf18ce913ea151ce231bc04741960485303f47aaad9449e7d33ac1e1c28358
 F src/decNumber/example8.c e6343b5bdb8d235f32527906eac0e2cbd7c0911f56d1db49a07330b3154c91e6
 F src/decNumber/readme.txt e6470131dd8f01c3a4c7babf1db4836049d7ae77062e01dea75a2f751cfeea67
-P 6d02aa752e79f277878663d5fecbb33491050d38f91b2a216816405f4e7e4e86
-R f6fe0fd71130dc10123f9d7eacd522e1
+P 712a15a856b3985d24ab691fdfe5d6fbac53ef78f87b5d9ae574844e19316711
+R 5c21a5bf850e17678968c748179910c6
 U lifepillar
-Z 7ecf7345bcbd339b1809b63ec3cb15b4
+Z 54c04741c93382c856994cf9e21d5b9f
 # Remove this line to create a well-formed Fossil manifest.
