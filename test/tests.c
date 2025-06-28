@@ -167,7 +167,11 @@ static void sqlite_decimal_test_decdivide(void) {
   mu_assert_query(db, "select decStr(decDiv('0.00', '1'))", "0.00");
   mu_assert_query(db, "select decStr(decDiv('1', '0'))", "Division by zero");
   mu_assert_query(db, "select decStr(decDiv('-1', '0'))", "Division by zero");
-  mu_assert_query(db, "select decStr(decDiv('0', '1.00'))", "0E+2"); // FIXME: why is this using exp notation?
+  // Exponential notation is used whenever the exponent is positive
+  // See https://speleotrove.com/decimal/decifaq4.html#enot
+  mu_assert_query(db, "select decStr(decDiv('0', '1.00'))", "0E+2");
+  // decReduce() can be used to set the exponent of a zero to 0.
+  mu_assert_query(db, "select decStr(decReduce(decDiv('0', '1.00')))", "0");
   mu_assert_query(db, "select decStr(decDiv('1.0', '1e-34'))", "1.0E+34");
   mu_assert_query(db,
       "select decStr(decDiv('1', '7'))",
@@ -246,9 +250,8 @@ static void sqlite_decimal_test_decfromint(void) {
 }
 
 static void sqlite_decimal_test_decgetexponent(void) {
-  mu_skip_if(1, "Currently not implemented");
-  mu_assert_query(db, "select decGetExp(dec('-12.345'))", "-3");
-  mu_assert_query(db, "select decGetExp(dec('1e17'))", "17");
+  mu_assert_query(db, "select decExponent(dec('-12.345'))", "-3");
+  mu_assert_query(db, "select decExponent(dec('1e17'))", "17");
 }
 
 static void sqlite_decimal_test_decgreatest(void) {
@@ -307,7 +310,6 @@ static void sqlite_decimal_test_decisinfinite(void) {
 }
 
 static void sqlite_decimal_test_decisinteger(void) {
-  mu_skip_if(1, "Currently not implemented");
   mu_assert_query(db, "select decIsInt('0')", "1");
   mu_assert_query(db, "select decIsInt('10')", "1");
   mu_assert_query(db, "select decIsInt('1.0')", "0");
@@ -323,7 +325,6 @@ static void sqlite_decimal_test_decisnan(void) {
 }
 
 static void sqlite_decimal_test_decislogical(void) {
-  mu_skip_if(1, "Currently not implemented");
   mu_assert_query(db, "select decIsLogical('011010111')", "1");
   mu_assert_query(db, "select decIsLogical('012')", "0");
   mu_assert_query(db, "select decIsLogical('-1')", "0");
@@ -368,7 +369,6 @@ static void sqlite_decimal_test_decispositive(void) {
 }
 
 static void sqlite_decimal_test_decissigned(void) {
-  mu_skip_if(1, "Currently not implemented");
   mu_assert_query(db, "select decIsSigned('0.00')", "0");
   mu_assert_query(db, "select decIsSigned('-0.00')", "1");
   mu_assert_query(db, "select decIsSigned('-0.01')", "1");

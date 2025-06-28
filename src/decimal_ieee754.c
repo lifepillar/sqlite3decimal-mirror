@@ -559,6 +559,15 @@ void decimalIsInteger(sqlite3_context* context, sqlite3_value* value) {
   }
 }
 
+void decimalIsLogical(sqlite3_context* context, sqlite3_value* value) {
+  decQuad d;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&d, decCtx, value, context)) {
+    uint32_t result = decQuadIsLogical(&d);
+    sqlite3_result_int(context, result);
+  }
+}
 
 #pragma mark Dec x Dec -> Dec
 
@@ -1009,6 +1018,5 @@ SQLITE_DECIMAL_AGGR_FINAL(Avg, avgAggrDefault, avgAggrFinOp)
     }
 
 SQLITE_DECIMAL_NOT_IMPL1(GetCoefficient)
-SQLITE_DECIMAL_NOT_IMPL1(IsLogical)
 SQLITE_DECIMAL_NOT_IMPL1(ToInt64)
 
