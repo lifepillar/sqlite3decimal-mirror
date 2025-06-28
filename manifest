@@ -1,12 +1,12 @@
-C Bump\sversion.
-D 2025-06-27T21:29:09.477
+C Fix\saccidentally\sintroduced\scircular\sdependency\sin\sMakefile.\n\nAlso\slet\sMakefile\sdepend\son\s`VERSION`.
+D 2025-06-28T07:29:41.980
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
 F .fossil-settings/ignore-glob 7b46a109eab5cf91cabb643a93dcfbec75d0aa47f67bddd4210d897b4f4b2a69
 F Doxyfile 2388b4a12f1799e9a5bcf764b488134c6d7ae5bcc2a3e8cf9970b7d3281a62fb
 F LICENSE 9fa1f54869c4dcd32b9423afd255293abef84010c188491f815e3739eb169df3
-F Makefile.in b445f9826574a0cccc08bd46b9a3223fe0f02d33373736ebcd83d093ecd6d1e8
+F Makefile.in 617f180ed9df7de3508da1d57f3595f9d6d8e52f094849e5156913cb18095a27
 F VERSION 90e08c95949665b088b61fbb341965ca0f3698b85c146c2ce01add9094265fc6
 F auto.def d0dd113f79e45f96b2e682a29dce3d592c7e66c6486d2224ac2e516252a671ef
 F autosetup/LICENSE 41a26aebdd2cd185d1e2b210f71b7ce234496979f6b35aef2cbf6b80cbed4ce4
@@ -164,8 +164,8 @@ F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a
 F test/null_handling.sql 177b19ae25371b0b6e428f27f253d48f0b4dd0d213672843198bbd461411376b
 F test/tests.c ac2e2a1ddd8ae8d034d3c02c3a102f31a0eb29afe2691bdc5e2a2a9ec132084d
 F tools/mkversion.c f98cc6031e40b4e509218ebd1409c8961372320d17b3e580a1ce09a0dd567b7d
-P 7d8afde2a4ad16137bbfddae1b05b4a3123b26c1a4bcafd51fff92056ad39aa8
-R eff8395f8194207645341189fcdafdf2
+P 34442bd5116331dead26b2c9293623ab04be0f59c58b71b1c475992a868d0150
+R 3e4c74a01fdcb1d886bf0084322260dc
 U lifepillar
-Z e7a2a5b1f05a524f4c858b1461322d53
+Z 03e22a0243ce56f463549991c895be40
 # Remove this line to create a well-formed Fossil manifest.
