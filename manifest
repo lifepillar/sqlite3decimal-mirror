@@ -1,5 +1,5 @@
-C Update\sstring\sbuffer\sto\smake\sdecNumber's\sversion\snumber\sfit.
-D 2025-06-28T14:22:27.242
+C Fix\smore\sGCC\swarnings.
+D 2025-06-28T14:42:34.343
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob 4cef5550fe066ae4a464cc48f4dfae0e6618613dbd872a723fc481dc52aa7b50
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -159,7 +159,7 @@ F src/sqlite/shell.c eec0247ca1323bd76712342fbc5e5f2a6a548731dc0c53fb6355189efa6
 F src/sqlite/sqlite3.c c3bdffa01dab94be370bdcaeb819cda4a6e0c61f0c6e19a6f94ccba76fc9eeca
 F src/sqlite/sqlite3.h 5d46e69d5e345c68308e2b864f8c7baa3843967f98543de7e28adbde3a7ebedc
 F src/sqlite/sqlite3ext.h 0bfd049bb2088cc44c2ad54f2079d1c6e43091a4e1ce8868779b75f6c1484f1e
-F src/sqlite3decimal.c f7844afc14c173d2b9088cf4db69137b4d26129f735fd0aa4b26ba50ff72ca97
+F src/sqlite3decimal.c f2adb09c17e85a0a3b9da4f5b1e7f18db9eefb77cc34fe99de87464c5add8736
 F src/sqlite3decimal.h 1e0855a0ccedfc01cf684e9120bba5cade44b3721e54241caf4834afbcb35606
 F src/stub.c 16469a0410ce6dff5e6bf9dc2e63832279a7c4f7082de479167d68734ceb7145
 F src/version.h f5a1dfab63085e597d636a1a85cb51a4cc16008ee963158a9b5aeb901c632d1c
@@ -168,8 +168,8 @@ F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a
 F test/null_handling.sql 177b19ae25371b0b6e428f27f253d48f0b4dd0d213672843198bbd461411376b
 F test/tests.c 5c228fd584ace58533eff6fdcc84ab746169cb20c27412f8ac17414f24ce6b5e
 F tools/mkversion.c a2cb51ab7c5e42f3e8a0b15fd3371c33be2ce5b485f63c1743ddb71db78b7988
-P 3eb1c1e660265472e00e60636595b6b22958a1ecc7bdb5450ce8439f43ad9961
-R 782b11f12a9b77d2e6590f215669a618
+P ea859fe01d269d193d494ec5f6f9fc084e021e1848c2c6cac947676cdbb5a734
+R c900b55a18193f8e035288970ddf5c87
 U lifepillar
-Z 909b36a88cf4af2eda419a68b6933d09
+Z dc8702f7fda6df42bc2c2b0b26de1b4d
 # Remove this line to create a well-formed Fossil manifest.
