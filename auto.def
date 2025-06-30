@@ -28,7 +28,7 @@ proc proj-file-content {args} {
   return $rc
 }
 
-define NAME "sqlite3decimal"
+define NAME "decimal"
 define VERSION [proj-file-content -trim $::autosetup(srcdir)/VERSION]
 
 if {[opt-bool debug]} {
