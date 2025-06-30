@@ -20,7 +20,7 @@
 /**
  * \brief SQLite Decimal long version string.
  */
-#define SQLITE_DECIMAL_VERSION "SQLite3Decimal v" SQLITE_DECIMAL_SHORT_VERSION
+#define SQLITE_DECIMAL_VERSION "Decimal v" SQLITE_DECIMAL_SHORT_VERSION
 
 #ifdef __cplusplus
 extern "C" {
