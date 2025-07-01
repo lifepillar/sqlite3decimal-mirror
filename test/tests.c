@@ -1040,7 +1040,7 @@ static int sqlite_decimal_test_init() {
   // Initialize decimal extension
   char* zErrMsg;
 
-  rc = sqlite3_load_extension(db, "./libsqlite3decimal", "sqlite3_decimal_init", &zErrMsg);
+  rc = sqlite3_load_extension(db, "./libdecimal", "sqlite3_decimal_init", &zErrMsg);
 
   if (rc != SQLITE_OK) {
     fprintf(stderr, "[Decimal] %s\n", zErrMsg);
