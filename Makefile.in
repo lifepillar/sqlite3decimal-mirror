@@ -164,6 +164,7 @@ distclean: clean
 	-rm -f @srcdir@/**/Session.vim
 	-rm -f @srcdir@/**/tags
 	-rm -f $(TOOLDIR)/mkversion
+	-rm -fr $(TOOLDIR)/mkversion.dSYM
 
 Makefile: @AUTODEPS@ @srcdir@/Makefile.in VERSION
 	@AUTOREMAKE@
