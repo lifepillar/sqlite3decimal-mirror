@@ -1046,6 +1046,10 @@ static int sqlite_decimal_test_init() {
     fprintf(stderr, "[Decimal] %s\n", zErrMsg);
   }
 
+  if (sqlite3_db_config(db, SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION, 0, NULL) != SQLITE_OK) {
+    fprintf(stderr, "Could not disable extensions: %s\n", zErrMsg);
+  }
+
   return rc;
 }
 
