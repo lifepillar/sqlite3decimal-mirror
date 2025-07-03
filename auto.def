@@ -2,7 +2,6 @@
 use cc cc-db cc-lib cc-shared
 
 options {
-  static => "Build a static library"
 }
 
 #
@@ -42,13 +41,6 @@ if {[opt-bool debug]} {
   define DECFLAGS {-DDECPRINT=0 -DDECCHECK=0 -DDECALLOC=0}
 }
 define EXTRA_CFLAGS {-std=c2x -pedantic -Wall -Wextra -Wno-unknown-pragmas}
-
-if {[opt-bool static]} {
-  msg-result "Building a static library"
-  define DEC_STATICLIB
-} else {
-  msg-result "Building a shared library"
-}
 
 cc-check-endian
 cc-check-tools ar ranlib strip

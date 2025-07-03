@@ -43,11 +43,8 @@ SQLITE_FLAGS       += -DSQLITE_OMIT_PROGRESS_CALLBACK
 SQLITE_FLAGS       += -DSQLITE_OMIT_SHARED_CACHE
 SQLITE_FLAGS       += -DSQLITE_USE_ALLOCA
 
-@if DEC_STATICLIB
-LIB                 = lib@NAME@.a
-@else
-LIB                 = lib@NAME@@SH_SOEXT@
-@endif
+STATICLIB           = lib@NAME@.a
+DYNAMICLIB          = lib@NAME@@SH_SOEXT@
 
 # The decimal128 module is used as a “proxy” between the decNumber and decQuad formats.
 # The decimal128 module requires decimal64 (for shared code and tables)
@@ -66,16 +63,14 @@ OBJS               += $(SRCDIR)/sqlite3decimal.o
 # Main targets
 
 .PHONY: all
-all: $(LIB)
+all: $(STATICLIB) $(DYNAMICLIB)
 
-@if DEC_STATICLIB
-$(LIB): $(OBJS)
+$(STATICLIB): $(OBJS)
 	$(AR) $(ARFLAGS) $(LDFLAGS) $@ $(OBJS)
 	$(RANLIB) $@
-@else
-$(LIB): $(OBJS)
+
+$(DYNAMICLIB): $(OBJS)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(SH_LDFLAGS) -o $@ $(OBJS)
-@endif
 
 $(SRCDIR)/version.h: $(TOOLDIR)/mkversion VERSION
 	$(TOOLDIR)/mkversion VERSION >src/version.h
@@ -105,8 +100,6 @@ $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/decimal.h $(SRCDIR)/sqlite3decimal.h
 $(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 
 
-@if DEC_STATICLIB
-@else
 # Test targets
 
 TESTBIN             = tests
@@ -117,7 +110,7 @@ test: buildtests
 	@srcdir@/tests
 
 .PHONY: tests
-buildtests: $(LIB) $(TESTBIN)
+buildtests: $(DYNAMICLIB) $(TESTBIN)
 
 $(TESTBIN): $(TESTOBJS)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $(TESTOBJS)
@@ -129,7 +122,6 @@ $(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c
 $(TESTDIR)/tests.o: $(TESTDIR)/tests.c
 $(TESTDIR)/tests.o: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
 	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(TESTDIR)/tests.c
-@endif
 
 
 # Other targets
@@ -153,7 +145,7 @@ doc:
 .PHONY: clean
 clean:
 	-rm -f $(OBJS) $(TESTBIN) $(TESTOBJS) $(TOOLDIR)/*.o
-	-rm -f $(LIB)
+	-rm -f $(STATICLIB) $(DYNAMICLIB)
 
 .PHONY: distclean
 distclean: clean

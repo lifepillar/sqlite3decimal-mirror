@@ -1,14 +1,14 @@
-C Make\sfunctions\sSQLITE_INNOCUOUS.\n\nAlthough,\sstrictly\sspeaking,\ssome\sfunctions\shave\sa\sside\seffect\s(they\smay\salter\nthe\scontent\sof\sthe\sdecStatus\svirtual\stable),\sthat\sdoes\snot\sseem\sto\spose\nsecurity\srisks.
-D 2025-07-03T09:07:40.527
+C Build\sstatic\sas\swell\sas\sdynamic\slibrary.
+D 2025-07-03T09:28:13.687
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob a6723819a2aa1224ecdcd7d0781e787b52970bb4ae80a8ae42346e03c0909085
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
 F .fossil-settings/ignore-glob 7b46a109eab5cf91cabb643a93dcfbec75d0aa47f67bddd4210d897b4f4b2a69
 F Doxyfile 2388b4a12f1799e9a5bcf764b488134c6d7ae5bcc2a3e8cf9970b7d3281a62fb
 F LICENSE 9fa1f54869c4dcd32b9423afd255293abef84010c188491f815e3739eb169df3
-F Makefile.in a8c1065d6dc6676289bdc273797c4fa40b9862e6130349239e6d320bf8cc240a
+F Makefile.in b4fd85c5c3b36a383aae287b57f342379d708ee77b352300910473dee9ff7c3e
 F VERSION d9d3d708a01b5dbf4d2fbd6066229d60ee5f08053fdcc214ef9c795ae1a14af2
-F auto.def 5b6bdaf4f6791e4883a5b7a64cd2afcc07a440bbf09547f6ee6443d09f390ab8
+F auto.def 94373e441ee7d1b89d8c6bdafeae486246e383183945df9bde452c37d05ac181
 F autosetup/LICENSE 41a26aebdd2cd185d1e2b210f71b7ce234496979f6b35aef2cbf6b80cbed4ce4
 F autosetup/Makefile 18f4f3c04ef3214d46887b35e6a9fc76aeb13d03cfe24a5452f7b262adaa9082
 F autosetup/README.autosetup a78ff8c4a3d2636a4268736672a74bf14a82f42687fcf0631a70c516075c031e
@@ -168,8 +168,8 @@ F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a
 F test/null_handling.sql 177b19ae25371b0b6e428f27f253d48f0b4dd0d213672843198bbd461411376b
 F test/tests.c 15ebfabfdf9f4c5731f1de4dff1c9f873d87d6131914e08e4206e5a62b1a7f7f
 F tools/mkversion.c a2cb51ab7c5e42f3e8a0b15fd3371c33be2ce5b485f63c1743ddb71db78b7988
-P b28bab9e0f0c2165f2ab6cd8915805f398929b6eac60bf5208771c0c0f5e2226
-R 3b3802bb4915c92857c28b5d4c2f28a8
+P 4a857cd6d1315e76ac007dcef4b09456ab271238cbcdca1a54ee22da9dd7afb5
+R 230ed10f5362b9d59430cf89a2e4d106
 U lifepillar
-Z 42db3df414917e70729638e55313a097
+Z 3c9c4e9beae067604db54f672a9308d8
 # Remove this line to create a well-formed Fossil manifest.
