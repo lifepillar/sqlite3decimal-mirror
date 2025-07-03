@@ -17,7 +17,7 @@
 #define mu_unit_sqlite_h
 
 #include <time.h>
-#include <sqlite3.h>
+#include "sqlite3.h"
 #include "mu_unit.h"
 
 /**
