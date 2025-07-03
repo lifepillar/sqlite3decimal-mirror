@@ -824,13 +824,13 @@ int sqlite3_decimal_init(
 
   for (size_t i = 0; i < sizeof(aFunc) / sizeof(aFunc[0]) && rc == SQLITE_OK; i++) {
     rc = sqlite3_create_function(db, aFunc[i].zName, aFunc[i].nArg,
-                                 SQLITE_UTF8 | SQLITE_DETERMINISTIC,
+                                 SQLITE_UTF8 | SQLITE_DETERMINISTIC | SQLITE_INNOCUOUS,
                                  decimalSharedContext,
                                  aFunc[i].xFunc, 0, 0);
   }
   for (size_t i = 0; i < sizeof(aAgg) / sizeof(aAgg[0]) && rc == SQLITE_OK; i++) {
     rc = sqlite3_create_function(db, aAgg[i].zName, aAgg[i].nArg,
-                                 SQLITE_UTF8 | SQLITE_DETERMINISTIC,
+                                 SQLITE_UTF8 | SQLITE_DETERMINISTIC | SQLITE_INNOCUOUS,
                                  decimalSharedContext,
                                  0, aAgg[i].xStep, aAgg[i].xFinal);
   }

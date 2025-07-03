@@ -1,5 +1,5 @@
-C Update\slibrary\sname\sin\stests.
-D 2025-07-01T11:37:46.555
+C Make\sfunctions\sSQLITE_INNOCUOUS.\n\nAlthough,\sstrictly\sspeaking,\ssome\sfunctions\shave\sa\sside\seffect\s(they\smay\salter\nthe\scontent\sof\sthe\sdecStatus\svirtual\stable),\sthat\sdoes\snot\sseem\sto\spose\nsecurity\srisks.
+D 2025-07-03T09:07:40.527
 F .fossil-settings/binary-glob ae5af67ff74f4120bbd0bdcf195934dba79d8d3f05daeffb3866cf02e8d21357
 F .fossil-settings/clean-glob a6723819a2aa1224ecdcd7d0781e787b52970bb4ae80a8ae42346e03c0909085
 F .fossil-settings/crlf-glob 7e36bb517767475f5537a6e00f0758d08aa81f40e4e185c9f8cd0c49fe412383
@@ -159,7 +159,7 @@ F src/sqlite/shell.c eec0247ca1323bd76712342fbc5e5f2a6a548731dc0c53fb6355189efa6
 F src/sqlite/sqlite3.c c3bdffa01dab94be370bdcaeb819cda4a6e0c61f0c6e19a6f94ccba76fc9eeca
 F src/sqlite/sqlite3.h 5d46e69d5e345c68308e2b864f8c7baa3843967f98543de7e28adbde3a7ebedc
 F src/sqlite/sqlite3ext.h 0bfd049bb2088cc44c2ad54f2079d1c6e43091a4e1ce8868779b75f6c1484f1e
-F src/sqlite3decimal.c f2adb09c17e85a0a3b9da4f5b1e7f18db9eefb77cc34fe99de87464c5add8736
+F src/sqlite3decimal.c e5914cf5456e250441baca04d066c2b9a8178491a977acfda38bbd07fd7b00f4
 F src/sqlite3decimal.h 85780cd939bebdb41e45ec0010340aee5d85817002dcfa0619bb04bdef5119fc
 F src/stub.c 16469a0410ce6dff5e6bf9dc2e63832279a7c4f7082de479167d68734ceb7145
 F src/version.h 9f6cdcdd27ca4a563950e07f08d2c1fd59678714fbc02a9a1bd16a3fa2328303
@@ -168,8 +168,8 @@ F test/mu_unit_sqlite.h 6e1d773bf20998e6e62b01191028e6fd8d5b1cbd988928c3c421487a
 F test/null_handling.sql 177b19ae25371b0b6e428f27f253d48f0b4dd0d213672843198bbd461411376b
 F test/tests.c 15ebfabfdf9f4c5731f1de4dff1c9f873d87d6131914e08e4206e5a62b1a7f7f
 F tools/mkversion.c a2cb51ab7c5e42f3e8a0b15fd3371c33be2ce5b485f63c1743ddb71db78b7988
-P 855bfbb2dcccec3d45ea90a0e565bc2514a3f83c84ab7ff1ca129b18daf689a3
-R a4ee8868f278e83d16a3cdde4c5911a6
+P b28bab9e0f0c2165f2ab6cd8915805f398929b6eac60bf5208771c0c0f5e2226
+R 3b3802bb4915c92857c28b5d4c2f28a8
 U lifepillar
-Z af10acdf7175276cc9ab25166dd60e99
+Z 42db3df414917e70729638e55313a097
 # Remove this line to create a well-formed Fossil manifest.
