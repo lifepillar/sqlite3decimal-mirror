@@ -24,7 +24,7 @@
 
 #if !defined(DECNUMBERLOC)
   #define DECNUMBERLOC
-  #define DECVERSION    "decNumber 3.68-p2" /* Package Version [19 max.] */
+  #define DECVERSION    "decNumber 3.68-p3" /* Package Version [19 max.] */
   #define DECNLAUTHOR   "Mike Cowlishaw"              /* Who to blame */
 
   #include <stdlib.h>         /* for abs                              */

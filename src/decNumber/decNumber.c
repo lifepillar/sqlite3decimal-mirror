@@ -8127,10 +8127,10 @@ static void decFree(void *alloc) {
   b0-=8;                           // -> true start of storage
   n=UBTOUI(b0);                    // lift length
   for (b=b0+4; b<b0+8; b++) if (*b!=DECFENCE)
-    printf("=== Corrupt byte [%02x] at offset %d from %ld ===\n", *b,
+    printf("=== Corrupt byte [%02x] at offset %ld from %ld ===\n", *b,
            b-b0-8, (LI)b0);
   for (b=b0+n+8; b<b0+n+12; b++) if (*b!=DECFENCE)
-    printf("=== Corrupt byte [%02x] at offset +%d from %ld, n=%ld ===\n", *b,
+    printf("=== Corrupt byte [%02x] at offset +%ld from %ld, n=%ld ===\n", *b,
            b-b0-8, (LI)b0, (LI)n);
   free(b0);                        // drop the storage
   decAllocBytes-=n;                // account for storage
