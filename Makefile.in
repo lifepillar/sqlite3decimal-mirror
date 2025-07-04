@@ -58,7 +58,7 @@ OBJS               += $(DECDIR)/decimal128.o
 OBJS               += $(SRCDIR)/decimal_ieee754.o
 OBJS               += $(DECDIR)/decNumber.o
 OBJS               += $(DECDIR)/decQuad.o
-OBJS               += $(SRCDIR)/sqlite3decimal.o
+OBJS               += $(SRCDIR)/decimal.o
 
 .c.o:
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -c $< -o $*.o
@@ -108,9 +108,9 @@ $(DECDIR)/decQuad.o:          $(DECDIR)/decQuad.c
 $(DECDIR)/decQuad.o:          $(DECDIR)/decContext.h $(DECDIR)/decQuad.h $(DECDIR)/decNumberLocal.h
 $(DECDIR)/decQuad.o:          $(DECDIR)/decCommon.c $(DECDIR)/decDPD.h $(DECDIR)/decBasic.c
 
-$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/sqlite3decimal.c
-$(SRCDIR)/sqlite3decimal.o:   $(SQLITEDIR)/sqlite3ext.h $(SQLITEDIR)/sqlite3.h
-$(SRCDIR)/sqlite3decimal.o:   $(SRCDIR)/decimal.h $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
+$(SRCDIR)/decimal.o:          $(SRCDIR)/decimal.c
+$(SRCDIR)/decimal.o:          $(SQLITEDIR)/sqlite3ext.h $(SQLITEDIR)/sqlite3.h
+$(SRCDIR)/decimal.o:          $(SRCDIR)/decimal.h $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 
 
 # Test targets
@@ -154,7 +154,7 @@ depend:
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decimal_ieee754.o $(SRCDIR)/decimal_ieee754.c
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decNumber.o $(DECDIR)/decNumber.c
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decQuad.o $(DECDIR)/decQuad.c
-	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT sqlite3decimal.o $(SRCDIR)/sqlite3decimal.c
+	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decimal.o $(SRCDIR)/decimal.c
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) $(SQLITE_FLAGS) -I$(SRCDIR) -MM -MT tests.o $(TESTDIR)/tests.c
 
 .PHONY: doc
@@ -164,10 +164,10 @@ doc:
 .PHONY: clean
 clean:
 	-rm -f $(OBJS) $(TESTBIN) $(TESTOBJS) $(TOOLDIR)/*.o
-	-rm -f $(LIB)
 
 .PHONY: distclean
 distclean: clean
+	-rm -f $(LIB)
 	-rm -f @srcdir@/*.a @srcdir@/*@SH_SOEXT@
 	-rm -f $(SRCDIR)/autoconfig.h @srcdir@/config.log @srcdir@/Makefile
 	-rm -f @srcdir@/**/cscope.*
