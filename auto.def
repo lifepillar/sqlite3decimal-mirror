@@ -46,16 +46,17 @@ define EXTRA_CFLAGS {-std=c2x -pedantic -Wall -Wextra -Wno-unknown-pragmas}
 if {[opt-bool static]} {
   msg-result "Building a static library"
   define DEC_STATICLIB
-  define SHOBJ_CFLAGS {-DSQLITE_CORE}
+  define TEST_FLAGS {-DSTATIC}
 } else {
   msg-result "Building a shared library"
+  define TEST_FLAGS {}
 }
 
 cc-check-endian
 cc-check-tools ar ranlib strip
 
 cc-with {-includes {stdint.h inttypes.h}} {
-  cc-check-types uint32_t uint16_t int16_t uint8_t
+  cc-check-types uint64_t uint32_t uint16_t int16_t uint8_t
 }
 
 make-config-header src/autoconfig.h

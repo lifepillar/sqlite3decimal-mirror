@@ -22,16 +22,19 @@ CFLAGS              = @CFLAGS@
 LDFLAGS             = @LDFLAGS@
 @if DEC_STATICLIB
 SH_LDFLAGS          =
-SHOBJ_CFLAGS        = @SHOBJ_CFLAGS@
+SHOBJ_CFLAGS        =
+STATIC_EXT_FLAGS    = -DSQLITE_CORE
 @else
 SH_LDFLAGS          = @SH_LDFLAGS@
 SHOBJ_CFLAGS        = @SHOBJ_CFLAGS@
+STATIC_EXT_FLAGS    =
 @endif
 EXTRA_CFLAGS        = @EXTRA_CFLAGS@
 EXTRA_CFLAGS       += -I$(DECDIR) -I$(SQLITEDIR)
 DECFLAGS            = @DECFLAGS@
 DECFLAGS           += -DDECUSE64=1 -DDECSUBSET=0
 
+# Flags specific to building the sqlite3.c amalgamation
 SQLITE_FLAGS        = -Wno-unused-parameter
 SQLITE_FLAGS       += -DSQLITE_THREADSAFE=0
 SQLITE_FLAGS       += -DSQLITE_DEFAULT_MEMSTATUS=0
@@ -43,6 +46,9 @@ SQLITE_FLAGS       += -DSQLITE_OMIT_DEPRECATED
 SQLITE_FLAGS       += -DSQLITE_OMIT_PROGRESS_CALLBACK
 SQLITE_FLAGS       += -DSQLITE_OMIT_SHARED_CACHE
 SQLITE_FLAGS       += -DSQLITE_USE_ALLOCA
+
+# Flags for tests
+TEST_FLAGS          = @TEST_FLAGS@
 
 @if DEC_STATICLIB
 LIB                 = lib@NAME@.a
@@ -61,7 +67,7 @@ OBJS               += $(DECDIR)/decQuad.o
 OBJS               += $(SRCDIR)/decimal.o
 
 .c.o:
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -c $< -o $*.o
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) $(STATIC_EXT_FLAGS) -c $< -o $*.o
 
 
 # Main targets
@@ -115,21 +121,15 @@ $(SRCDIR)/decimal.o:          $(SRCDIR)/decimal.h $(SRCDIR)/autoconfig.h $(SRCDI
 
 # Test targets
 
-TESTBIN             = tests
+TESTBIN             = @srcdir@/runtests
 TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/tests.o
 
-@if DEC_STATICLIB
-@else
 .PHONY: test
-test: buildtests
-	@srcdir@/tests
+test: $(TESTBIN)
+	$(TESTBIN)
 
-.PHONY: tests
-buildtests: $(LIB) $(TESTBIN)
-
-$(TESTBIN): $(TESTOBJS)
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -L. -ldecimal -o $@ $(TESTOBJS)
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $(TESTOBJS)
+$(TESTBIN): $(TESTOBJS) $(LIB)
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -L@srcdir@ -ldecimal -o $@ $(TESTOBJS)
 
 $(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c $(SQLITEDIR)/sqlite3.h
 	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $*.c
@@ -139,9 +139,8 @@ $(TESTDIR)/tests.o: $(TESTDIR)/tests.c
 $(TESTDIR)/tests.o: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
 $(TESTDIR)/tests.o: $(SQLITEDIR)/sqlite3.h
 $(TESTDIR)/tests.o: $(SRCDIR)/decimal.h $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
-	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) -I$(SRCDIR) $*.c
+	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(STATIC_EXT_FLAGS) $(SQLITE_FLAGS) $(TEST_FLAGS) -I$(SRCDIR) $*.c
 
-@endif
 
 # Other targets
 
@@ -155,7 +154,7 @@ depend:
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decNumber.o $(DECDIR)/decNumber.c
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decQuad.o $(DECDIR)/decQuad.c
 	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) -MM -MT decimal.o $(SRCDIR)/decimal.c
-	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(SHOBJ_CFLAGS) $(DECFLAGS) $(SQLITE_FLAGS) -I$(SRCDIR) -MM -MT tests.o $(TESTDIR)/tests.c
+	@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(STATIC_EXT_FLAGS) $(SQLITE_FLAGS) $(TEST_FLAGS) -I$(SRCDIR) -MM -MT tests.o $(TESTDIR)/tests.c
 
 .PHONY: doc
 doc:

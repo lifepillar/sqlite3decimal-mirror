@@ -23,6 +23,9 @@
  */
 #define SQLITE_DECIMAL_VERSION "Decimal v" SQLITE_DECIMAL_SHORT_VERSION
 
+// Entry point
+int sqlite3_decimal_init(sqlite3* db, char** pzErrMsg, sqlite3_api_routines const* api);
+
 #pragma mark Context functions
 
 /**
