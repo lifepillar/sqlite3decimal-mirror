@@ -670,6 +670,28 @@ void decimalToString(sqlite3_context* context, sqlite3_value* value) {
   }
 }
 
+void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* value) {
+  decQuad decnum;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&decnum, decCtx, value, context)) {
+    // bcd_coeff is an array of DECQUAD_Pmax elements, one digit in each byte
+    // (BCD8 encoding); the first (most significant) digit is ignored if the
+    // result will be a NaN; all are ignored if the result is finite.
+    // All bytes must be in the range 0-9 (decNumber's mmanual, p. 56).
+    uint8_t bcd_coeff[DECQUAD_Pmax];
+    // No error is possible from decQuadGetCoefficient(), and no status is set
+    decQuadGetCoefficient(&decnum, &bcd_coeff[0]);
+    char digits[DECQUAD_Pmax + 1];
+
+    for (size_t i = 0; i < DECQUAD_Pmax; ++i)
+      sprintf(&digits[i], "%01d", bcd_coeff[i]);
+
+    digits[DECQUAD_Pmax] = '\0';
+    sqlite3_result_text(context, digits, -1, SQLITE_TRANSIENT);
+  }
+}
+
 void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
   switch (sqlite3_value_type(value)) {
     case SQLITE_BLOB:
@@ -1110,6 +1132,5 @@ SQLITE_DECIMAL_AGGR_FINAL(Avg, avgAggrDefault, avgAggrFinOp)
       return;                                                             \
     }
 
-SQLITE_DECIMAL_NOT_IMPL1(GetCoefficient)
 SQLITE_DECIMAL_NOT_IMPL1(ToInt64)
 

@@ -317,6 +317,11 @@ static void sqlite_decimal_test_decfromint(void) {
   mu_assert_query(db, "select decStr(dec(-2147483649))", "2147483647"); // Wrap around, no error
 }
 
+static void sqlite_decimal_test_decgetcoefficient(void) {
+  mu_assert_query(db, "select decGetCoeff(dec('12.345'))", "0000000000000000000000000000012345");
+  mu_assert_query(db, "select decGetCoeff(dec('-12.345'))", "0000000000000000000000000000012345");
+}
+
 static void sqlite_decimal_test_decgetexponent(void) {
   mu_assert_query(db, "select decExponent(dec('-12.345'))", "-3");
   mu_assert_query(db, "select decExponent(dec('1e17'))", "17");
@@ -1027,6 +1032,7 @@ static void sqlite_decimal_func_tests(void) {
   mu_test(sqlite_decimal_test_decexp);
   mu_test(sqlite_decimal_test_decfma);
   mu_test(sqlite_decimal_test_decfromint);
+  mu_test(sqlite_decimal_test_decgetcoefficient);
   mu_test(sqlite_decimal_test_decgetexponent);
   mu_test(sqlite_decimal_test_decgreatest);
   mu_test(sqlite_decimal_test_decinvert);
