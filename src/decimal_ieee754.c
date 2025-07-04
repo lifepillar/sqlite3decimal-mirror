@@ -59,7 +59,13 @@ reverse_bytes(size_t count, uint8_t dest[count], uint8_t const src[count]) {
  * \param decnum A decimal value to encode
  */
 static inline void decQuadToSQLite3Blob(sqlite3_context* context, decQuad* decnum) {
+#if HAVE_LITTLE_ENDIAN
   sqlite3_result_blob(context, decnum->bytes, DECQUAD_Bytes, SQLITE_TRANSIENT);
+#else // Big-endian
+  uint8_t buf[DECQUAD_Bytes];
+  reverse_bytes(DECQUAD_Bytes, &buf, decnum->bytes);
+  sqlite3_result_blob(context, &buf, DECQUAD_Bytes, SQLITE_TRANSIENT);
+#endif
 }
 
 /**
