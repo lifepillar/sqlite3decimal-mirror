@@ -1,5 +1,5 @@
 /**
- * \file      decimal_ieee754.h
+ * \file      decimal_ieee754.c
  * \author    Lifepillar
  * \copyright Copyright (c) 2025 Lifepillar.
  *            This program is free software; you can redistribute it and/or
@@ -13,10 +13,12 @@
  */
 #include <signal.h>
 #include <string.h>
+#include "sqlite3ext.h"
 #include "decNumber/decQuad.h"
 #include "decNumber/decimal128.h"
 #include "decimal.h"
 
+SQLITE_EXTENSION_INIT3
 
 #pragma mark Helper functions
 

@@ -13,6 +13,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include "sqlite3ext.h"
 #include "decimal.h"
 
 SQLITE_EXTENSION_INIT1

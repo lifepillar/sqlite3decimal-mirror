@@ -15,11 +15,13 @@
 #define sqlite3_decimal_decimal_h
 
 #include <stdlib.h>
-#include "sqlite3ext.h"
-#include "sqlite3decimal.h"
+#include "autoconfig.h"
+#include "version.h"
 
-// Needed for dynamic linking
-SQLITE_EXTENSION_INIT3
+/**
+ * \brief Decimal extension's long version string.
+ */
+#define SQLITE_DECIMAL_VERSION "Decimal v" SQLITE_DECIMAL_SHORT_VERSION
 
 #pragma mark Context functions
 
