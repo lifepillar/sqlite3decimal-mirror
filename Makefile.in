@@ -128,8 +128,13 @@ TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/tests.o
 test: $(TESTBIN)
 	$(TESTBIN)
 
+@if DEC_STATICLIB
 $(TESTBIN): $(TESTOBJS) $(LIB)
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -L@srcdir@ -ldecimal -o $@ $(TESTOBJS)
+@else
+$(TESTBIN): $(TESTOBJS) $(LIB)
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -I$(TESTDIR) -o $@ $(TESTOBJS)
+@endif
 
 $(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c $(SQLITEDIR)/sqlite3.h
 	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(SQLITE_FLAGS) $*.c
