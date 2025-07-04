@@ -1,5 +1,5 @@
 /**
- * \file      stub.h
+ * \file      stub.c
  * \author    Lifepillar
  * \copyright Copyright (c) 2019 Lifepillar.
  *            This program is free software; you can redistribute it and/or
@@ -13,7 +13,10 @@
  */
 #include <signal.h>
 #include <string.h>
+#include "sqlite3ext.h"
 #include "decimal.h"
+
+SQLITE_EXTENSION_INIT3
 
 // Stub implementation
 

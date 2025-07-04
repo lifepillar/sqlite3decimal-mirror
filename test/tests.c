@@ -13,6 +13,8 @@
  *
  */
 #include "mu_unit_sqlite.h"
+#include "sqlite3.h"
+#include "decimal.h"
 
 static sqlite3* db;
 
