@@ -63,6 +63,18 @@ static void sqlite_decimal_test_dec_parse_error(void) {
   mu_db_execute(db, "delete from decStatus");
 }
 
+static void sqlite_decimal_test_dec_from_malformed_blob(void) {
+  mu_db_execute(db, "drop table if exists t;");
+  mu_db_execute(db, "create table t(n blob);");
+  mu_db_execute(db, "insert into t(n) values (x'121314');");
+  mu_assert_query_fails(db, "select dec(n) from t", "Conversion syntax");
+  mu_db_execute(db, "delete from decTraps where flag = 'Conversion syntax'");
+  mu_assert_query(db, "select decStr(t.n) from t;", "NaN");
+  mu_db_execute(db, "drop table t;");
+  mu_db_execute(db, "delete from decStatus");
+}
+
+
 static void sqlite_decimal_test_decabs(void) {
   mu_assert_query(db, "select decStr(decAbs(dec('-12.345')))", "12.345");
   mu_assert_query(db, "select decStr(decAbs(dec('+12.345')))", "12.345");
@@ -936,6 +948,7 @@ static void sqlite_decimal_func_tests(void) {
   mu_test(sqlite_decimal_test_dec_Inf);
   mu_test(sqlite_decimal_test_dec_neg);
   mu_test(sqlite_decimal_test_dec_parse_error);
+  mu_test(sqlite_decimal_test_dec_from_malformed_blob);
   mu_test(sqlite_decimal_test_decabs);
   mu_test(sqlite_decimal_test_decabs_null);
   mu_test(sqlite_decimal_test_decadd_two_numbers);

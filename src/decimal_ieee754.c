@@ -60,8 +60,8 @@ static inline void decQuadFromSQLite3Blob(
     memcpy(&result->bytes, bytes, DECQUAD_Bytes);
   }
   else {
-    decQuadZero(result); // FIXME: set to NaN
-    decCtx->status|=DEC_Conversion_syntax;
+    decContextSetStatusQuiet(decCtx, DEC_Conversion_syntax);
+    decQuadFromString(result, "NaN", decCtx);
   }
 }
 
