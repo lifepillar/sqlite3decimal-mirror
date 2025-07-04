@@ -58,6 +58,8 @@ int main(int argc, char* argv[argc + 1]) {
   printf("\n/**\n");
   printf(" * \\brief SQLite3 Decimal short version string.\n");
   printf(" */\n");
+  printf("#ifndef sqlite3_decimal_version_h\n");
+  printf("#define sqlite3_decimal_version_h\n");
   printf("#define SQLITE_DECIMAL_SHORT_VERSION \"%s\"\n\n", text);
 
   char* z = text;
@@ -110,7 +112,7 @@ int main(int argc, char* argv[argc + 1]) {
     ++d;
   }
 
-  printf("\n");
+  printf("\n#endif\n");
 
   return EXIT_SUCCESS;
 }
