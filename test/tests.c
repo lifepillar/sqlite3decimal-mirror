@@ -13,23 +13,78 @@
  *
  */
 #include "mu_unit_sqlite.h"
+#include "decContext.h"
 #include "decimal.h"
 
 static sqlite3* db;
 
 #pragma mark Test functions
 
+static void sqlite_decimal_test_endianness(void) {
+  mu_assert(decContextTestEndian(0) == 0, "Incorrect endianness");
+}
+
+// See also: https://speleotrove.com/decimal/dbspec.html
+#if DEBUG
+static void sqlite_decimal_test_decbits(void) {
+  // For special numbers, the first four bit of the continuation field must all be one (11110 for infinities, 11111 for NaNs)
+  mu_assert_query(db,
+      "select decBits(dec('+Inf'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "0 11110 000000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+  mu_assert_query(db,
+      "select decBits(dec('-Inf'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "1 11110 000000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+  mu_assert_query(db,
+      "select decBits(dec('NaN'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "0 11111 000000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+  mu_assert_query(db,
+      "select decBits(dec('+NaN'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "0 11111 000000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+  mu_assert_query(db,
+      "select decBits(dec('-NaN'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "1 11111 000000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+  // TODO: check these values
+  // Zero (with no fractional digits) has exponent 1.
+  mu_assert_query(db,
+      "select decBits(dec('0'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "0 01000 100000100000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+  mu_assert_query(db,
+      "select decBits(dec('0.0'));",
+      // Sign bit + (5+12)-bit combination field + 11 declets = 128 bits
+      "0 01000 100000011111 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000"
+      );
+
+  mu_assert_query(db,
+      "select decBits(dec('-1.24'));",
+      // Sign bit + 5-bit combination field + 12-bit exponent continuation + 11 declets = 128 bits
+      "1 01000 100000011110 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0010100100"
+      );
+}
+#endif
+
 static void sqlite_decimal_test_decbytes(void) {
-  mu_assert_query(db, "select decBytes(dec('-1.00'))", "80000000 00000000 00000000 008007a2");
-  mu_assert_query(db, "select decBytes(dec('-Inf'))",  "00000000 00000000 00000000 000000f8");
-  mu_assert_query(db, "select decBytes(dec('+Inf'))",  "00000000 00000000 00000000 00000078");
-  mu_assert_query(db, "select decBytes(dec('-0'))",    "00000000 00000000 00000000 000008a2");
-  mu_assert_query(db, "select decBytes(dec('0'))",     "00000000 00000000 00000000 00000822");
-  mu_assert_query(db, "select decBytes(dec('-NaN'))",  "00000000 00000000 00000000 000000fc");
-  mu_assert_query(db, "select decBytes(dec('NaN'))",   "00000000 00000000 00000000 0000007c");
+  mu_assert_query(db, "select decBytes(dec('+Inf'))",  "78000000 00000000 00000000 00000000");
+  mu_assert_query(db, "select decBytes(dec('-Inf'))",  "f8000000 00000000 00000000 00000000");
+  mu_assert_query(db, "select decBytes(dec('NaN'))",   "7c000000 00000000 00000000 00000000");
+  mu_assert_query(db, "select decBytes(dec('-NaN'))",  "fc000000 00000000 00000000 00000000");
+  mu_assert_query(db, "select decBytes(dec('0'))",     "22080000 00000000 00000000 00000000");
+  mu_assert_query(db, "select decBytes(dec('-0'))",    "a2080000 00000000 00000000 00000000");
+  mu_assert_query(db, "select decBytes(dec('-1.00'))", "a2078000 00000000 00000000 00000080");
   mu_assert_query( db,
       "select decBytes(dec('-0.001213872189473241234987231984754353498798734892374289399999999999'))",
-      "d351ef68 4c8fd314 d49ccff0 3511ffa5"
+      "a5ff1135 f0cf9cd4 14d38f4c 68ef51d3"
       );
 }
 
@@ -943,6 +998,10 @@ static void sqlite_decimal_func_tests(void) {
   mu_setup = sqlite_test_context_setup;
   mu_teardown = mu_noop;
 
+  mu_test(sqlite_decimal_test_endianness);
+#if DEBUG
+  mu_test(sqlite_decimal_test_decbits);
+#endif
   mu_test(sqlite_decimal_test_decbytes);
   mu_test(sqlite_decimal_test_dec_NaN);
   mu_test(sqlite_decimal_test_dec_Inf);

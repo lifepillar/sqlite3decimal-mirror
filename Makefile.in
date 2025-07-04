@@ -122,7 +122,7 @@ $(SRCDIR)/decimal.o:          $(SRCDIR)/decimal.h $(SRCDIR)/autoconfig.h $(SRCDI
 # Test targets
 
 TESTBIN             = @srcdir@/runtests
-TESTOBJS            = $(SQLITEDIR)/sqlite3.o $(TESTDIR)/tests.o
+TESTOBJS            = $(DECDIR)/decContext.o $(SQLITEDIR)/sqlite3.o $(TESTDIR)/tests.o
 
 .PHONY: test
 test: $(TESTBIN)
@@ -143,6 +143,7 @@ $(SQLITEDIR)/sqlite3.o: $(SQLITEDIR)/sqlite3.c $(SQLITEDIR)/sqlite3.h
 $(TESTDIR)/tests.o: $(TESTDIR)/tests.c
 $(TESTDIR)/tests.o: $(TESTDIR)/mu_unit_sqlite.h $(TESTDIR)/mu_unit.h
 $(TESTDIR)/tests.o: $(SQLITEDIR)/sqlite3.h
+$(TESTDIR)/tests.o: $(DECDIR)/decContext.h
 $(TESTDIR)/tests.o: $(SRCDIR)/decimal.h $(SRCDIR)/autoconfig.h $(SRCDIR)/version.h
 	$(CC) -c -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(STATIC_EXT_FLAGS) $(SQLITE_FLAGS) $(TEST_FLAGS) -I$(SRCDIR) $*.c
 
@@ -169,6 +170,7 @@ doc:
 clean:
 	-rm -f $(OBJS) $(TESTBIN) $(TESTOBJS) $(TOOLDIR)/*.o
 	-rm -fr $(TOOLDIR)/mkversion.dSYM
+	-rm -fr @srcdir@/runtests.dSYM
 
 .PHONY: distclean
 distclean: clean

@@ -55,6 +55,12 @@ if {[opt-bool static]} {
 cc-check-endian
 cc-check-tools ar ranlib strip
 
+if {[have-feature little-endian]} {
+  define-append DECFLAGS -DDECLITEND=1
+} else {
+  define-append DECFLAGS -DDECLITEND=0
+}
+
 cc-with {-includes {stdint.h inttypes.h}} {
   cc-check-types uint64_t uint32_t uint16_t int16_t uint8_t
 }

@@ -9,18 +9,48 @@
  *            but without any warranty; without even the implied warranty of
  *            merchantability or fitness for a particular purpose.
  *
- * \brief     Stub for implementations
+ * \brief     An implementation based on IEEE 754 decimal128 format.
  */
+
 #include <signal.h>
 #include <string.h>
+
 #include "sqlite3ext.h"
+#include "decimal.h"
 #include "decNumber/decQuad.h"
 #include "decNumber/decimal128.h"
-#include "decimal.h"
 
 SQLITE_EXTENSION_INIT3
 
+
 #pragma mark Helper functions
+
+#if DEBUG
+/**
+ ** @brief Returns the i-th bit of a `decQuad` number.
+ **
+ ** Bit 0 is the MSB, no matter what the endianness is.
+ **/
+static char bit(size_t i, decQuad const* decnum) {
+#if HAVE_LITTLE_ENDIAN
+  return '0' + ((decnum->bytes[DECQUAD_Bytes - 1 - i / 8] >> (7 - i % 8)) & 0x01);
+#else
+  return '0' + ((decnum->bytes[i / 8] >> (7 - i % 8)) & 0x01);
+#endif
+}
+#endif
+
+/**
+ ** @brief Copies `count` bytes from `src` to `dest` in reverse order.
+ **/
+#if !HAVE_LITTLE_ENDIAN
+static void
+reverse_bytes(size_t count, uint8_t dest[count], uint8_t const src[count]) {
+  for (size_t i = 0; i < count; ++i) {
+    dest[i] = src[count - 1 - i];
+  }
+}
+#endif
 
 /**
  * \brief Encodes a decimal value.
@@ -53,11 +83,13 @@ static inline void decQuadFromSQLite3Blob(
     sqlite3_value*   value,
     [[maybe_unused]] decContext* decCtx
     ) {
-  int length = sqlite3_value_bytes(value);
-
-  if (length == DECQUAD_Bytes) {
+  if (sqlite3_value_bytes(value) == DECQUAD_Bytes) {
     uint8_t const* bytes = sqlite3_value_blob(value);
+#if HAVE_LITTLE_ENDIAN
     memcpy(&result->bytes, bytes, DECQUAD_Bytes);
+#else
+    reverse_bytes(DECQUAD_Bytes, result->bytes, bytes);
+#endif
   }
   else {
     decContextSetStatusQuiet(decCtx, DEC_Conversion_syntax);
@@ -639,7 +671,7 @@ void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
     case SQLITE_TEXT:
     case SQLITE_INTEGER:
     default:
-      sqlite3_result_error(context, "Currently, only blob arguments are accepted", -1);
+      sqlite3_result_error(context, "Only blob arguments are accepted", -1);
       return;
   }
 
@@ -651,7 +683,7 @@ void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
   size_t j = 0;
 
   for (i = 0; i < DECQUAD_Bytes; ++i) {
-#if DECLITEND
+#if HAVE_LITTLE_ENDIAN
     sprintf(&hexbuf[j], "%02x", bytes[DECQUAD_Bytes - 1 - i]);
 #else
     sprintf(&hexbuf[j], "%02x", bytes[i]);
@@ -668,6 +700,59 @@ void decimalBytes(sqlite3_context* context, sqlite3_value* value) {
   // printf(">%s> %s [big-endian]  %s\n", tag, hexbuf, buff);
   sqlite3_result_text(context, hexbuf, -1, SQLITE_TRANSIENT);
 }
+
+// See: IEEE Standard for Floating Point Arithmetic (IEEE754), 2008, p. 22.
+#if DEBUG
+void decimalBits(sqlite3_context* context, sqlite3_value* value) {
+  decQuad decnum;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (!decode(&decnum, decCtx, value, context)) {
+      sqlite3_result_error(context, "Malformed decimal blob", -1);
+      return;
+  }
+
+  size_t const k = 8 * DECQUAD_Bytes;  // Storage in bits
+  size_t const w = (k / 16 + 9) - 5;   // (Size of the combination field) - 5
+  size_t const t = 15 * k / 16 - 10;   // Trailing significand field width in bits
+  char bits[k + 3 + (t / 10 - 1) + 1]; // t/10 - 1 spaces between declets
+
+  bits[0] = bit(0, &decnum); // Sign bit
+  bits[1] = ' ';
+
+  // Combination field (bits 1-17)
+  size_t m = 2;
+
+  for (size_t i = 1; i <= 5; ++i) { // bits 1-5
+    bits[m] = bit(i, &decnum);
+    ++m;
+  }
+
+  bits[m] = ' ';
+  ++m;
+
+  for (size_t i = 6; i <= 5 + w; ++i) { // bits 6-(w+5)
+    bits[m] = bit(i, &decnum);
+    ++m;
+  }
+  bits[m] = ' ';
+  ++m;
+
+  // Significand
+  for (size_t i = w + 6; i < k; i += 10) { // Group remaining bits in declets
+    for (size_t j = 0; j < 10; ++j) {
+      bits[m] = bit(i + j, &decnum);
+      ++m;
+    }
+    bits[m] = ' ';
+    ++m;
+  }
+
+  bits[m - 1] = '\0';
+
+  sqlite3_result_text(context, bits, -1, SQLITE_TRANSIENT);
+}
+#endif
 
 /**
  * \brief Returns the class of a decimal as text.
