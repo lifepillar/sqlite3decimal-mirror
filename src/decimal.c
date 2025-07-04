@@ -65,6 +65,9 @@ SQLITE_DECIMAL_OP0(Version)
   }
 
 SQLITE_DECIMAL_OP1(Abs)
+#if DEBUG
+SQLITE_DECIMAL_OP1(Bits)
+#endif
 SQLITE_DECIMAL_OP1(Bytes)
 SQLITE_DECIMAL_OP1(Class)
 SQLITE_DECIMAL_OP1(Create)
@@ -735,6 +738,9 @@ int sqlite3_decimal_init(
     { SQLITE_DECIMAL_PREFIX "Abs",            1, decimalAbsFunc                },
     { SQLITE_DECIMAL_PREFIX "Add",           -1, decimalAddFunc                },
     { SQLITE_DECIMAL_PREFIX "And",            2, decimalAndFunc                },
+#if DEBUG
+    { SQLITE_DECIMAL_PREFIX "Bits",           1, decimalBitsFunc               },
+#endif
     { SQLITE_DECIMAL_PREFIX "Bytes",          1, decimalBytesFunc              },
     { SQLITE_DECIMAL_PREFIX "Class",          1, decimalClassFunc              },
     { SQLITE_DECIMAL_PREFIX "ClearStatus",    0, decimalClearStatusFunc        },

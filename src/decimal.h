@@ -244,6 +244,16 @@ void decimalAbs(sqlite3_context* context, sqlite3_value* x);
    */
 void decimalBytes(sqlite3_context* context, sqlite3_value* x);
 
+/**
+ ** @brief Converts a decimal blob into a string of bits, ordered MSB to LSB.
+ **
+ ** @note This function is available only when building with the `DEBUG` flag
+ **       set.
+ **/
+#if DEBUG
+void decimalBits(sqlite3_context* context, sqlite3_value* x);
+#endif
+
   /**
    * \brief Returns the class of a decimal as text.
    *
