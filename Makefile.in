@@ -164,6 +164,7 @@ doc:
 .PHONY: clean
 clean:
 	-rm -f $(OBJS) $(TESTBIN) $(TESTOBJS) $(TOOLDIR)/*.o
+	-rm -fr $(TOOLDIR)/mkversion.dSYM
 
 .PHONY: distclean
 distclean: clean
@@ -175,7 +176,6 @@ distclean: clean
 	-rm -f @srcdir@/**/Session.vim
 	-rm -f @srcdir@/**/tags
 	-rm -f $(TOOLDIR)/mkversion
-	-rm -fr $(TOOLDIR)/mkversion.dSYM
 
 Makefile: @AUTODEPS@ @srcdir@/Makefile.in VERSION
 	@AUTOREMAKE@
