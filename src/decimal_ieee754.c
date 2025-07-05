@@ -677,8 +677,8 @@ void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* value) {
   if (decode(&decnum, decCtx, value, context)) {
     // bcd_coeff is an array of DECQUAD_Pmax elements, one digit in each byte
     // (BCD8 encoding); the first (most significant) digit is ignored if the
-    // result will be a NaN; all are ignored if the result is finite.
-    // All bytes must be in the range 0-9 (decNumber's mmanual, p. 56).
+    // result will be a NaN; all are ignored if the result is infinite.
+    // All bytes must be in the range 0-9 (decNumber's manual, p. 56).
     uint8_t bcd_coeff[DECQUAD_Pmax];
     // No error is possible from decQuadGetCoefficient(), and no status is set
     decQuadGetCoefficient(&decnum, &bcd_coeff[0]);
