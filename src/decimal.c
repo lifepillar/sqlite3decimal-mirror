@@ -74,6 +74,7 @@ SQLITE_DECIMAL_OP1(Create)
 SQLITE_DECIMAL_OP1(Exp)
 SQLITE_DECIMAL_OP1(GetCoefficient)
 SQLITE_DECIMAL_OP1(GetExponent)
+SQLITE_DECIMAL_OP1(GetMantissa)
 SQLITE_DECIMAL_OP1(Invert)
 SQLITE_DECIMAL_OP1(IsCanonical)
 SQLITE_DECIMAL_OP1(IsFinite)
@@ -780,7 +781,7 @@ int sqlite3_decimal_init(
     { SQLITE_DECIMAL_PREFIX "LogB",           1, decimalLogBFunc               },
     { SQLITE_DECIMAL_PREFIX "Ln",             1, decimalLnFunc                 },
     { SQLITE_DECIMAL_PREFIX "Lt",             2, decimalLessThanFunc           },
-    { SQLITE_DECIMAL_PREFIX "Mantissa",       1, decimalGetCoefficientFunc     },
+    { SQLITE_DECIMAL_PREFIX "Mantissa",       1, decimalGetMantissaFunc        },
     { SQLITE_DECIMAL_PREFIX "MaxMag",        -1, decimalMaxMagFunc             },
     { SQLITE_DECIMAL_PREFIX "MinMag",        -1, decimalMinMagFunc             },
     { SQLITE_DECIMAL_PREFIX "Minus",          1, decimalMinusFunc              },

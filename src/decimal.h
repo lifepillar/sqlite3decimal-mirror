@@ -282,7 +282,15 @@ void decimalCreate(sqlite3_context* context, sqlite3_value* x);
 void decimalExp(sqlite3_context* context, sqlite3_value* x);
 
   /**
-   * \brief Returns the coefficient (significand) of the given decimal as text.
+   * \brief Returns the mantissa (significand) of the given decimal as text.
+   */
+void decimalGetMantissa(sqlite3_context* context, sqlite3_value* x);
+
+  /**
+   * \brief Returns the signed coefficient of the given decimal as text.
+   *
+   * This is the same as `decimalGetMantissa()` except that if the number is
+   * negative, a minus sign is prepended to the result.
    */
 void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* x);
 
