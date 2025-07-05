@@ -221,9 +221,9 @@ static void sqlite_decimal_test_deccompare(void) {
   mu_assert_query(db, "select decStr(decCompare('NaN', '1'))", "NaN");
   mu_assert_query(db, "select decStr(decCompare('1', 'NaN'))", "NaN");
   mu_assert_query(db, "select decStr(decCompare('NaN', 'NaN'))", "NaN");
-  mu_assert_query(db, "select decToInt32(decCompare('03.2', '3.20')) = 0", "1");
-  mu_assert_query(db, "select decToInt32(decCompare('-03.2', '3.20')) = -1", "1");
-  mu_assert_query(db, "select decToInt32(decCompare('-1.2', '-3.20')) = 1", "1");
+  mu_assert_query(db, "select decToInt(decCompare('03.2', '3.20')) = 0", "1");
+  mu_assert_query(db, "select decToInt(decCompare('-03.2', '3.20')) = -1", "1");
+  mu_assert_query(db, "select decToInt(decCompare('-1.2', '-3.20')) = 1", "1");
 }
 
 static void sqlite_decimal_test_decdivide(void) {
@@ -317,9 +317,30 @@ static void sqlite_decimal_test_decfromint(void) {
   mu_assert_query(db, "select decStr(dec(-2147483649))", "2147483647"); // Wrap around, no error
 }
 
+static void sqlite_decimal_test_decgetmantissa(void) {
+  mu_assert_query(db, "select decMantissa(dec('0'))", "0");
+  mu_assert_query(db, "select decMantissa(dec('-0'))", "0");
+  mu_assert_query(db, "select decMantissa(dec('Inf'))", "0");
+  mu_assert_query(db, "select decMantissa(dec('-Inf'))", "0");
+  mu_assert_query(db, "select decMantissa(dec('NaN'))", "0");
+  mu_assert_query(db, "select decMantissa(dec('-NaN'))", "0");
+  mu_assert_query(db, "select decMantissa(dec('12.345'))", "12345");
+  mu_assert_query(db, "select decMantissa(dec('-12.345'))", "12345");
+  mu_assert_query(db, "select decMantissa(dec('0.0098700'))", "98700");
+  mu_assert_query(db, "select decMantissa(dec('-0.00987'))", "987");
+}
+
 static void sqlite_decimal_test_decgetcoefficient(void) {
-  mu_assert_query(db, "select decGetCoeff(dec('12.345'))", "0000000000000000000000000000012345");
-  mu_assert_query(db, "select decGetCoeff(dec('-12.345'))", "0000000000000000000000000000012345");
+  mu_assert_query(db, "select decCoefficient(dec('0'))", "0");
+  mu_assert_query(db, "select decCoefficient(dec('-0'))", "-0");
+  mu_assert_query(db, "select decCoefficient(dec('Inf'))", "0");
+  mu_assert_query(db, "select decCoefficient(dec('-Inf'))", "-0");
+  mu_assert_query(db, "select decCoefficient(dec('NaN'))", "0");
+  mu_assert_query(db, "select decCoefficient(dec('-NaN'))", "-0");
+  mu_assert_query(db, "select decCoefficient(dec('12.345'))", "12345");
+  mu_assert_query(db, "select decCoefficient(dec('-12.345'))", "-12345");
+  mu_assert_query(db, "select decCoefficient(dec('0.0098700'))", "98700");
+  mu_assert_query(db, "select decCoefficient(dec('-0.00987'))", "-987");
 }
 
 static void sqlite_decimal_test_decgetexponent(void) {
@@ -771,20 +792,20 @@ static void sqlite_decimal_test_decsum_null(void) {
 
 static void sqlite_decimal_test_dectoint32(void) {
   mu_assert_query(db, "select round from decContext", "ROUND_HALF_EVEN");
-  mu_assert_query(db, "select decToInt32('0')", "0");
-  mu_assert_query(db, "select decToInt32('123')", "123");
-  mu_assert_query(db, "select decToInt32('123.5')", "124");
-  mu_assert_query(db, "select decToInt32('122.5')", "122");
-  mu_assert_query(db, "select decToInt32('-123')", "-123");
-  mu_assert_query(db, "select decToInt32('-123.5')", "-124");
-  mu_assert_query(db, "select decToInt32('-122.5')", "-122");
-  mu_assert_query_fails(db, "select decToInt32('Inf')", "Invalid operation");
-  mu_assert_query_fails(db, "select decToInt32('-Inf')", "Invalid operation");
-  mu_assert_query_fails(db, "select decToInt32('NaN')", "Invalid operation");
-  mu_assert_query(db, "select decToInt32(dec('2147483647'))", "2147483647");
-  mu_assert_query(db, "select decToInt32(dec(2147483648))", "-2147483648"); // Wraps around, no error
-  mu_assert_query(db, "select decToInt32(dec(-2147483648))", "-2147483648");
-  mu_assert_query(db, "select decToInt32(dec(-2147483649))", "2147483647"); // Wraps around, no error
+  mu_assert_query(db, "select decToInt('0')", "0");
+  mu_assert_query(db, "select decToInt('123')", "123");
+  mu_assert_query(db, "select decToInt('123.5')", "124");
+  mu_assert_query(db, "select decToInt('122.5')", "122");
+  mu_assert_query(db, "select decToInt('-123')", "-123");
+  mu_assert_query(db, "select decToInt('-123.5')", "-124");
+  mu_assert_query(db, "select decToInt('-122.5')", "-122");
+  mu_assert_query_fails(db, "select decToInt('Inf')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt('-Inf')", "Invalid operation");
+  mu_assert_query_fails(db, "select decToInt('NaN')", "Invalid operation");
+  mu_assert_query(db, "select decToInt(dec('2147483647'))", "2147483647");
+  mu_assert_query(db, "select decToInt(dec(2147483648))", "-2147483648"); // Wraps around, no error
+  mu_assert_query(db, "select decToInt(dec(-2147483648))", "-2147483648");
+  mu_assert_query(db, "select decToInt(dec(-2147483649))", "2147483647"); // Wraps around, no error
 }
 
 static void sqlite_decimal_test_dectointegral(void) {
@@ -1033,6 +1054,7 @@ static void sqlite_decimal_func_tests(void) {
   mu_test(sqlite_decimal_test_decfma);
   mu_test(sqlite_decimal_test_decfromint);
   mu_test(sqlite_decimal_test_decgetcoefficient);
+  mu_test(sqlite_decimal_test_decgetmantissa);
   mu_test(sqlite_decimal_test_decgetexponent);
   mu_test(sqlite_decimal_test_decgreatest);
   mu_test(sqlite_decimal_test_decinvert);

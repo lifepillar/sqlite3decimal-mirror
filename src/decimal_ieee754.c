@@ -670,24 +670,60 @@ void decimalToString(sqlite3_context* context, sqlite3_value* value) {
   }
 }
 
-void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* value) {
+void decimalGetMantissa(sqlite3_context* context, sqlite3_value* value) {
   decQuad decnum;
   decContext* decCtx = sqlite3_user_data(context);
 
   if (decode(&decnum, decCtx, value, context)) {
     // bcd_coeff is an array of DECQUAD_Pmax elements, one digit in each byte
-    // (BCD8 encoding); the first (most significant) digit is ignored if the
-    // result will be a NaN; all are ignored if the result is infinite.
-    // All bytes must be in the range 0-9 (decNumber's manual, p. 56).
+    // (BCD8 encoding) […] All bytes must be in the range 0-9 (decNumber's
+    // manual, p. 56).
+    // The digits of the coefficent are written, one digit per byte, into
+    // DECDOUBLE_Pmax elements of the bcd array. If the number is a NaN the
+    // first byte will be zero (the remainder will be the payload), and if it
+    // is infinite then all of bcd will be zero (ibid., p.58).
     uint8_t bcd_coeff[DECQUAD_Pmax];
+    char    digits[DECQUAD_Pmax + 1]; // +1 for the sign
+    size_t  j = 0;
+    size_t  k = 0;
     // No error is possible from decQuadGetCoefficient(), and no status is set
     decQuadGetCoefficient(&decnum, &bcd_coeff[0]);
-    char digits[DECQUAD_Pmax + 1];
 
-    for (size_t i = 0; i < DECQUAD_Pmax; ++i)
-      sprintf(&digits[i], "%01d", bcd_coeff[i]);
+    for (; j < DECQUAD_Pmax - 1 && bcd_coeff[j] == 0; ++j) // Skip leading zeroes
+      ;
 
-    digits[DECQUAD_Pmax] = '\0';
+    for (; j < DECQUAD_Pmax; ++j, ++k)
+      sprintf(&digits[k], "%01d", bcd_coeff[j]);
+
+    digits[k] = '\0';
+    sqlite3_result_text(context, digits, -1, SQLITE_TRANSIENT);
+  }
+}
+
+void decimalGetCoefficient(sqlite3_context* context, sqlite3_value* value) {
+  decQuad decnum;
+  decContext* decCtx = sqlite3_user_data(context);
+
+  if (decode(&decnum, decCtx, value, context)) {
+    uint8_t bcd_coeff[DECQUAD_Pmax];
+    char    digits[DECQUAD_Pmax + 1]; // +1 for the sign
+    size_t  j = 0;
+    size_t  k = 0;
+    // No error is possible from decQuadGetCoefficient(), and no status is set
+    int32_t sign = decQuadGetCoefficient(&decnum, &bcd_coeff[0]);
+
+    if (sign) {
+      digits[0] = '-';
+      ++k;
+    }
+
+    for (; j < DECQUAD_Pmax - 1 && bcd_coeff[j] == 0; ++j) // Skip leading zeroes
+      ;
+
+    for (; j < DECQUAD_Pmax; ++j, ++k)
+      sprintf(&digits[k], "%01d", bcd_coeff[j]);
+
+    digits[k] = '\0';
     sqlite3_result_text(context, digits, -1, SQLITE_TRANSIENT);
   }
 }
