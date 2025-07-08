@@ -172,10 +172,6 @@ depend:
 doc:
 	doxygen
 
-.PHONY: foo
-foo:
-	echo @host@ @build_cpu@ @host_cpu@
-
 .PHONY: release
 release: $(RELEASE_NAME).tar.gz
 
