@@ -6,12 +6,11 @@
 
 NAME                = @NAME@
 VERSION             = @VERSION@
-FOO = @BASE_OS@
 
 @if DEC_STATICLIB
-RELEASE_NAME        = lib$(NAME)$(VERSION)-@host_cpu@-@BASE_OS@-static
+RELEASE_NAME        = lib$(NAME)-v$(VERSION)-@host_cpu@-@BASE_OS@-static
 @else
-RELEASE_NAME        = lib$(NAME)-$(VERSION)-@host_cpu@-@BASE_OS@
+RELEASE_NAME        = lib$(NAME)-v$(VERSION)-@host_cpu@-@BASE_OS@
 @endif
 
 SRCDIR              = @srcdir@/src
