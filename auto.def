@@ -31,6 +31,10 @@ proc proj-file-content {args} {
 define NAME "decimal"
 define VERSION [proj-file-content -trim $::autosetup(srcdir)/VERSION]
 
+regsub -nocase {^([a-zA-Z]+).*} [get-define host_os] {\1} base_os
+define BASE_OS $base_os
+msg-result "Checking OS... $base_os"
+
 if {[opt-bool debug]} {
   define CFLAGS {-g -O0}
   define-append CFLAGS -DDEBUG

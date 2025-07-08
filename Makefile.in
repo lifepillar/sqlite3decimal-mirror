@@ -6,11 +6,12 @@
 
 NAME                = @NAME@
 VERSION             = @VERSION@
+FOO = @BASE_OS@
 
 @if DEC_STATICLIB
-RELEASE_NAME        = lib$(NAME)-static-$(VERSION)-@host_cpu@-@host_vendor@
+RELEASE_NAME        = lib$(NAME)$(VERSION)-@host_cpu@-@BASE_OS@-static
 @else
-RELEASE_NAME        = lib$(NAME)-$(VERSION)-@host_cpu@-@host_vendor@
+RELEASE_NAME        = lib$(NAME)-$(VERSION)-@host_cpu@-@BASE_OS@
 @endif
 
 SRCDIR              = @srcdir@/src
@@ -194,7 +195,7 @@ clean:
 distclean: clean
 	-rm -f $(LIB)
 	-rm -f @srcdir@/*.a @srcdir@/*@SH_SOEXT@
-	-rm -f $(RELEASE_NAME).*
+	-rm -f $(RELEASE_NAME)[-.]*
 	-rm -f $(SRCDIR)/autoconfig.h @srcdir@/config.log @srcdir@/Makefile
 	-rm -f @srcdir@/**/cscope.*
 	-rm -f -r @srcdir@/html
