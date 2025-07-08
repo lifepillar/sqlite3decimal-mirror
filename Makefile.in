@@ -7,6 +7,12 @@
 NAME                = @NAME@
 VERSION             = @VERSION@
 
+@if DEC_STATICLIB
+RELEASE_NAME        = lib$(NAME)-static-$(VERSION)-@host_cpu@-@host_vendor@
+@else
+RELEASE_NAME        = lib$(NAME)-$(VERSION)-@host_cpu@-@host_vendor@
+@endif
+
 SRCDIR              = @srcdir@/src
 DECDIR              = $(SRCDIR)/decNumber
 SQLITEDIR           = $(SRCDIR)/sqlite
@@ -166,6 +172,18 @@ depend:
 doc:
 	doxygen
 
+.PHONY: foo
+foo:
+	echo @host@ @build_cpu@ @host_cpu@
+
+.PHONY: release
+release: $(RELEASE_NAME).tar.gz
+
+$(RELEASE_NAME).tar.gz: $(LIB)
+	tar -cvf $(RELEASE_NAME).tar $(LIB)
+	gzip $(RELEASE_NAME).tar
+	fossil uv add $(RELEASE_NAME).tar.gz
+
 .PHONY: clean
 clean:
 	-rm -f $(OBJS) $(TESTBIN) $(TESTOBJS) $(TOOLDIR)/*.o
@@ -176,6 +194,7 @@ clean:
 distclean: clean
 	-rm -f $(LIB)
 	-rm -f @srcdir@/*.a @srcdir@/*@SH_SOEXT@
+	-rm -f $(RELEASE_NAME).*
 	-rm -f $(SRCDIR)/autoconfig.h @srcdir@/config.log @srcdir@/Makefile
 	-rm -f @srcdir@/**/cscope.*
 	-rm -f -r @srcdir@/html
